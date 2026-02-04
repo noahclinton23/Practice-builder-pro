@@ -4,17 +4,20 @@
 <meta charset="UTF-8"/>
 <title>Practice AI Coach</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { background:#0F1115; color:#EDEFF2; }
-.card { background:#171A21; border-radius:12px; padding:14px; }
-.btn-blue { background:#1F6FEB; }
-.btn-green { background:#2EA043; }
-.btn-red { background:#DA3633; }
-.btn-amber { background:#D29922; color:black; }
-.btn-gray { background:#30363D; }
+  body { background:#0F1115; color:#EDEFF2; }
+  .card { background:#171A21; border-radius:12px; padding:14px; }
+  .btn-blue { background:#1F6FEB; }
+  .btn-green { background:#2EA043; }
+  .btn-red { background:#DA3633; }
+  .btn-amber { background:#D29922; color:black; }
+  .btn-gray { background:#30363D; }
+  .chip { background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.08); }
+  .chip-on { outline:2px solid #1F6FEB; }
+  .small { font-size:12px; color:#9AA0A6; }
+  .divider { height:1px; background:rgba(255,255,255,0.08); margin:12px 0; }
 </style>
 </head>
 
@@ -32,303 +35,800 @@ body { background:#0F1115; color:#EDEFF2; }
 
 <!-- HOME -->
 <div id="home" class="tab">
+  <div class="grid grid-cols-2 gap-4 mb-6">
+    <button onclick="toggleAsk()" class="btn-gray p-5 rounded-xl font-bold">Ask Coach</button>
+    <button onclick="showTab('practice')" class="btn-blue p-5 rounded-xl font-bold">Build Practice</button>
+  </div>
 
-<div class="grid grid-cols-2 gap-4 mb-6">
-  <button onclick="toggleAsk()" class="btn-gray p-5 rounded-xl font-bold">Ask Coach</button>
-  <button onclick="showTab('practice')" class="btn-blue p-5 rounded-xl font-bold">Generate Practice</button>
-</div>
+  <div id="askBox" class="card hidden">
+    <h2 class="font-semibold mb-2">Ask Coach</h2>
+    <input id="askInput" placeholder="Example: What should we emphasize today?"
+      class="w-full p-2 bg-black rounded mb-2"/>
+    <div class="flex gap-2">
+      <button onclick="answerAsk()" class="btn-green px-4 py-2 rounded font-semibold">Ask</button>
+      <button onclick="clearFocus()" class="btn-gray px-4 py-2 rounded font-semibold">Clear Focus</button>
+    </div>
+    <p id="askAnswer" class="text-gray-400 mt-2"></p>
+  </div>
 
-<div id="askBox" class="card hidden">
-  <h2 class="font-semibold mb-2">Ask Coach</h2>
-  <input id="askInput" class="w-full p-2 bg-black rounded mb-2"/>
-  <button onclick="answerAsk()" class="btn-green px-4 py-2 rounded">Ask</button>
-  <p id="askAnswer" class="text-gray-400 mt-2"></p>
-</div>
-
-<div id="todayFocus" class="card mt-4 hidden"></div>
-
+  <div id="todayFocus" class="card mt-4 hidden"></div>
 </div>
 
 <!-- ROSTER -->
 <div id="roster" class="tab hidden">
+  <h2 class="text-xl font-bold mb-3">Roster</h2>
 
-<h2 class="text-xl font-bold mb-3">Roster</h2>
+  <div class="card mb-4">
+    <div class="small mb-2">Add / edit players (Perimeter + Big are inferred later; for now we use skills + ATH).</div>
 
-<div class="card mb-4">
-<input id="playerName" placeholder="Name" class="w-full bg-black p-2 rounded mb-2"/>
-<div class="grid grid-cols-2 gap-2">
-<input id="height" placeholder="Height in inches" class="bg-black p-2 rounded"/>
-<input id="weight" placeholder="Weight" class="bg-black p-2 rounded"/>
-</div>
+    <input id="playerName" placeholder="Name" class="w-full bg-black p-2 rounded mb-2"/>
 
-<div class="grid grid-cols-3 gap-2 mt-2">
-<input id="BH" placeholder="BH" class="bg-black p-2 rounded"/>
-<input id="PD" placeholder="PD" class="bg-black p-2 rounded"/>
-<input id="SH" placeholder="SH" class="bg-black p-2 rounded"/>
-<input id="FN" placeholder="FN" class="bg-black p-2 rounded"/>
-<input id="DF" placeholder="DF" class="bg-black p-2 rounded"/>
-<input id="RB" placeholder="RB" class="bg-black p-2 rounded"/>
-<input id="ATH" placeholder="ATH" class="bg-black p-2 rounded"/>
-</div>
+    <div class="grid grid-cols-2 gap-2">
+      <input id="height" placeholder="Height (inches)" class="bg-black p-2 rounded"/>
+      <input id="weight" placeholder="Weight" class="bg-black p-2 rounded"/>
+    </div>
 
-<button onclick="savePlayer()" class="btn-green px-4 py-2 rounded mt-3">Save Player</button>
-</div>
+    <div class="grid grid-cols-3 gap-2 mt-2">
+      <input id="BH" placeholder="BH" class="bg-black p-2 rounded"/>
+      <input id="PD" placeholder="PD" class="bg-black p-2 rounded"/>
+      <input id="SH" placeholder="SH" class="bg-black p-2 rounded"/>
+      <input id="FN" placeholder="FN" class="bg-black p-2 rounded"/>
+      <input id="DF" placeholder="DF" class="bg-black p-2 rounded"/>
+      <input id="RB" placeholder="RB" class="bg-black p-2 rounded"/>
+      <input id="ATH" placeholder="ATH" class="bg-black p-2 rounded"/>
+    </div>
 
-<ul id="rosterList"></ul>
+    <div class="flex gap-2 mt-3">
+      <button onclick="savePlayer()" class="btn-green px-4 py-2 rounded font-bold">Save Player</button>
+      <button onclick="resetPlayerForm()" class="btn-gray px-4 py-2 rounded font-bold">Clear</button>
+    </div>
+  </div>
 
+  <ul id="rosterList"></ul>
 </div>
 
 <!-- PRACTICE -->
 <div id="practice" class="tab hidden">
+  <h2 class="text-xl font-bold mb-3">Build Today’s Practice</h2>
 
-<h2 class="text-xl font-bold mb-3">Build Today’s Practice</h2>
+  <div class="card mb-4">
+    <div class="flex items-center justify-between gap-2">
+      <h3 class="font-semibold">Who’s here today?</h3>
+      <div class="flex gap-2">
+        <button onclick="setAllPresent(true)" class="btn-green px-3 py-2 rounded font-semibold">All</button>
+        <button onclick="setAllPresent(false)" class="btn-red px-3 py-2 rounded font-semibold">None</button>
+      </div>
+    </div>
+    <div id="presentList" class="grid grid-cols-2 gap-2 mt-3"></div>
+  </div>
 
-<div class="card mb-4">
-<h3 class="font-semibold mb-2">Who’s here today?</h3>
-<div id="presentList" class="grid grid-cols-2 gap-2"></div>
-</div>
+  <div class="card mb-4">
+    <h3 class="font-semibold mb-2">Emphasis (optional)</h3>
+    <div class="grid grid-cols-2 gap-2 text-sm">
+      <label class="flex items-center gap-2"><input type="checkbox" id="catDefense"/> Defense</label>
+      <label class="flex items-center gap-2"><input type="checkbox" id="catOffense"/> Offense</label>
+      <label class="flex items-center gap-2"><input type="checkbox" id="catPress"/> Press/Pressure</label>
+      <label class="flex items-center gap-2"><input type="checkbox" id="catRebound"/> Rebounding</label>
+      <label class="flex items-center gap-2"><input type="checkbox" id="catCondition"/> Conditioning</label>
+      <label class="flex items-center gap-2"><input type="checkbox" id="catShooting"/> Shooting</label>
+    </div>
+    <div class="small mt-2">If you don’t check anything, it uses: Today’s Focus + player weaknesses + variety.</div>
+  </div>
 
-<div class="card mb-4">
-<h3 class="font-semibold mb-2">Emphasis</h3>
-<div class="grid grid-cols-2 gap-2 text-sm">
-<label><input type="checkbox" id="catDefense"/> Defense</label>
-<label><input type="checkbox" id="catOffense"/> Offense</label>
-<label><input type="checkbox" id="catPress"/> Press</label>
-<label><input type="checkbox" id="catRebound"/> Rebound</label>
-<label><input type="checkbox" id="catCondition"/> Conditioning</label>
-</div>
-</div>
+  <div class="flex gap-2 mb-4">
+    <button onclick="generatePractice(false)" class="btn-blue p-3 rounded w-full font-bold">BUILD</button>
+    <button onclick="generatePractice(true)" class="btn-gray p-3 rounded font-bold">Regenerate</button>
+  </div>
 
-<div class="flex gap-2 mb-4">
-<button onclick="generatePractice()" class="btn-blue p-3 rounded w-full font-bold">BUILD</button>
-<button onclick="generatePractice()" class="btn-gray p-3 rounded">Regenerate</button>
-</div>
-
-<div id="practiceOutput"></div>
-
+  <div id="practiceOutput"></div>
 </div>
 
 <!-- FULL SCREEN DRILL -->
 <div id="drillScreen" class="hidden fixed inset-0 bg-[#0F1115] p-4 overflow-y-auto">
+  <button onclick="closeDrill()" class="btn-red px-4 py-2 rounded mb-4 font-bold">← Back</button>
 
-<button onclick="closeDrill()" class="btn-red px-4 py-2 rounded mb-4">← Back</button>
+  <div class="card">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <h2 id="drillTitle" class="text-xl font-bold"></h2>
+        <div id="drillMeta" class="small mt-1"></div>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <button onclick="likeDrill(true)" class="btn-green px-3 py-2 rounded font-bold">👍</button>
+        <button onclick="likeDrill(false)" class="btn-red px-3 py-2 rounded font-bold">👎</button>
+      </div>
+    </div>
 
-<h2 id="drillTitle" class="text-xl font-bold mb-2"></h2>
-<p id="drillExplain" class="text-gray-300 mb-4"></p>
+    <div class="divider"></div>
 
-<h3 class="font-semibold mb-2">Standards</h3>
-<ul id="drillStandards" class="list-disc pl-5 mb-4"></ul>
+    <h3 class="font-semibold mb-2">How to run it</h3>
+    <p id="drillExplain" class="text-gray-200 leading-relaxed"></p>
 
-<div class="flex gap-2">
-<button onclick="logResult('met')" class="btn-green px-4 py-2 rounded">Met</button>
-<button onclick="logResult('mixed')" class="btn-amber px-4 py-2 rounded">Mixed</button>
-<button onclick="logResult('missed')" class="btn-red px-4 py-2 rounded">Missed</button>
-</div>
+    <div class="divider"></div>
 
-<p id="drillLogMsg" class="text-gray-400 mt-3"></p>
+    <div class="flex items-center justify-between gap-2">
+      <h3 class="font-semibold">Coach Explain</h3>
+      <button onclick="coachExplain()" class="btn-gray px-3 py-2 rounded font-bold">Coach Brain</button>
+    </div>
+    <div id="coachExplainBox" class="hidden mt-2 bg-black/30 p-3 rounded"></div>
 
+    <div class="divider"></div>
+
+    <h3 class="font-semibold mb-2">Standards (log who missed what)</h3>
+    <div id="drillStandards"></div>
+
+    <div class="divider"></div>
+
+    <div class="flex gap-2">
+      <button onclick="finishDrillLog()" class="btn-blue px-4 py-2 rounded font-bold w-full">Save Drill Log</button>
+    </div>
+    <p id="drillLogMsg" class="small mt-2"></p>
+  </div>
 </div>
 
 <!-- PROGRESS -->
 <div id="progress" class="tab hidden">
-
-<h2 class="text-xl font-bold mb-3">Player Progress</h2>
-
-<select id="playerSelect" class="bg-black p-2 rounded mb-3 w-full" onchange="showPlayerProgress()"></select>
-
-<div id="progressCard" class="card hidden"></div>
-
+  <h2 class="text-xl font-bold mb-3">Player Progress</h2>
+  <select id="playerSelect" class="bg-black p-2 rounded mb-3 w-full" onchange="showPlayerProgress()"></select>
+  <div id="progressCard" class="card hidden"></div>
 </div>
 
 <script>
-
-/* ---------------- DATA ---------------- */
-
+/* =========================
+   STORAGE
+========================= */
 let roster = JSON.parse(localStorage.getItem("roster")) || [];
 let editingIndex = null;
-let present = {};
-let todayFocusTags = [];
 
-/* ---------------- NAV ---------------- */
+let present = JSON.parse(localStorage.getItem("present")) || {};
+let focus = JSON.parse(localStorage.getItem("todayFocus")) || { tags: [], text: "" };
 
-function showTab(id){
- document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
- document.getElementById(id).classList.remove("hidden");
+let prefs = JSON.parse(localStorage.getItem("prefs")) || {}; // prefs[drillId] = -1,0,1
+let recent = JSON.parse(localStorage.getItem("recentDrills")) || []; // last used drillIds
+let logs = JSON.parse(localStorage.getItem("logs")) || []; // drill logs
+
+function saveAll(){
+  localStorage.setItem("roster", JSON.stringify(roster));
+  localStorage.setItem("present", JSON.stringify(present));
+  localStorage.setItem("todayFocus", JSON.stringify(focus));
+  localStorage.setItem("prefs", JSON.stringify(prefs));
+  localStorage.setItem("recentDrills", JSON.stringify(recent));
+  localStorage.setItem("logs", JSON.stringify(logs));
 }
 
-/* ---------------- ASK COACH ---------------- */
+/* =========================
+   NAV
+========================= */
+function showTab(id){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
 
-function toggleAsk(){
- document.getElementById("askBox").classList.toggle("hidden");
+/* =========================
+   ASK COACH (sets focus)
+========================= */
+function toggleAsk(){ document.getElementById("askBox").classList.toggle("hidden"); }
+
+function clearFocus(){
+  focus = { tags: [], text: "" };
+  askAnswer.innerText = "";
+  todayFocus.classList.add("hidden");
+  saveAll();
 }
 
 function answerAsk(){
- todayFocusTags = ["defense","rebound"];
- askAnswer.innerText = "Focus today: Help-side defense and finishing possessions.";
- todayFocus.innerHTML = "<b>Today’s Focus:</b> Help-side defense • Rebounding";
- todayFocus.classList.remove("hidden");
+  const q = (askInput.value || "").toLowerCase();
+
+  // Simple tag parse (V0) — later we replace with ChatGPT output tags
+  let tags = [];
+  if(q.includes("help") || q.includes("paint") || q.includes("defense")) tags.push("defense","help","communication");
+  if(q.includes("rebound")) tags.push("rebound");
+  if(q.includes("press")) tags.push("press");
+  if(q.includes("shoot")) tags.push("shooting");
+  if(q.includes("post") || q.includes("4-1")) tags.push("post","offense");
+  if(q.includes("conditioning") || q.includes("legs")) tags.push("conditioning");
+
+  if(tags.length === 0) tags = ["defense","rebound"]; // default “coach” answer
+
+  focus = {
+    tags: [...new Set(tags)],
+    text: "Today’s Focus: " + [...new Set(tags)].join(" • ")
+  };
+
+  askAnswer.innerText = "Locked focus. Go to Practice → Build to generate around it.";
+  todayFocus.innerHTML = `<b>${focus.text}</b><div class="small mt-1">Used automatically unless you override with checkboxes.</div>`;
+  todayFocus.classList.remove("hidden");
+  saveAll();
 }
 
-/* ---------------- ROSTER ---------------- */
-
-function saveRoster(){
- localStorage.setItem("roster", JSON.stringify(roster));
+/* =========================
+   ROSTER
+========================= */
+function resetPlayerForm(){
+  editingIndex = null;
+  ["playerName","height","weight","BH","PD","SH","FN","DF","RB","ATH"].forEach(id=>{
+    document.getElementById(id).value = "";
+  });
 }
 
 function savePlayer(){
- const p = {
-  name:playerName.value,
-  height:height.value,
-  weight:weight.value,
-  BH:BH.value, PD:PD.value, SH:SH.value,
-  FN:FN.value, DF:DF.value, RB:RB.value,
-  ATH:ATH.value
- };
+  const p = {
+    name: playerName.value.trim(),
+    height: parseInt(height.value || "0", 10) || 0,
+    weight: parseInt(weight.value || "0", 10) || 0,
+    BH: parseInt(BH.value || "0", 10) || 0,
+    PD: parseInt(PD.value || "0", 10) || 0,
+    SH: parseInt(SH.value || "0", 10) || 0,
+    FN: parseInt(FN.value || "0", 10) || 0,
+    DF: parseInt(DF.value || "0", 10) || 0,
+    RB: parseInt(RB.value || "0", 10) || 0,
+    ATH: parseInt(ATH.value || "0", 10) || 0,
+  };
 
- if(editingIndex!==null){
-  roster[editingIndex]=p;
-  editingIndex=null;
- } else roster.push(p);
+  if(!p.name){ alert("Need a name."); return; }
 
- saveRoster();
- renderRoster();
- renderPresent();
- renderPlayerSelect();
- document.querySelectorAll("#roster input").forEach(i=>i.value="");
+  if(editingIndex !== null) roster[editingIndex] = p;
+  else roster.push(p);
+
+  // default present state
+  if(present[p.name] === undefined) present[p.name] = true;
+
+  saveAll();
+  renderRoster();
+  renderPresentList();
+  renderPlayerSelect();
+  resetPlayerForm();
 }
 
 function renderRoster(){
- rosterList.innerHTML="";
- roster.forEach((p,i)=>{
-  const li=document.createElement("li");
-  li.className="card flex justify-between items-center mb-2";
-  li.innerHTML=`
-   <div>${p.name}</div>
-   <div class="flex gap-2">
-    <button class="btn-green px-3 py-1 rounded" onclick="editPlayer(${i})">Edit</button>
-    <button class="btn-red px-3 py-1 rounded" onclick="removePlayer(${i})">Remove</button>
-   </div>`;
-  rosterList.appendChild(li);
- });
+  rosterList.innerHTML="";
+  roster.forEach((p,i)=>{
+    const li=document.createElement("li");
+    li.className="card flex justify-between items-center mb-2 gap-3";
+    li.innerHTML=`
+      <div class="min-w-0">
+        <div class="font-semibold truncate">${p.name}</div>
+        <div class="small truncate">BH ${p.BH} • PD ${p.PD} • SH ${p.SH} • FN ${p.FN} • DF ${p.DF} • RB ${p.RB} • ATH ${p.ATH}</div>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <button class="btn-green px-3 py-2 rounded font-bold" onclick="editPlayer(${i})">Edit</button>
+        <button class="btn-red px-3 py-2 rounded font-bold" onclick="removePlayer(${i})">Remove</button>
+      </div>`;
+    rosterList.appendChild(li);
+  });
 }
 
 function editPlayer(i){
- const p=roster[i];
- editingIndex=i;
- playerName.value=p.name;
- height.value=p.height;
- weight.value=p.weight;
- BH.value=p.BH; PD.value=p.PD; SH.value=p.SH;
- FN.value=p.FN; DF.value=p.DF; RB.value=p.RB;
- ATH.value=p.ATH;
+  const p=roster[i];
+  editingIndex=i;
+  playerName.value=p.name;
+  height.value=p.height || "";
+  weight.value=p.weight || "";
+  BH.value=p.BH; PD.value=p.PD; SH.value=p.SH;
+  FN.value=p.FN; DF.value=p.DF; RB.value=p.RB;
+  ATH.value=p.ATH;
 }
 
 function removePlayer(i){
- roster.splice(i,1);
- saveRoster();
- renderRoster();
- renderPresent();
- renderPlayerSelect();
+  const name = roster[i].name;
+  roster.splice(i,1);
+  delete present[name];
+  saveAll();
+  renderRoster();
+  renderPresentList();
+  renderPlayerSelect();
 }
 
-/* ---------------- PRACTICE ---------------- */
+/* =========================
+   PRESENT LIST
+========================= */
+function renderPresentList(){
+  const wrap = document.getElementById("presentList");
+  if(!wrap) return;
+  wrap.innerHTML="";
 
-function renderPresent(){
- presentList.innerHTML="";
- roster.forEach(p=>{
-  if(present[p.name]===undefined) present[p.name]=true;
-  const lbl=document.createElement("label");
-  lbl.className="bg-black/40 p-2 rounded flex gap-2";
-  lbl.innerHTML=`<input type="checkbox" ${present[p.name]?"checked":""}/> ${p.name}`;
-  lbl.querySelector("input").onchange=e=>present[p.name]=e.target.checked;
-  presentList.appendChild(lbl);
- });
+  roster.forEach(p=>{
+    if(present[p.name] === undefined) present[p.name] = true;
+
+    const lbl=document.createElement("label");
+    lbl.className="bg-black/40 p-2 rounded flex gap-2 items-center";
+    lbl.innerHTML=`<input type="checkbox" ${present[p.name] ? "checked" : ""}/> <span class="truncate">${p.name}</span>`;
+    lbl.querySelector("input").onchange=e=>{
+      present[p.name]=e.target.checked;
+      saveAll();
+    };
+    wrap.appendChild(lbl);
+  });
+
+  saveAll();
 }
 
-const DRILLS=[
- {id:"shell",title:"Shell Defense",tags:["defense"],explain:"4v4 shell emphasizing no-middle, two feet in paint, bump cutters and finishing with rebounds.",standards:["Two feet in paint","Bump cutters","Force away middle","Rebound"]},
- {id:"post",title:"4–1 Post Feeds",tags:["offense"],explain:"Pass → V-cut to empty, wing looks post first, seal and kick-outs.",standards:["V-cut","Post seal","Wing feed look","Spacing"]},
- {id:"press",title:"Press → Man",tags:["press","defense"],explain:"2-2-1 into sprint back man with loud communication.",standards:["Sprint back","Talk","No middle","Matchups"]},
- {id:"cond",title:"Quarter Conditioning",tags:["conditioning"],explain:"NFHS game pace intervals finishing with free throws.",standards:["Full speed","Proper lanes","Finish","FTs tired"]}
+function setAllPresent(val){
+  roster.forEach(p=>present[p.name]=val);
+  saveAll();
+  renderPresentList();
+}
+
+function getPresentPlayers(){
+  return roster.filter(p=>present[p.name]);
+}
+
+/* =========================
+   DRILL LIBRARY (more variety)
+   Tags used:
+   defense, help, communication, rebound,
+   offense, post, motion, screening,
+   press, conditioning, shooting, finishing,
+   denial
+========================= */
+const DRILLS = [
+  // DEFENSE CORE
+  {id:"shell_no_middle", title:"Shell: No Middle / Help-Side", tags:["defense","help","communication","rebound"],
+    explain:"4v4 shell. On-ball forces away from middle. Help-side: two feet in paint. Bump cutters. Finish with box-out + rebound.",
+    standards:["Two feet in paint on help side","Bump every cutter","Force away from middle","Box out hard + secure rebound"],
+    coachShort:"No middle because that’s where teams score. Two feet in the paint so you’re early, not late. Miss it and you give up layups—fix it.",
+    coachLong:"We force away from middle to kill straight-line drives. Help-side two feet in the paint means you’re already in position to stop the drive, help the helper, or step up for a charge. Bumping cutters keeps us connected so we don’t give up back-cuts. Finish possessions with a box-out every rep or the drill doesn’t count."},
+
+  {id:"closeout_contain", title:"Closeout → Contain → Rebound", tags:["defense","communication","rebound"],
+    explain:"Coach passes to shooter. Sprint closeout, high hands, chop feet. Contain drive away from middle. Shot goes up → hit first, box, rebound.",
+    standards:["Sprint closeout under control","No blow-by to middle","Talk early (ball/help)","Hit first on box-out"],
+    coachShort:"Closeouts are where defense dies. Sprint, stop, contain. If you fly by or open middle, you’re costing points—tighten it up.",
+    coachLong:"We win games by eliminating easy shots. Closeout has to be fast AND controlled—high hands, choppy feet, angle to take away middle. Then you must finish with physical rebounding. Communication makes rotations early instead of desperate."},
+
+  {id:"deny_one_pass", title:"Deny One-Pass Away + Recover", tags:["defense","denial","communication"],
+    explain:"3v3/4v4. One pass away is deny. On skip, recover on flight and close out under control. No gambling; stay connected.",
+    standards:["Deny one pass away (see ball+man)","Recover on flight of pass","No ball watching","Talk cutters/screens"],
+    coachShort:"Deny because we don’t let teams run offense clean. If you’re late on the pass, you’re already beat. Be early.",
+    coachLong:"One pass away is where easy catches become easy scores. Denial disrupts timing and shrinks their playbook. Recovery has to be on the flight of the pass, not after the catch. Talk screens and cutters so we don’t get back-doored."},
+
+  {id:"post_34_deny", title:"Post Defense: 3/4 Deny + Fronting Help", tags:["defense","denial","rebound"],
+    explain:"Work post entry denial. 3/4 deny baseline or high side based on your rule. Weak-side help ready. Finish with box-out on shot.",
+    standards:["3/4 deny position is correct","Hands active on entry","Help ready behind","Box out on shot"],
+    coachShort:"3/4 deny stops easy post touches. If they catch deep, that’s on you. Fight early so we don’t foul late.",
+    coachLong:"Post scoring kills high school teams when the catch is deep. 3/4 deny prevents clean entry angles and buys time for help. Hands disrupt the passing window. If you’re lazy early, you’ll foul late trying to recover."},
+
+  // PRESS / PRESS TO MAN
+  {id:"press_221_align", title:"2-2-1 Press Alignment + Traps", tags:["press","communication","conditioning"],
+    explain:"Walk through spots, then speed it up. Trap triggers on sideline/dead dribble. Safety stays deepest. Convert on break.",
+    standards:["Sprint to spots","Trap on trigger (no guessing)","Safety stays deepest","Talk the whole time"],
+    coachShort:"Press works when we’re organized and fast. Jogging and silence kills it. Sprint to spots and talk.",
+    coachLong:"A press is a team system: spacing, timing, and communication. Sprinting to spots creates pressure without gambling. Traps happen on triggers—sideline, dead dribble, bad pass—so we aren’t guessing. Safety is non-negotiable to prevent layups."},
+
+  {id:"press_122_flow", title:"1-2-2 Press Flow + Sprint Back", tags:["press","communication","conditioning","defense"],
+    explain:"1-2-2 positioning, push ball to sideline. On break, sprint back into man, matchups called early.",
+    standards:["Push to sideline","No straight-line middle","Sprint back and match","Emergency switch called loud"],
+    coachShort:"If we press, we better get back. If you’re late, it’s a layup. Sprint back and talk your matchup.",
+    coachLong:"Press isn’t gambling—it’s pressure with recovery. We want direction (sideline) and then immediate conversion to man. Matching up is communication. Late talk equals open shots."},
+
+  // OFFENSE: 4-1 + 14
+  {id:"motion_41_vcut", title:"4–1 Motion: Pass → V-Cut Replace", tags:["offense","motion","post"],
+    explain:"4-out/1-in. Every pass triggers a V-cut to empty. Wing looks post first. If no feed, swing and continue—no standing.",
+    standards:["Pass then V-cut hard","See post first on wing catch","Post seal + target hand","Spacing stays 4-out"],
+    coachShort:"We cut because standing kills offense. Pass, cut hard, and replace. If you don’t move, you’re guarding yourself.",
+    coachLong:"Our 4–1 works because it forces help to make decisions. Pass → V-cut means defenders can’t load up. Wing catches and immediately checks the post because post touches collapse defense. Spacing stays disciplined so the post has room to work."},
+
+  {id:"motion_14_backdoor", title:"14 Motion: Wing Entry → Backdoor + Ball Screen", tags:["offense","motion","screening"],
+    explain:"Wing gets ball. First cutter runs through/backdoor. Then wing uses ball screen. Big flashes top to swing it and keep flow.",
+    standards:["Backdoor is rim-threatening","Screen angle is correct","Flash is on time","Keep ball moving (no pounding)"],
+    coachShort:"14 works when cuts are hard and screens are real. Soft cuts = nothing. Sell it like you want to score.",
+    coachLong:"The backdoor punishes denial and keeps defenders honest. The ball screen creates advantage. Big flashing top is a release valve that prevents dead possessions and keeps spacing intact. Timing is everything."},
+
+  {id:"post_touch_to_score", title:"Constraint: Post Touch Before Shot", tags:["offense","post","motion"],
+    explain:"5v5 or 4v4. Possession doesn’t count unless you touch the post first. Forces entries, timing, and spacing discipline.",
+    standards:["Find post early","Post seals before ball arrives","Perimeter relocates after pass","No lazy passes into traffic"],
+    coachShort:"Touching the post collapses defense. If we can’t enter the post, we won’t score when it matters. Make the pass.",
+    coachLong:"A post touch forces help and creates high-percentage looks. It also teaches our perimeter to cut/relocate instead of watching. Entries must be on time and on target—bad passes become turnovers."},
+
+  // SHOOTING / FINISHING
+  {id:"shoot_5spot", title:"5-Spot Catch & Shoot (Game Speed)", tags:["shooting","offense","conditioning"],
+    explain:"5 spots. Passer + shooter. Sprint into catches, shoot on balance. Track makes if you want. Add closeouts later.",
+    standards:["Sprint into shot ready","Feet set / square","Next-man-rep pace","Compete on makes goal"],
+    coachShort:"If you can’t shoot tired, you can’t shoot. Sprint into reps and be ready. Slow reps waste practice.",
+    coachLong:"Game shots aren’t slow. Sprinting into catches trains readiness and conditioning. Balance and footwork make shots repeatable. Keep the rep pace high to build real game stamina."},
+
+  {id:"finish_contact", title:"Finishing Through Contact", tags:["finishing","offense","conditioning"],
+    explain:"Lines at wings. Attack rim with pad/contact. Finish strong with two hands when possible. Run back in lanes.",
+    standards:["Attack straight line","Finish strong (no soft layups)","Run back in lanes","Next rep immediately"],
+    coachShort:"We finish because soft equals blocked. Go into contact, not around it. Play strong.",
+    coachLong:"At the rim you’ll get hit. Training contact finishing builds toughness and reduces fear. Straight-line attacks create advantage. Running back trains transition habits."},
+
+  // CONDITIONING (game-shaped)
+  {id:"cond_quarter_waves", title:"Quarter Waves (NFHS Game Pace)", tags:["conditioning","defense","transition"],
+    explain:"20–30 sec waves: sprint lanes → closeout → help → rebound → outlet → sprint. Rest short. Repeat like a quarter.",
+    standards:["Full speed reps","Talk on defense","Finish with rebound","No quitting late reps"],
+    coachShort:"Conditioning has to look like basketball. Sprint, stop, talk, rebound. Jogging is fake work.",
+    coachLong:"NFHS pace is repeated bursts, not long-distance jogging. Quarter waves train stop/start, recovery, and decision fatigue. Talking under fatigue is the separator for good teams."},
+
+  {id:"def_3stops", title:"3 Stops Wins (Compete)", tags:["defense","communication","rebound","conditioning"],
+    explain:"Split teams. You stay on defense until you get 3 stops WITH rebounds. Silence = stop doesn’t count.",
+    standards:["Talk early every rep","No middle","Rebound to finish","Multiple efforts"],
+    coachShort:"Stops win games. If you don’t rebound, it’s not a stop. Talk or you’re not playing.",
+    coachLong:"This creates real accountability. Defensive possessions only end with a rebound. Communication makes rotations clean. Multiple efforts teach toughness and eliminate one-and-done effort."},
+
+  // EXTRA VARIETY (a few more so it doesn’t repeat)
+  {id:"scramble_help_helper", title:"Help the Helper Scramble", tags:["defense","help","communication"],
+    explain:"Drive kick scenario. First help stops ball. Second help covers the helper. Recover on flight. Repeat fast.",
+    standards:["Two feet in paint","Help the helper","Recover on flight","Communicate early"],
+    coachShort:"If you help, someone has to help you. That’s team defense. Late equals open shots.",
+    coachLong:"Our defense relies on early help and clean recovery. Help the helper is what prevents wide-open threes after the first rotation. Recovery timing is on the flight of the pass."},
+
+  {id:"under_screen_recover", title:"Under Screens + Recover (No Chase)", tags:["defense","communication"],
+    explain:"2v2/3v3. All screens are under. Don’t chase. If emergency switch happens, it must be called loud and early.",
+    standards:["Go under every screen","Recover to square ball","No chasing over top","Communicate any switch"],
+    coachShort:"We go under. Period. Chasing puts us in rotation. Under, recover, and stay connected.",
+    coachLong:"Under coverage protects the paint and keeps us out of scramble mode. Recovery is a sprint to square up, not a lazy jog. If a switch happens, we communicate early so two guys don’t guard the ball."},
 ];
 
-let currentDrill=null;
+/* =========================
+   PRACTICE GENERATION
+========================= */
+let currentPractice = [];
+let currentDrill = null;
+let drillDraft = null; // current drill log object while in drill screen
 
-function generatePractice(){
- practiceOutput.innerHTML="";
- const cats=[];
- if(catDefense.checked) cats.push("defense");
- if(catOffense.checked) cats.push("offense");
- if(catPress.checked) cats.push("press");
- if(catRebound.checked) cats.push("rebound");
- if(catCondition.checked) cats.push("conditioning");
-
- let pool=DRILLS.filter(d=>{
-  return cats.length===0 || d.tags.some(t=>cats.includes(t));
- });
-
- pool.slice(0,4).forEach(d=>{
-  const c=document.createElement("div");
-  c.className="card mb-3 cursor-pointer";
-  c.innerHTML=`<b>${d.title}</b><div class="text-gray-400 text-sm">${d.standards.join(" • ")}</div>`;
-  c.onclick=()=>openDrill(d);
-  practiceOutput.appendChild(c);
- });
+function getSelectedCategories(){
+  const cats = [];
+  if(catDefense.checked) cats.push("defense","help","communication","denial");
+  if(catOffense.checked) cats.push("offense","motion","post","screening");
+  if(catPress.checked) cats.push("press");
+  if(catRebound.checked) cats.push("rebound");
+  if(catCondition.checked) cats.push("conditioning","transition");
+  if(catShooting && catShooting.checked) cats.push("shooting");
+  return [...new Set(cats)];
 }
 
+function inferWeaknessTags(players){
+  if(players.length === 0) return [];
+  const avg = {BH:0,PD:0,SH:0,FN:0,DF:0,RB:0,ATH:0};
+  players.forEach(p=>{
+    avg.BH += p.BH; avg.PD += p.PD; avg.SH += p.SH;
+    avg.FN += p.FN; avg.DF += p.DF; avg.RB += p.RB;
+    avg.ATH += p.ATH;
+  });
+  Object.keys(avg).forEach(k=>avg[k] = avg[k]/players.length);
+
+  // lowest two skills drive tags
+  const skillPairs = [
+    ["BH","offense"], ["PD","offense"], ["SH","shooting"], ["FN","finishing"],
+    ["DF","defense"], ["RB","rebound"]
+  ].map(([k,t])=>({k,t,v:avg[k]})).sort((a,b)=>a.v-b.v);
+
+  const tags = [];
+  skillPairs.slice(0,2).forEach(s=>{
+    tags.push(s.t);
+    if(s.k === "DF") tags.push("help","communication","denial");
+    if(s.k === "RB") tags.push("rebound");
+    if(s.k === "BH" || s.k === "PD") tags.push("motion","decision");
+    if(s.k === "SH") tags.push("shooting");
+    if(s.k === "FN") tags.push("finishing","post");
+  });
+
+  return [...new Set(tags)];
+}
+
+function scoreDrill(drill, wantTags){
+  // base randomness
+  let score = Math.random() * 2;
+
+  // match focus/weakness tags
+  const matchCount = drill.tags.filter(t => wantTags.includes(t)).length;
+  score += matchCount * 3;
+
+  // likes/dislikes
+  const pref = prefs[drill.id] || 0; // -1,0,1
+  score += pref * 4;
+
+  // avoid repetition
+  if(recent.includes(drill.id)) score -= 6;
+
+  return score;
+}
+
+function generatePractice(regen){
+  const players = getPresentPlayers();
+
+  // Build the “wantTags” set
+  const checkboxTags = getSelectedCategories();
+  const weaknessTags = inferWeaknessTags(players);
+  const focusTags = focus.tags || [];
+
+  // Priority: if boxes checked, they override; otherwise use focus + weaknesses
+  let wantTags = checkboxTags.length ? checkboxTags : [...new Set([...focusTags, ...weaknessTags])];
+  if(wantTags.length === 0) wantTags = ["defense","rebound","conditioning"];
+
+  // score + pick
+  const ranked = DRILLS
+    .map(d => ({ d, s: scoreDrill(d, wantTags) }))
+    .sort((a,b)=>b.s-a.s)
+    .map(x=>x.d);
+
+  // select top N with variety
+  const N = 6;
+  currentPractice = ranked.slice(0, Math.min(N, ranked.length));
+
+  // update recent list
+  currentPractice.forEach(d=>{
+    recent.unshift(d.id);
+  });
+  recent = [...new Set(recent)].slice(0, 10);
+  saveAll();
+
+  // render clickable cards
+  practiceOutput.innerHTML = "";
+  const header = document.createElement("div");
+  header.className = "card mb-3";
+  header.innerHTML = `
+    <div class="font-semibold">Build drivers</div>
+    <div class="small mt-1">Focus: ${focus.tags?.length ? focus.tags.join(", ") : "none"} • Weakness: ${weaknessTags.length ? weaknessTags.join(", ") : "n/a"} • Manual: ${checkboxTags.length ? "on" : "off"}</div>
+    <div class="small mt-1">Present: ${players.length}/${roster.length}</div>
+  `;
+  practiceOutput.appendChild(header);
+
+  currentPractice.forEach((d, idx)=>{
+    const c=document.createElement("div");
+    c.className="card mb-3 cursor-pointer";
+    const pref = prefs[d.id] || 0;
+    const prefText = pref === 1 ? "• 👍 liked" : pref === -1 ? "• 👎 disliked" : "";
+    c.innerHTML = `
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+          <b>${idx+1}. ${d.title}</b>
+          <div class="small mt-1">${d.standards.join(" • ")}</div>
+          <div class="small mt-1">Tags: ${d.tags.join(", ")} ${prefText}</div>
+        </div>
+        <div class="small shrink-0">Tap →</div>
+      </div>
+    `;
+    c.onclick=()=>openDrill(d);
+    practiceOutput.appendChild(c);
+  });
+}
+
+/* =========================
+   DRILL SCREEN + LOGGING
+========================= */
 function openDrill(d){
- currentDrill=d;
- drillTitle.innerText=d.title;
- drillExplain.innerText=d.explain;
- drillStandards.innerHTML="";
- d.standards.forEach(s=>{
-  const li=document.createElement("li");
-  li.innerText=s;
-  drillStandards.appendChild(li);
- });
- drillScreen.classList.remove("hidden");
+  currentDrill = d;
+
+  drillTitle.innerText = d.title;
+  drillMeta.innerText = `Tags: ${d.tags.join(", ")} • Preference: ${prefs[d.id]===1?"Liked":prefs[d.id]===-1?"Disliked":"Neutral"}`;
+  drillExplain.innerText = d.explain;
+
+  // reset coach explain
+  coachExplainBox.classList.add("hidden");
+  coachExplainBox.innerHTML = "";
+
+  // build the standards rows with per-standard logging
+  const players = getPresentPlayers();
+
+  drillDraft = {
+    ts: new Date().toISOString(),
+    drillId: d.id,
+    drillTitle: d.title,
+    tags: d.tags,
+    standards: d.standards.map(s => ({
+      text: s,
+      status: "unset",            // met/mixed/missed
+      failedPlayers: []           // names
+    }))
+  };
+
+  const wrap = document.getElementById("drillStandards");
+  wrap.innerHTML = "";
+
+  d.standards.forEach((s, idx)=>{
+    const row = document.createElement("div");
+    row.className = "mb-3 p-3 rounded bg-black/25";
+
+    row.innerHTML = `
+      <div class="flex items-start justify-between gap-2">
+        <div class="font-semibold">${idx+1}) ${s}</div>
+        <div class="flex gap-2 shrink-0">
+          <button class="btn-green px-3 py-2 rounded font-bold" onclick="setStandardStatus(${idx}, 'met')">Met</button>
+          <button class="btn-amber px-3 py-2 rounded font-bold" onclick="setStandardStatus(${idx}, 'mixed')">Mixed</button>
+          <button class="btn-red px-3 py-2 rounded font-bold" onclick="setStandardStatus(${idx}, 'missed')">Missed</button>
+        </div>
+      </div>
+      <div id="std_status_${idx}" class="small mt-1">Status: unset</div>
+      <div id="std_players_${idx}" class="mt-2 hidden">
+        <div class="small mb-2">Tap names who missed this standard:</div>
+        <div id="std_chips_${idx}" class="flex flex-wrap gap-2"></div>
+      </div>
+    `;
+
+    wrap.appendChild(row);
+
+    // chips
+    const chipsWrap = row.querySelector(`#std_chips_${idx}`);
+    players.forEach(p=>{
+      const b = document.createElement("button");
+      b.className = "chip px-3 py-2 rounded font-semibold";
+      b.innerText = p.name;
+      b.onclick = () => toggleFailPlayer(idx, p.name, b);
+      chipsWrap.appendChild(b);
+    });
+  });
+
+  drillLogMsg.innerText = "";
+  drillScreen.classList.remove("hidden");
 }
 
-function closeDrill(){ drillScreen.classList.add("hidden"); }
-
-function logResult(r){
- drillLogMsg.innerText=`Logged: ${r.toUpperCase()}`;
+function closeDrill(){
+  drillScreen.classList.add("hidden");
+  currentDrill = null;
+  drillDraft = null;
 }
 
-/* ---------------- PROGRESS ---------------- */
+function setStandardStatus(idx, status){
+  if(!drillDraft) return;
+  drillDraft.standards[idx].status = status;
 
+  const statusEl = document.getElementById(`std_status_${idx}`);
+  statusEl.innerText = `Status: ${status}`;
+
+  const playersBox = document.getElementById(`std_players_${idx}`);
+
+  // Only show player tagging if mixed/missed
+  if(status === "mixed" || status === "missed"){
+    playersBox.classList.remove("hidden");
+  } else {
+    playersBox.classList.add("hidden");
+    drillDraft.standards[idx].failedPlayers = [];
+    // reset chip UI
+    const chipWrap = document.getElementById(`std_chips_${idx}`);
+    chipWrap.querySelectorAll("button").forEach(btn=>btn.classList.remove("chip-on"));
+  }
+}
+
+function toggleFailPlayer(stdIdx, name, btn){
+  if(!drillDraft) return;
+  const arr = drillDraft.standards[stdIdx].failedPlayers;
+  const i = arr.indexOf(name);
+  if(i >= 0){
+    arr.splice(i,1);
+    btn.classList.remove("chip-on");
+  } else {
+    arr.push(name);
+    btn.classList.add("chip-on");
+  }
+}
+
+function finishDrillLog(){
+  if(!drillDraft) return;
+
+  // Require at least 1 standard status set (so you don’t save blanks)
+  const anySet = drillDraft.standards.some(s => s.status !== "unset");
+  if(!anySet){
+    drillLogMsg.innerText = "Set at least one standard status before saving.";
+    return;
+  }
+
+  logs.unshift(drillDraft);
+  logs = logs.slice(0, 500); // cap
+  saveAll();
+
+  drillLogMsg.innerText = "Saved ✅ (Logged per-standard failures for present players.)";
+}
+
+/* =========================
+   LIKE / DISLIKE
+========================= */
+function likeDrill(isLike){
+  if(!currentDrill) return;
+  prefs[currentDrill.id] = isLike ? 1 : -1;
+  saveAll();
+  drillMeta.innerText = `Tags: ${currentDrill.tags.join(", ")} • Preference: ${prefs[currentDrill.id]===1?"Liked":prefs[currentDrill.id]===-1?"Disliked":"Neutral"}`;
+}
+
+/* =========================
+   COACH EXPLAIN (Coach Brain + Expand)
+========================= */
+function coachExplain(){
+  if(!currentDrill) return;
+
+  const d = currentDrill;
+  const short = d.coachShort || "Do it because it wins. Execute it fast and right.";
+  const long = d.coachLong || "Expand: teaching breakdown will live here.";
+
+  coachExplainBox.classList.remove("hidden");
+  coachExplainBox.innerHTML = `
+    <div class="font-semibold mb-1">Coach Brain:</div>
+    <div class="text-gray-200">${short}</div>
+    <div class="mt-2">
+      <button class="btn-blue px-3 py-2 rounded font-bold" onclick="expandCoachExplain()">Hit Expand for More</button>
+    </div>
+    <div id="coachExplainMore" class="hidden mt-3 text-gray-200 leading-relaxed"></div>
+  `;
+
+  // stash long text
+  coachExplainBox.dataset.long = long;
+}
+
+function expandCoachExplain(){
+  const more = document.getElementById("coachExplainMore");
+  more.classList.remove("hidden");
+  more.innerText = coachExplainBox.dataset.long || "";
+}
+
+/* =========================
+   PROGRESS (Player: what they struggle with)
+   Uses: roster skill lows + logged standard failures
+========================= */
 function renderPlayerSelect(){
- playerSelect.innerHTML="<option>Select player…</option>";
- roster.forEach((p,i)=>{
-  const o=document.createElement("option");
-  o.value=i;
-  o.innerText=p.name;
-  playerSelect.appendChild(o);
- });
-}
-
-function showPlayerProgress(){
- const p=roster[playerSelect.value];
- if(!p) return;
- progressCard.innerHTML=`
- <b>${p.name}</b><br/>
- Needs work: ${lowestSkill(p)}<br/>
- Strength: ${highestSkill(p)}
- `;
- progressCard.classList.remove("hidden");
+  playerSelect.innerHTML = "<option value=''>Select player…</option>";
+  roster.forEach((p,i)=>{
+    const o=document.createElement("option");
+    o.value=i;
+    o.innerText=p.name;
+    playerSelect.appendChild(o);
+  });
 }
 
 function highestSkill(p){
- return Object.entries(p).filter(([k])=>["BH","PD","SH","FN","DF","RB"].includes(k)).sort((a,b)=>b[1]-a[1])[0][0];
+  const keys = ["BH","PD","SH","FN","DF","RB"];
+  return keys.map(k=>[k,p[k]]).sort((a,b)=>b[1]-a[1])[0][0];
 }
-function lowestSkill(p){
- return Object.entries(p).filter(([k])=>["BH","PD","SH","FN","DF","RB"].includes(k)).sort((a,b)=>a[1]-b[1])[0][0];
+function lowestSkills(p, n=2){
+  const keys = ["BH","PD","SH","FN","DF","RB"];
+  return keys.map(k=>[k,p[k]]).sort((a,b)=>a[1]-b[1]).slice(0,n).map(x=>x[0]);
 }
 
-/* INIT */
+function playerFailureSummary(name){
+  // count failures by standard text
+  const counts = {};
+  logs.forEach(l=>{
+    l.standards?.forEach(s=>{
+      if((s.status === "mixed" || s.status === "missed") && s.failedPlayers?.includes(name)){
+        counts[s.text] = (counts[s.text] || 0) + 1;
+      }
+    });
+  });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  return sorted.slice(0,3); // top 3 recurring misses
+}
+
+function showPlayerProgress(){
+  const idx = playerSelect.value;
+  const p = roster[idx];
+  if(!p) return;
+
+  const strength = highestSkill(p);
+  const needs = lowestSkills(p, 2);
+  const recurring = playerFailureSummary(p.name);
+
+  const recurringHtml = recurring.length
+    ? `<ul class="list-disc pl-5 mt-2">${recurring.map(([t,c])=>`<li>${t} <span class="small">(${c}x)</span></li>`).join("")}</ul>`
+    : `<div class="small mt-2">No logged drill failures yet (log standards in drills to populate this).</div>`;
+
+  progressCard.innerHTML = `
+    <div class="flex items-start justify-between gap-2">
+      <div class="min-w-0">
+        <div class="text-lg font-bold">${p.name}</div>
+        <div class="small mt-1">BH ${p.BH} • PD ${p.PD} • SH ${p.SH} • FN ${p.FN} • DF ${p.DF} • RB ${p.RB} • ATH ${p.ATH}</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div><b>Strength:</b> ${strength}</div>
+    <div class="mt-1"><b>Needs work:</b> ${needs.join(", ")}</div>
+    <div class="divider"></div>
+    <div><b>Recurring drill misses (based on your tags):</b></div>
+    ${recurringHtml}
+  `;
+  progressCard.classList.remove("hidden");
+}
+
+/* =========================
+   INIT
+========================= */
 renderRoster();
-renderPresent();
+renderPresentList();
 renderPlayerSelect();
+
+// Ensure all players default present if not set
+roster.forEach(p=>{
+  if(present[p.name] === undefined) present[p.name] = true;
+});
+saveAll();
 
 </script>
 
