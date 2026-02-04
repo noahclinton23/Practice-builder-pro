@@ -1,58 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <title>Practice AI Coach</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+body { background:#0F1115; color:#EDEFF2; }
+.card { background:#171A21; border-radius:12px; padding:14px; }
+.btn-blue { background:#1F6FEB; }
+.btn-green { background:#2EA043; }
+.btn-red { background:#DA3633; }
+.btn-amber { background:#D29922; color:black; }
+.btn-gray { background:#30363D; }
+</style>
 </head>
 
-<body class="bg-[#0F1115] text-[#EDEFF2] p-4">
+<body class="p-4">
 
 <h1 class="text-2xl font-bold mb-4">🏀 Practice Command Center</h1>
 
 <!-- NAV -->
 <div class="flex gap-2 mb-6">
-  <button onclick="showTab('home')" class="bg-[#3B82F6] px-4 py-2 rounded">Home</button>
-  <button onclick="showTab('roster')" class="bg-[#22C55E] px-4 py-2 rounded">Roster</button>
-  <button onclick="showTab('practice')" class="bg-[#A855F7] px-4 py-2 rounded">Practice</button>
-  <button onclick="showTab('progress')" class="bg-[#FACC15] text-black px-4 py-2 rounded">Progress</button>
+  <button onclick="showTab('home')" class="btn-blue px-4 py-2 rounded">Home</button>
+  <button onclick="showTab('roster')" class="btn-green px-4 py-2 rounded">Roster</button>
+  <button onclick="showTab('practice')" class="btn-amber px-4 py-2 rounded">Practice</button>
+  <button onclick="showTab('progress')" class="btn-gray px-4 py-2 rounded">Progress</button>
 </div>
 
 <!-- HOME -->
 <div id="home" class="tab">
-  <div class="grid grid-cols-2 gap-4">
 
-    <button onclick="showTab('practice')" class="bg-[#3B82F6] p-5 rounded-xl font-bold">
-      Generate Practice
-    </button>
+<div class="grid grid-cols-2 gap-4 mb-6">
+  <button onclick="toggleAsk()" class="btn-gray p-5 rounded-xl font-bold">Ask Coach</button>
+  <button onclick="showTab('practice')" class="btn-blue p-5 rounded-xl font-bold">Generate Practice</button>
+</div>
 
-    <button onclick="showAsk()" class="bg-[#A855F7] p-5 rounded-xl font-bold">
-      Ask Coach
-    </button>
+<div id="askBox" class="card hidden">
+  <h2 class="font-semibold mb-2">Ask Coach</h2>
+  <input id="askInput" class="w-full p-2 bg-black rounded mb-2"/>
+  <button onclick="answerAsk()" class="btn-green px-4 py-2 rounded">Ask</button>
+  <p id="askAnswer" class="text-gray-400 mt-2"></p>
+</div>
 
-    <button onclick="showTab('roster')" class="bg-[#22C55E] p-5 rounded-xl font-bold">
-      Roster
-    </button>
+<div id="todayFocus" class="card mt-4 hidden"></div>
 
-    <button onclick="showTab('progress')" class="bg-[#FACC15] text-black p-5 rounded-xl font-bold">
-      Progress
-    </button>
-
-  </div>
-
-  <div id="askBox" class="hidden mt-6 bg-[#171A21] p-4 rounded">
-    <h2 class="font-semibold mb-2">Ask the Coach</h2>
-    <input id="askInput" placeholder="What should we work on today?"
-      class="w-full p-2 rounded bg-black text-white"/>
-    <button onclick="answerAsk()" class="mt-2 bg-[#22C55E] px-4 py-2 rounded">
-      Ask
-    </button>
-    <p id="askAnswer" class="mt-3 text-gray-400"></p>
-  </div>
 </div>
 
 <!-- ROSTER -->
@@ -60,24 +54,24 @@
 
 <h2 class="text-xl font-bold mb-3">Roster</h2>
 
-<div class="bg-[#171A21] p-4 rounded mb-4">
-  <input id="playerName" placeholder="Name" class="bg-black p-2 rounded w-full mb-2"/>
-  <input id="height" placeholder="Height (inches)" class="bg-black p-2 rounded w-full mb-2"/>
-  <input id="weight" placeholder="Weight" class="bg-black p-2 rounded w-full mb-2"/>
+<div class="card mb-4">
+<input id="playerName" placeholder="Name" class="w-full bg-black p-2 rounded mb-2"/>
+<div class="grid grid-cols-2 gap-2">
+<input id="height" placeholder="Height in inches" class="bg-black p-2 rounded"/>
+<input id="weight" placeholder="Weight" class="bg-black p-2 rounded"/>
+</div>
 
-  <div class="grid grid-cols-3 gap-2">
-    <input id="BH" placeholder="BH" class="bg-black p-2 rounded"/>
-    <input id="PD" placeholder="PD" class="bg-black p-2 rounded"/>
-    <input id="SH" placeholder="SH" class="bg-black p-2 rounded"/>
-    <input id="FN" placeholder="FN" class="bg-black p-2 rounded"/>
-    <input id="DF" placeholder="DF" class="bg-black p-2 rounded"/>
-    <input id="RB" placeholder="RB" class="bg-black p-2 rounded"/>
-    <input id="ATH" placeholder="ATH" class="bg-black p-2 rounded"/>
-  </div>
+<div class="grid grid-cols-3 gap-2 mt-2">
+<input id="BH" placeholder="BH" class="bg-black p-2 rounded"/>
+<input id="PD" placeholder="PD" class="bg-black p-2 rounded"/>
+<input id="SH" placeholder="SH" class="bg-black p-2 rounded"/>
+<input id="FN" placeholder="FN" class="bg-black p-2 rounded"/>
+<input id="DF" placeholder="DF" class="bg-black p-2 rounded"/>
+<input id="RB" placeholder="RB" class="bg-black p-2 rounded"/>
+<input id="ATH" placeholder="ATH" class="bg-black p-2 rounded"/>
+</div>
 
-  <button onclick="addPlayer()" class="mt-3 bg-[#22C55E] px-4 py-2 rounded">
-    Add Player
-  </button>
+<button onclick="savePlayer()" class="btn-green px-4 py-2 rounded mt-3">Save Player</button>
 </div>
 
 <ul id="rosterList"></ul>
@@ -87,123 +81,254 @@
 <!-- PRACTICE -->
 <div id="practice" class="tab hidden">
 
-<h2 class="text-xl font-bold mb-3">Generate Practice</h2>
+<h2 class="text-xl font-bold mb-3">Build Today’s Practice</h2>
 
-<button onclick="generatePractice()" class="bg-[#3B82F6] p-4 rounded w-full font-bold mb-4">
-  BUILD TODAY’S PRACTICE
-</button>
+<div class="card mb-4">
+<h3 class="font-semibold mb-2">Who’s here today?</h3>
+<div id="presentList" class="grid grid-cols-2 gap-2"></div>
+</div>
+
+<div class="card mb-4">
+<h3 class="font-semibold mb-2">Emphasis</h3>
+<div class="grid grid-cols-2 gap-2 text-sm">
+<label><input type="checkbox" id="catDefense"/> Defense</label>
+<label><input type="checkbox" id="catOffense"/> Offense</label>
+<label><input type="checkbox" id="catPress"/> Press</label>
+<label><input type="checkbox" id="catRebound"/> Rebound</label>
+<label><input type="checkbox" id="catCondition"/> Conditioning</label>
+</div>
+</div>
+
+<div class="flex gap-2 mb-4">
+<button onclick="generatePractice()" class="btn-blue p-3 rounded w-full font-bold">BUILD</button>
+<button onclick="generatePractice()" class="btn-gray p-3 rounded">Regenerate</button>
+</div>
 
 <div id="practiceOutput"></div>
+
+</div>
+
+<!-- FULL SCREEN DRILL -->
+<div id="drillScreen" class="hidden fixed inset-0 bg-[#0F1115] p-4 overflow-y-auto">
+
+<button onclick="closeDrill()" class="btn-red px-4 py-2 rounded mb-4">← Back</button>
+
+<h2 id="drillTitle" class="text-xl font-bold mb-2"></h2>
+<p id="drillExplain" class="text-gray-300 mb-4"></p>
+
+<h3 class="font-semibold mb-2">Standards</h3>
+<ul id="drillStandards" class="list-disc pl-5 mb-4"></ul>
+
+<div class="flex gap-2">
+<button onclick="logResult('met')" class="btn-green px-4 py-2 rounded">Met</button>
+<button onclick="logResult('mixed')" class="btn-amber px-4 py-2 rounded">Mixed</button>
+<button onclick="logResult('missed')" class="btn-red px-4 py-2 rounded">Missed</button>
+</div>
+
+<p id="drillLogMsg" class="text-gray-400 mt-3"></p>
 
 </div>
 
 <!-- PROGRESS -->
 <div id="progress" class="tab hidden">
 
-<h2 class="text-xl font-bold mb-3">Monthly Progress</h2>
+<h2 class="text-xl font-bold mb-3">Player Progress</h2>
 
-<canvas id="skillChart"></canvas>
+<select id="playerSelect" class="bg-black p-2 rounded mb-3 w-full" onchange="showPlayerProgress()"></select>
+
+<div id="progressCard" class="card hidden"></div>
 
 </div>
 
 <script>
 
-let roster = JSON.parse(localStorage.getItem("roster")) || [];
+/* ---------------- DATA ---------------- */
 
-function saveRoster(){
-  localStorage.setItem("roster", JSON.stringify(roster));
-}
+let roster = JSON.parse(localStorage.getItem("roster")) || [];
+let editingIndex = null;
+let present = {};
+let todayFocusTags = [];
+
+/* ---------------- NAV ---------------- */
 
 function showTab(id){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+ document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
 }
 
-function showAsk(){
-  document.getElementById("askBox").classList.toggle("hidden");
+/* ---------------- ASK COACH ---------------- */
+
+function toggleAsk(){
+ document.getElementById("askBox").classList.toggle("hidden");
 }
 
 function answerAsk(){
-  document.getElementById("askAnswer").innerText =
-    "Priority today: Help-side defense and post feeds. Conditioning trending flat — recommend strict defensive emphasis.";
+ todayFocusTags = ["defense","rebound"];
+ askAnswer.innerText = "Focus today: Help-side defense and finishing possessions.";
+ todayFocus.innerHTML = "<b>Today’s Focus:</b> Help-side defense • Rebounding";
+ todayFocus.classList.remove("hidden");
 }
 
-/* -------- ROSTER ---------- */
+/* ---------------- ROSTER ---------------- */
 
-function addPlayer(){
-  const p = {
-    name: playerName.value,
-    height: height.value,
-    weight: weight.value,
-    BH: BH.value,
-    PD: PD.value,
-    SH: SH.value,
-    FN: FN.value,
-    DF: DF.value,
-    RB: RB.value,
-    ATH: ATH.value
-  };
+function saveRoster(){
+ localStorage.setItem("roster", JSON.stringify(roster));
+}
 
-  roster.push(p);
-  saveRoster();
-  renderRoster();
+function savePlayer(){
+ const p = {
+  name:playerName.value,
+  height:height.value,
+  weight:weight.value,
+  BH:BH.value, PD:PD.value, SH:SH.value,
+  FN:FN.value, DF:DF.value, RB:RB.value,
+  ATH:ATH.value
+ };
+
+ if(editingIndex!==null){
+  roster[editingIndex]=p;
+  editingIndex=null;
+ } else roster.push(p);
+
+ saveRoster();
+ renderRoster();
+ renderPresent();
+ renderPlayerSelect();
+ document.querySelectorAll("#roster input").forEach(i=>i.value="");
 }
 
 function renderRoster(){
-  const list = document.getElementById("rosterList");
-  list.innerHTML = "";
-  roster.forEach(p=>{
-    const li = document.createElement("li");
-    li.className="bg-[#171A21] p-3 rounded mb-2";
-    li.innerHTML = `${p.name} | ATH ${p.ATH}`;
-    list.appendChild(li);
-  });
+ rosterList.innerHTML="";
+ roster.forEach((p,i)=>{
+  const li=document.createElement("li");
+  li.className="card flex justify-between items-center mb-2";
+  li.innerHTML=`
+   <div>${p.name}</div>
+   <div class="flex gap-2">
+    <button class="btn-green px-3 py-1 rounded" onclick="editPlayer(${i})">Edit</button>
+    <button class="btn-red px-3 py-1 rounded" onclick="removePlayer(${i})">Remove</button>
+   </div>`;
+  rosterList.appendChild(li);
+ });
 }
 
-renderRoster();
+function editPlayer(i){
+ const p=roster[i];
+ editingIndex=i;
+ playerName.value=p.name;
+ height.value=p.height;
+ weight.value=p.weight;
+ BH.value=p.BH; PD.value=p.PD; SH.value=p.SH;
+ FN.value=p.FN; DF.value=p.DF; RB.value=p.RB;
+ ATH.value=p.ATH;
+}
 
-/* -------- PRACTICE ---------- */
+function removePlayer(i){
+ roster.splice(i,1);
+ saveRoster();
+ renderRoster();
+ renderPresent();
+ renderPlayerSelect();
+}
+
+/* ---------------- PRACTICE ---------------- */
+
+function renderPresent(){
+ presentList.innerHTML="";
+ roster.forEach(p=>{
+  if(present[p.name]===undefined) present[p.name]=true;
+  const lbl=document.createElement("label");
+  lbl.className="bg-black/40 p-2 rounded flex gap-2";
+  lbl.innerHTML=`<input type="checkbox" ${present[p.name]?"checked":""}/> ${p.name}`;
+  lbl.querySelector("input").onchange=e=>present[p.name]=e.target.checked;
+  presentList.appendChild(lbl);
+ });
+}
+
+const DRILLS=[
+ {id:"shell",title:"Shell Defense",tags:["defense"],explain:"4v4 shell emphasizing no-middle, two feet in paint, bump cutters and finishing with rebounds.",standards:["Two feet in paint","Bump cutters","Force away middle","Rebound"]},
+ {id:"post",title:"4–1 Post Feeds",tags:["offense"],explain:"Pass → V-cut to empty, wing looks post first, seal and kick-outs.",standards:["V-cut","Post seal","Wing feed look","Spacing"]},
+ {id:"press",title:"Press → Man",tags:["press","defense"],explain:"2-2-1 into sprint back man with loud communication.",standards:["Sprint back","Talk","No middle","Matchups"]},
+ {id:"cond",title:"Quarter Conditioning",tags:["conditioning"],explain:"NFHS game pace intervals finishing with free throws.",standards:["Full speed","Proper lanes","Finish","FTs tired"]}
+];
+
+let currentDrill=null;
 
 function generatePractice(){
+ practiceOutput.innerHTML="";
+ const cats=[];
+ if(catDefense.checked) cats.push("defense");
+ if(catOffense.checked) cats.push("offense");
+ if(catPress.checked) cats.push("press");
+ if(catRebound.checked) cats.push("rebound");
+ if(catCondition.checked) cats.push("conditioning");
 
-  practiceOutput.innerHTML = `
-  <div class="bg-[#171A21] p-4 rounded mb-3">
-    <h3 class="font-bold">0:00–10: Shell Defense</h3>
-    <p class="text-gray-400">Two feet in paint • bump cutters • rebound</p>
-  </div>
+ let pool=DRILLS.filter(d=>{
+  return cats.length===0 || d.tags.some(t=>cats.includes(t));
+ });
 
-  <div class="bg-[#171A21] p-4 rounded mb-3">
-    <h3 class="font-bold">10–25: 4–1 Motion Post Feeds</h3>
-    <p class="text-gray-400">Wing entry • seal • kick-out</p>
-  </div>
-
-  <div class="bg-[#171A21] p-4 rounded mb-3">
-    <h3 class="font-bold">25–40: Press to Man Conversion</h3>
-    <p class="text-gray-400">2-2-1 alignment → sprint back</p>
-  </div>
-
-  <div class="bg-[#171A21] p-4 rounded mb-3">
-    <h3 class="font-bold">40–55: Quarter Conditioning</h3>
-    <p class="text-gray-400">Sprint lanes • finish • FT fatigue</p>
-  </div>
-  `;
+ pool.slice(0,4).forEach(d=>{
+  const c=document.createElement("div");
+  c.className="card mb-3 cursor-pointer";
+  c.innerHTML=`<b>${d.title}</b><div class="text-gray-400 text-sm">${d.standards.join(" • ")}</div>`;
+  c.onclick=()=>openDrill(d);
+  practiceOutput.appendChild(c);
+ });
 }
 
-/* -------- CHART ---------- */
+function openDrill(d){
+ currentDrill=d;
+ drillTitle.innerText=d.title;
+ drillExplain.innerText=d.explain;
+ drillStandards.innerHTML="";
+ d.standards.forEach(s=>{
+  const li=document.createElement("li");
+  li.innerText=s;
+  drillStandards.appendChild(li);
+ });
+ drillScreen.classList.remove("hidden");
+}
 
-const ctx = document.getElementById('skillChart');
+function closeDrill(){ drillScreen.classList.add("hidden"); }
 
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ['Week 1','Week 2','Week 3','Week 4'],
-    datasets: [{
-      label: 'Defense',
-      data: [4,5,6,7],
-      borderColor: '#22C55E'
-    }]
-  }
-});
+function logResult(r){
+ drillLogMsg.innerText=`Logged: ${r.toUpperCase()}`;
+}
+
+/* ---------------- PROGRESS ---------------- */
+
+function renderPlayerSelect(){
+ playerSelect.innerHTML="<option>Select player…</option>";
+ roster.forEach((p,i)=>{
+  const o=document.createElement("option");
+  o.value=i;
+  o.innerText=p.name;
+  playerSelect.appendChild(o);
+ });
+}
+
+function showPlayerProgress(){
+ const p=roster[playerSelect.value];
+ if(!p) return;
+ progressCard.innerHTML=`
+ <b>${p.name}</b><br/>
+ Needs work: ${lowestSkill(p)}<br/>
+ Strength: ${highestSkill(p)}
+ `;
+ progressCard.classList.remove("hidden");
+}
+
+function highestSkill(p){
+ return Object.entries(p).filter(([k])=>["BH","PD","SH","FN","DF","RB"].includes(k)).sort((a,b)=>b[1]-a[1])[0][0];
+}
+function lowestSkill(p){
+ return Object.entries(p).filter(([k])=>["BH","PD","SH","FN","DF","RB"].includes(k)).sort((a,b)=>a[1]-b[1])[0][0];
+}
+
+/* INIT */
+renderRoster();
+renderPresent();
+renderPlayerSelect();
 
 </script>
 
