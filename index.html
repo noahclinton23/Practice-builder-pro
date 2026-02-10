@@ -2,66 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
   <title>Practice Command Center</title>
+
+  <!-- iPad / PWA feel -->
+  <meta name="theme-color" content="#070b14" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    .grit{
+    :root{
+      --bg1:#0b1220;
+      --bg2:#070b14;
+      --card: rgba(15,23,42,.72);
+      --stroke: rgba(148,163,184,.15);
+      --muted: rgba(226,232,240,.78);
+      --muted2: rgba(226,232,240,.62);
+      --gold:#f5c542;
+      --ok: rgba(34,197,94,.10);
+      --okStroke: rgba(34,197,94,.25);
+      --warn: rgba(249,115,22,.10);
+      --warnStroke: rgba(249,115,22,.25);
+      --bad: rgba(239,68,68,.10);
+      --badStroke: rgba(239,68,68,.25);
+      --chip: rgba(2,6,23,.35);
+      --chipStroke: rgba(148,163,184,.22);
+      --btn: rgba(2,6,23,.35);
+      --btnHover: rgba(2,6,23,.55);
+    }
+
+    /* iPad app shell */
+    body{
       background:
         radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.10), transparent 60%),
         radial-gradient(900px 500px at 90% 10%, rgba(245,197,66,.10), transparent 55%),
         radial-gradient(900px 600px at 70% 90%, rgba(239,68,68,.07), transparent 60%),
-        linear-gradient(180deg,#0b1220 0%, #070b14 100%);
+        linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 100%);
+      color: rgb(241,245,249);
+      min-height: 100vh;
+      padding-bottom: calc(92px + env(safe-area-inset-bottom));
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none;
     }
+
     .card{
-      background: rgba(15,23,42,.72);
-      border: 1px solid rgba(148,163,184,.15);
+      background: var(--card);
+      border: 1px solid var(--stroke);
       box-shadow: 0 10px 30px rgba(0,0,0,.35);
       backdrop-filter: blur(10px);
     }
     .chip{
-      border: 1px solid rgba(148,163,184,.22);
-      background: rgba(2,6,23,.35);
+      border: 1px solid var(--chipStroke);
+      background: var(--chip);
     }
     .btn{
       border: 1px solid rgba(148,163,184,.18);
-      background: rgba(2,6,23,.35);
+      background: var(--btn);
+      transition: transform .06s ease, background .12s ease;
+      touch-action: manipulation;
     }
-    .btn:hover{ background: rgba(2,6,23,.55); }
-    .accent-gold{ color:#f5c542; }
-    .divider{ border-color: rgba(148,163,184,.18); }
+    .btn:hover{ background: var(--btnHover); }
+    .btn:active{ transform: scale(.98); }
+
+    .accent-gold{ color: var(--gold); }
+    .muted{ color: var(--muted); }
+    .muted2{ color: var(--muted2); }
+    .mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
+
     .badge{
       border:1px solid rgba(245,197,66,.28);
       background: rgba(245,197,66,.10);
-      color:#f5c542;
+      color: var(--gold);
     }
     .okbadge{
-      border:1px solid rgba(34,197,94,.25);
-      background: rgba(34,197,94,.10);
+      border:1px solid var(--okStroke);
+      background: var(--ok);
       color: rgba(134,239,172,.95);
     }
     .warnbadge{
-      border:1px solid rgba(249,115,22,.25);
-      background: rgba(249,115,22,.10);
+      border:1px solid var(--warnStroke);
+      background: var(--warn);
       color: rgba(253,186,116,.95);
     }
     .danger{
-      border:1px solid rgba(239,68,68,.25);
-      background: rgba(239,68,68,.10);
+      border:1px solid var(--badStroke);
+      background: var(--bad);
       color: rgb(252,165,165);
     }
-    .muted{ color: rgba(226,232,240,.78); }
-    .muted2{ color: rgba(226,232,240,.62); }
-    .mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
-    .ring-gold{ box-shadow:0 0 0 2px rgba(245,197,66,.18); }
-    .inp{ background: rgba(0,0,0,.25); border:1px solid rgba(148,163,184,.20); outline:none; }
-    .inp:focus{ box-shadow:0 0 0 2px rgba(245,197,66,.18); border-color: rgba(245,197,66,.35); }
-    .miniScroll{ max-height: 280px; overflow:auto; }
+    .divider{ border-color: rgba(148,163,184,.18); }
+
+    .inp{
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(148,163,184,.20);
+      outline:none;
+    }
+    .inp:focus{
+      box-shadow:0 0 0 2px rgba(245,197,66,.18);
+      border-color: rgba(245,197,66,.35);
+    }
+
+    /* iPad-style bottom tab bar */
+    .tabbar{
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+      background: rgba(2,6,23,.80);
+      border-top: 1px solid rgba(148,163,184,.18);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+    .tabbtn{
+      width: 100%;
+      border-radius: 18px;
+      padding: 10px 10px;
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-weight: 800;
+      font-size: 12px;
+      border: 1px solid rgba(148,163,184,.14);
+      background: rgba(15,23,42,.45);
+    }
+    .tabbtn .ico{ font-size: 18px; line-height: 18px; }
+    .tabbtn.active{
+      border-color: rgba(245,197,66,.38);
+      box-shadow: 0 0 0 2px rgba(245,197,66,.12);
+      background: rgba(15,23,42,.65);
+      color: var(--gold);
+    }
+
+    .miniScroll{ max-height: 320px; overflow:auto; }
+    .bigTouch{ min-height: 44px; } /* iOS tap target */
+
+    /* Optional: reduce accidental text selection while tapping */
+    button, .tabbtn { -webkit-user-select: none; user-select: none; }
   </style>
 </head>
 
-<body class="grit text-slate-100 min-h-screen">
-  <div class="max-w-6xl mx-auto px-4 py-6">
+<body>
+  <div class="max-w-6xl mx-auto px-4 pt-6">
 
     <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-5">
@@ -78,21 +160,21 @@
         <div class="text-xs muted2">Mode</div>
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full badge text-xs font-semibold">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          Offline (Free)
+          Offline (iPad-ready)
         </div>
       </div>
     </div>
 
     <!-- Quote + Tip -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-      <div class="card rounded-2xl p-4 ring-gold">
+      <div class="card rounded-2xl p-4" style="box-shadow:0 0 0 2px rgba(245,197,66,.12), 0 10px 30px rgba(0,0,0,.35);">
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="text-xs uppercase tracking-wider muted2">Coach Quote</div>
             <div id="quoteText" class="text-lg font-semibold mt-1"></div>
             <div id="quoteSub" class="text-sm muted mt-1"></div>
           </div>
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="rotateQuote(true)">New</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="rotateQuote(true)">New</button>
         </div>
       </div>
       <div class="card rounded-2xl p-4">
@@ -102,17 +184,9 @@
             <div id="tipText" class="text-lg font-extrabold mt-1"></div>
             <div id="tipSub" class="text-sm muted mt-1"></div>
           </div>
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="rotateTip(true)">New</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="rotateTip(true)">New</button>
         </div>
       </div>
-    </div>
-
-    <!-- Nav -->
-    <div class="flex flex-wrap gap-2 mb-5">
-      <button id="tabBtn-home" class="btn px-4 py-2 rounded-xl font-semibold" onclick="showTab('home')">Home</button>
-      <button id="tabBtn-roster" class="btn px-4 py-2 rounded-xl font-semibold" onclick="showTab('roster')">Roster</button>
-      <button id="tabBtn-practice" class="btn px-4 py-2 rounded-xl font-semibold" onclick="showTab('practice')">Practice</button>
-      <button id="tabBtn-progress" class="btn px-4 py-2 rounded-xl font-semibold" onclick="showTab('progress')">Progress</button>
     </div>
 
     <!-- HOME -->
@@ -133,8 +207,8 @@
           </div>
           <div class="flex flex-col sm:items-end gap-2">
             <div class="flex gap-2">
-              <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="openWeeklySettings()">Edit</button>
-              <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="resetWeek()">Reset Week</button>
+              <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="openWeeklySettings()">Edit</button>
+              <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="resetWeek()">Reset Week</button>
             </div>
             <div class="text-xs muted2">Keep 1–2 priorities. Drill them until they’re automatic.</div>
           </div>
@@ -159,8 +233,8 @@
           <div class="text-xs muted2 mt-1">Last 7 days</div>
         </div>
         <div class="chip rounded-2xl p-4">
-          <div class="text-xs uppercase tracking-wider muted2">Drills Run</div>
-          <div class="text-2xl font-extrabold mt-1" id="tileDrills">0</div>
+          <div class="text-xs uppercase tracking-wider muted2">Practices Logged</div>
+          <div class="text-2xl font-extrabold mt-1" id="tilePractices">0</div>
           <div class="text-xs muted2 mt-1">This week</div>
         </div>
         <div class="chip rounded-2xl p-4">
@@ -172,8 +246,6 @@
 
       <!-- Today Focus + Quick actions + Recap -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-        <!-- Today Focus -->
         <div class="card rounded-2xl p-5 lg:col-span-2">
           <div class="flex items-start justify-between gap-3">
             <div>
@@ -185,10 +257,13 @@
                 Duration: <span class="font-semibold" id="todayDuration">90</span> min •
                 Drills: <span class="font-semibold" id="todayDrillCount">0</span>
               </div>
+              <div class="text-xs muted2 mt-2">
+                Tip: build + grade drills live. That becomes your “film” for development.
+              </div>
             </div>
             <div class="flex flex-col gap-2">
-              <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="showTab('practice')">Build / View</button>
-              <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="showTab('roster')">Set Present</button>
+              <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="showTab('practice')">Open Builder</button>
+              <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="showTab('roster')">Set Present</button>
             </div>
           </div>
 
@@ -211,35 +286,31 @@
 
           <div class="mt-4 flex flex-wrap gap-2">
             <span class="badge px-3 py-1 rounded-full text-xs font-semibold">Attendance-aware</span>
-            <span class="badge px-3 py-1 rounded-full text-xs font-semibold">Rotates drills</span>
+            <span class="badge px-3 py-1 rounded-full text-xs font-semibold">Grades 1–5</span>
             <span class="danger px-3 py-1 rounded-full text-xs font-semibold">Hard standards</span>
           </div>
         </div>
 
-        <!-- Quick Actions + Notes -->
         <div class="card rounded-2xl p-5">
           <div class="text-xs uppercase tracking-wider muted2 mb-3">Quick Actions</div>
 
           <div class="grid grid-cols-2 gap-3">
-            <button class="btn rounded-2xl p-4 text-left" onclick="showTab('practice')">
+            <button class="btn bigTouch rounded-2xl p-4 text-left" onclick="showTab('practice')">
               <div class="text-sm muted2">🏀</div>
-              <div class="font-extrabold mt-1">Build Practice</div>
+              <div class="font-extrabold mt-1">Build</div>
               <div class="text-xs muted2 mt-1">Generate today</div>
             </button>
-
-            <button class="btn rounded-2xl p-4 text-left" onclick="showTab('roster')">
+            <button class="btn bigTouch rounded-2xl p-4 text-left" onclick="showTab('roster')">
               <div class="text-sm muted2">👥</div>
               <div class="font-extrabold mt-1">Present</div>
               <div class="text-xs muted2 mt-1">Mark attendance</div>
             </button>
-
-            <button class="btn rounded-2xl p-4 text-left" onclick="showTab('progress')">
+            <button class="btn bigTouch rounded-2xl p-4 text-left" onclick="showTab('progress')">
               <div class="text-sm muted2">📊</div>
               <div class="font-extrabold mt-1">Progress</div>
-              <div class="text-xs muted2 mt-1">Who needs what</div>
+              <div class="text-xs muted2 mt-1">Needs & grades</div>
             </button>
-
-            <button class="btn rounded-2xl p-4 text-left" onclick="openAskCoachModal()">
+            <button class="btn bigTouch rounded-2xl p-4 text-left" onclick="openAskCoachModal()">
               <div class="text-sm muted2">🎯</div>
               <div class="font-extrabold mt-1">Ask Coach</div>
               <div class="text-xs muted2 mt-1">Quick explain</div>
@@ -252,7 +323,7 @@
           <textarea id="homeNotes" class="mt-2 w-full rounded-xl p-3 text-sm inp" rows="5"
             placeholder="Example: Sprint between drills. No talking during teaching. Feet in paint on help side."></textarea>
 
-          <button class="btn mt-3 px-3 py-2 rounded-xl text-sm font-semibold w-full" onclick="saveHomeNotes()">Save Notes</button>
+          <button class="btn bigTouch mt-3 px-3 py-2 rounded-xl text-sm font-semibold w-full" onclick="saveHomeNotes()">Save Notes</button>
         </div>
       </div>
 
@@ -262,11 +333,11 @@
           <div>
             <div class="text-xs uppercase tracking-wider muted2">Last Practice Recap</div>
             <div class="text-xl font-extrabold mt-1" id="recapTitle">No practice logged yet</div>
-            <div class="text-sm muted2 mt-1" id="recapMeta">Build a practice and log failures to populate this.</div>
+            <div class="text-sm muted2 mt-1" id="recapMeta">Build a practice, grade drills, log failures.</div>
           </div>
           <div class="flex gap-2">
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="showTab('practice')">Open Practice</button>
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearRecap()">Clear Recap</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="showTab('practice')">Open Practice</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearRecap()">Clear</button>
           </div>
         </div>
 
@@ -291,7 +362,6 @@
           </div>
         </div>
       </div>
-
     </section>
 
     <!-- ROSTER -->
@@ -301,35 +371,33 @@
           <div>
             <div class="text-xs uppercase tracking-wider muted2">Roster</div>
             <div class="text-xl font-extrabold mt-1">Players</div>
-            <div class="text-sm muted2 mt-1">Add/edit/remove. Tap “Present” to mark who’s here today.</div>
+            <div class="text-sm muted2 mt-1">Now includes height/weight to support development.</div>
           </div>
           <div class="flex gap-2">
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="openAddPlayer()">+ Add Player</button>
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearRoster()">Clear Roster</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="openAddPlayer()">+ Add Player</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearRoster()">Clear Roster</button>
           </div>
         </div>
 
         <div class="border-t divider my-4"></div>
-
         <div id="rosterList" class="space-y-2"></div>
       </div>
     </section>
 
     <!-- PRACTICE -->
     <section id="tab-practice" class="hidden space-y-5">
-
-      <!-- Practice controls -->
       <div class="card rounded-2xl p-5">
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div>
             <div class="text-xs uppercase tracking-wider muted2">Practice Builder</div>
             <div class="text-xl font-extrabold mt-1">Build Today’s Plan</div>
-            <div class="text-sm muted2 mt-1">Relative to attendance: 1–2 / 3–4 / 5–6 / 7+ (future).</div>
+            <div class="text-sm muted2 mt-1">
+              Bands: 1–2 / 3–4 / 5–6 / 7–9 (small-sided) / 10+ (5v5 eligible).
+            </div>
           </div>
-
           <div class="flex gap-2">
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="buildPractice()">Build Practice</button>
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="regeneratePractice()">Regenerate</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="buildPractice()">Build</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="regeneratePractice()">Regenerate</button>
           </div>
         </div>
 
@@ -343,38 +411,38 @@
             <div class="text-xs muted2 mt-3">
               Band today: <span class="font-semibold" id="bandLabel">—</span>
             </div>
-            <div class="text-xs muted2 mt-1">If nobody is present yet, set them in Roster.</div>
+            <div class="text-xs muted2 mt-1">Set roster first if empty.</div>
           </div>
 
           <div class="chip rounded-xl p-3">
             <div class="text-xs uppercase tracking-wider muted2">Duration (min)</div>
-            <input id="practiceDuration" type="number" min="30" max="150" class="mt-2 w-full rounded-lg p-2 text-sm inp" value="90"/>
+            <input id="practiceDuration" type="number" min="30" max="150" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" value="90"/>
             <div class="text-xs muted2 mt-2">Typical: 60–120</div>
           </div>
 
           <div class="chip rounded-xl p-3">
             <div class="text-xs uppercase tracking-wider muted2">Focus</div>
-            <input id="practiceFocus" class="mt-2 w-full rounded-lg p-2 text-sm inp" placeholder="Ex: Help Defense + Rebounding" />
+            <input id="practiceFocus" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" placeholder="Ex: Help Defense + Rebounding" />
             <div class="text-xs muted2 mt-2">Leave blank → auto</div>
           </div>
         </div>
 
         <div class="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
           <div class="chip rounded-xl p-3">
-            <div class="text-xs uppercase tracking-wider muted2">Emphasis (check what you want today)</div>
+            <div class="text-xs uppercase tracking-wider muted2">Emphasis (persisted)</div>
             <div class="mt-2 flex flex-wrap gap-2 text-sm">
-              <label class="chip px-3 py-2 rounded-full"><input type="checkbox" class="mr-2" id="em_def" checked>Defense</label>
-              <label class="chip px-3 py-2 rounded-full"><input type="checkbox" class="mr-2" id="em_reb" checked>Rebounding</label>
-              <label class="chip px-3 py-2 rounded-full"><input type="checkbox" class="mr-2" id="em_off">Offense</label>
-              <label class="chip px-3 py-2 rounded-full"><input type="checkbox" class="mr-2" id="em_press">Press</label>
-              <label class="chip px-3 py-2 rounded-full"><input type="checkbox" class="mr-2" id="em_cond" checked>Conditioning</label>
-              <label class="chip px-3 py-2 rounded-full"><input type="checkbox" class="mr-2" id="em_shoot">Shooting</label>
+              <label class="chip px-3 py-2 rounded-full bigTouch"><input type="checkbox" class="mr-2" id="em_def" checked>Defense</label>
+              <label class="chip px-3 py-2 rounded-full bigTouch"><input type="checkbox" class="mr-2" id="em_reb" checked>Rebounding</label>
+              <label class="chip px-3 py-2 rounded-full bigTouch"><input type="checkbox" class="mr-2" id="em_off">Offense</label>
+              <label class="chip px-3 py-2 rounded-full bigTouch"><input type="checkbox" class="mr-2" id="em_press">Press</label>
+              <label class="chip px-3 py-2 rounded-full bigTouch"><input type="checkbox" class="mr-2" id="em_cond" checked>Conditioning</label>
+              <label class="chip px-3 py-2 rounded-full bigTouch"><input type="checkbox" class="mr-2" id="em_shoot">Shooting</label>
             </div>
           </div>
 
           <div class="chip rounded-xl p-3">
             <div class="text-xs uppercase tracking-wider muted2">Notes (optional)</div>
-            <input id="practiceNotes" class="mt-2 w-full rounded-lg p-2 text-sm inp" placeholder="Ex: No fly-bys. Help side feet in paint." />
+            <input id="practiceNotes" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" placeholder="Ex: No fly-bys. Help side feet in paint." />
             <div class="text-xs muted2 mt-2">Saved with recap</div>
           </div>
         </div>
@@ -387,7 +455,7 @@
             <div class="text-xs uppercase tracking-wider muted2">Today’s Practice Plan</div>
             <div class="text-sm muted2 mt-1" id="planMeta">Build a practice to see it here.</div>
           </div>
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="logPracticeComplete()">Log Practice Complete</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="logPracticeComplete()">Log Practice Complete</button>
         </div>
 
         <div class="border-t divider my-4"></div>
@@ -402,25 +470,47 @@
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="text-xs uppercase tracking-wider muted2">Progress</div>
-            <div class="text-xl font-extrabold mt-1">Who Needs What</div>
-            <div class="text-sm muted2 mt-1">Based on logged failures + drill ratings.</div>
+            <div class="text-xl font-extrabold mt-1">Needs + Grades</div>
+            <div class="text-sm muted2 mt-1">Failures = standards missed. Grades (1–5) = execution quality.</div>
           </div>
           <div class="flex gap-2">
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="exportData()">Export JSON</button>
-            <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearProgress()">Clear Progress</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="exportData()">Export JSON</button>
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearProgress()">Clear Logs</button>
           </div>
         </div>
 
         <div class="border-t divider my-4"></div>
-
         <div id="progressBoard" class="space-y-3"></div>
       </div>
     </section>
+  </div>
 
+  <!-- Bottom Tab Bar -->
+  <div class="tabbar">
+    <div class="max-w-6xl mx-auto px-4 py-3">
+      <div class="grid grid-cols-4 gap-3">
+        <button id="tabBtn-home" class="tabbtn active" onclick="showTab('home')">
+          <div class="ico">🏠</div>
+          <div>Home</div>
+        </button>
+        <button id="tabBtn-roster" class="tabbtn" onclick="showTab('roster')">
+          <div class="ico">👥</div>
+          <div>Roster</div>
+        </button>
+        <button id="tabBtn-practice" class="tabbtn" onclick="showTab('practice')">
+          <div class="ico">🧠</div>
+          <div>Practice</div>
+        </button>
+        <button id="tabBtn-progress" class="tabbtn" onclick="showTab('progress')">
+          <div class="ico">📈</div>
+          <div>Progress</div>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Drill Detail Modal -->
-  <div id="drillModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4">
+  <div id="drillModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-50">
     <div class="card rounded-2xl p-5 w-full max-w-2xl">
       <div class="flex items-start justify-between gap-3">
         <div>
@@ -428,7 +518,7 @@
           <div id="dmTitle" class="text-xl font-extrabold mt-1">—</div>
           <div id="dmTags" class="text-xs muted2 mt-1">—</div>
         </div>
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="closeDrillModal()">Close</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="closeDrillModal()">Close</button>
       </div>
 
       <div class="border-t divider my-4"></div>
@@ -450,15 +540,15 @@
   </div>
 
   <!-- Failure Log Modal -->
-  <div id="failModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4">
+  <div id="failModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-50">
     <div class="card rounded-2xl p-5 w-full max-w-2xl">
       <div class="flex items-start justify-between gap-3">
         <div>
           <div class="text-xs uppercase tracking-wider muted2">Log Failures</div>
           <div id="fmTitle" class="text-xl font-extrabold mt-1">—</div>
-          <div class="text-sm muted2 mt-1">Tap players who failed this drill standard today.</div>
+          <div class="text-sm muted2 mt-1">Tap players who missed standards today.</div>
         </div>
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="closeFailModal()">Close</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="closeFailModal()">Close</button>
       </div>
 
       <div class="border-t divider my-4"></div>
@@ -466,14 +556,32 @@
       <div id="fmPlayers" class="flex flex-wrap gap-2"></div>
 
       <div class="mt-4 flex gap-2">
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="saveFailureLog()">Save</button>
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearFailureSelection()">Clear</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="saveFailureLog()">Save</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="clearFailureSelection()">Clear</button>
       </div>
     </div>
   </div>
 
+  <!-- Grade Drill Modal -->
+  <div id="gradeModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-50">
+    <div class="card rounded-2xl p-5 w-full max-w-3xl">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="text-xs uppercase tracking-wider muted2">Grade Drill (1–5)</div>
+          <div id="gmTitle" class="text-xl font-extrabold mt-1">—</div>
+          <div class="text-sm muted2 mt-1">Tap a number. Saved instantly.</div>
+        </div>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="closeGradeModal()">Close</button>
+      </div>
+
+      <div class="border-t divider my-4"></div>
+
+      <div id="gmBody" class="space-y-3 miniScroll"></div>
+    </div>
+  </div>
+
   <!-- Ask Coach Modal -->
-  <div id="askCoachModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4">
+  <div id="askCoachModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-50">
     <div class="card rounded-2xl p-5 w-full max-w-2xl">
       <div class="flex items-start justify-between gap-3">
         <div>
@@ -481,27 +589,27 @@
           <div class="text-xl font-extrabold mt-1">Quick explanation</div>
           <div class="text-sm muted2 mt-1">Offline coach brain. Fast and blunt.</div>
         </div>
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="closeAskCoachModal()">Close</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="closeAskCoachModal()">Close</button>
       </div>
 
       <div class="border-t divider my-4"></div>
 
-      <input id="coachQuestion" class="w-full rounded-xl p-3 text-sm inp" placeholder="Ask: 'How do I explain help-side defense to a freshman?'" />
-      <button class="btn mt-3 px-3 py-2 rounded-xl text-sm font-semibold w-full" onclick="answerCoachOffline()">Get Answer</button>
+      <input id="coachQuestion" class="w-full rounded-xl p-3 text-sm inp bigTouch" placeholder="Ask: 'How do I explain help-side defense to a freshman?'" />
+      <button class="btn bigTouch mt-3 px-3 py-2 rounded-xl text-sm font-semibold w-full" onclick="answerCoachOffline()">Get Answer</button>
       <div id="coachAnswer" class="mt-4 chip rounded-xl p-3 text-sm leading-relaxed hidden whitespace-pre-line"></div>
     </div>
   </div>
 
   <!-- Add/Edit Player Modal -->
-  <div id="playerModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4">
+  <div id="playerModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-50">
     <div class="card rounded-2xl p-5 w-full max-w-xl">
       <div class="flex items-start justify-between gap-3">
         <div>
           <div class="text-xs uppercase tracking-wider muted2" id="pmMode">Add Player</div>
           <div class="text-xl font-extrabold mt-1" id="pmTitle">Player</div>
-          <div class="text-sm muted2 mt-1">Keep it simple. You can add detail later.</div>
+          <div class="text-sm muted2 mt-1">Add height/weight so you can develop them across roles.</div>
         </div>
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="closePlayerModal()">Close</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="closePlayerModal()">Close</button>
       </div>
 
       <div class="border-t divider my-4"></div>
@@ -509,15 +617,15 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <div class="text-xs uppercase tracking-wider muted2">Name</div>
-          <input id="pmName" class="mt-2 w-full rounded-lg p-2 text-sm inp" placeholder="Quin Coykendal" />
+          <input id="pmName" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" placeholder="Quin Coykendal" />
         </div>
         <div>
           <div class="text-xs uppercase tracking-wider muted2">Number</div>
-          <input id="pmNumber" class="mt-2 w-full rounded-lg p-2 text-sm inp" placeholder="23" />
+          <input id="pmNumber" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" placeholder="23" />
         </div>
         <div>
           <div class="text-xs uppercase tracking-wider muted2">Position</div>
-          <select id="pmPos" class="mt-2 w-full rounded-lg p-2 text-sm inp">
+          <select id="pmPos" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch">
             <option value="G">G (Guard)</option>
             <option value="W">W (Wing)</option>
             <option value="F">F (Forward)</option>
@@ -526,13 +634,22 @@
         </div>
         <div>
           <div class="text-xs uppercase tracking-wider muted2">Notes</div>
-          <input id="pmNotes" class="mt-2 w-full rounded-lg p-2 text-sm inp" placeholder="Strong rebounder / needs ball pressure" />
+          <input id="pmNotes" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" placeholder="Strong rebounder / needs ball pressure" />
+        </div>
+
+        <div>
+          <div class="text-xs uppercase tracking-wider muted2">Height (in)</div>
+          <input id="pmHeight" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" placeholder="74" />
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wider muted2">Weight (lb)</div>
+          <input id="pmWeight" class="mt-2 w-full rounded-lg p-2 text-sm inp bigTouch" placeholder="165" />
         </div>
       </div>
 
       <div class="mt-4 flex gap-2">
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="savePlayer()">Save</button>
-        <button id="pmDeleteBtn" class="btn px-3 py-2 rounded-xl text-sm font-semibold danger hidden" onclick="deletePlayerFromModal()">Delete</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" onclick="savePlayer()">Save</button>
+        <button id="pmDeleteBtn" class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold danger hidden" onclick="deletePlayerFromModal()">Delete</button>
       </div>
     </div>
   </div>
@@ -550,6 +667,21 @@ const KEY_DRILL_PREF = "pcc_drill_pref";
 const KEY_WEEKLY_USED = "pcc_weekly_used";
 const KEY_FAILURES = "pcc_failures";
 const KEY_LAST_RECAP = "pcc_last_recap";
+const KEY_GRADES = "pcc_grades";
+const KEY_REGEN_SEED = "pcc_regen_seed";
+const KEY_EMPHASIS = "pcc_emphasis";
+
+/* =========================
+   HELPERS: UID + storage
+========================= */
+function uid(){
+  return (crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+}
+function loadJSON(key, fallback){
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+  catch { return fallback; }
+}
+function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 
 /* =========================
    TEAM DNA (for Ask Coach templates)
@@ -598,20 +730,21 @@ const tips = [
 let quoteIndex = 0;
 let tipIndex = 0;
 
-/* =========================
-   HELPERS: storage
-========================= */
-function loadJSON(key, fallback){
-  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-  catch { return fallback; }
+function rotateQuote(forceRandom=false){
+  quoteIndex = forceRandom ? Math.floor(Math.random()*quotes.length) : (quoteIndex+1)%quotes.length;
+  document.getElementById("quoteText").textContent = quotes[quoteIndex].text;
+  document.getElementById("quoteSub").textContent = quotes[quoteIndex].sub;
 }
-function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function rotateTip(forceRandom=false){
+  tipIndex = forceRandom ? Math.floor(Math.random()*tips.length) : (tipIndex+1)%tips.length;
+  document.getElementById("tipText").textContent = tips[tipIndex].text;
+  document.getElementById("tipSub").textContent = tips[tipIndex].sub;
+}
 
 /* =========================
-   WEEK ID (for “avoid repeats this week”)
+   WEEK ID (avoid repeats)
 ========================= */
 function getWeekId(d=new Date()){
-  // ISO week-ish (good enough for app)
   const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const dayNum = date.getUTCDay() || 7;
   date.setUTCDate(date.getUTCDate() + 4 - dayNum);
@@ -621,12 +754,16 @@ function getWeekId(d=new Date()){
 }
 
 /* =========================
-   DRILL LIBRARY (offline)
-   - minPlayers/maxPlayers control attendance relevance
+   DRILL MODEL
 ========================= */
 function mkDrill(id,title,category,tags,minPlayers,maxPlayers,explain,standards,coachShort,coachLong){
   return { id,title,category,tags,minPlayers,maxPlayers,explain,standards,coachShort,coachLong };
 }
+
+/* =========================
+   DRILL LIBRARY (offline)
+   - 5v5 requires MIN 10
+========================= */
 const DRILLS = [
   // ===== 1–2 =====
   mkDrill("d01","Two-Ball Handle Circuit","Skill",["Ball Handling","Guards"],1,2,
@@ -689,13 +826,13 @@ const DRILLS = [
     "Coach passes to wing, cutter V-cuts to empty spot, next fills. Emphasis: timing + spacing.",
     ["Hard V-cut","Fill empty immediately","No standing","Eyes to post window"],
     "WHY: Motion only works with cuts.\nDO: Cut hard, fill fast.\nCONSEQUENCE: Soft cuts = dead offense.",
-    "Teach: corners/top are not spots in your system. Keep movement through empty spaces."
+    "Teach: keep movement through empty spaces."
   ),
   mkDrill("d15","2v2 Pressure Zig-Zag (Half Court)","Defense",["Ball Pressure","Footwork"],3,4,
     "Ball handler zig-zags up court. Defender pressures without reaching, forces away from middle.",
     ["Arms-reach on ball","No reaches","Angle body to sideline","Talk stance"],
     "WHY: Pressure breaks teams.\nDO: Feet beat hands.\nCONSEQUENCE: Reaching = fouls.",
-    "Demand stance. If they stand tall, restart rep. Add timer or backcourt count."
+    "Demand stance. If they stand tall, restart rep."
   ),
 
   // ===== 5–6 =====
@@ -703,13 +840,13 @@ const DRILLS = [
     "Play 3v3. Defense earns point with stop + rebound. Offense earns point with score. Winner stays.",
     ["Box out every shot","Talk every possession","No jogging between games","Make layups"],
     "WHY: Compete like game.\nDO: Earn stops.\nCONSEQUENCE: Soft = lose.",
-    "Add rules: no middle drives, must get paint touch before 3, 3-second shot clock for pace."
+    "Add rules: no middle drives, must get paint touch before 3, short shot clock."
   ),
   mkDrill("d21","4v4 Shell (Ghost Player)","Defense",["Shell","Help"],5,6,
-    "Run 4v4 shell principles with one ‘ghost’ spot if short. Emphasis: help side feet in paint + recover.",
+    "Run shell principles with a ‘ghost’ spot if short. Help side feet in paint + recover.",
     ["Feet in paint on help side","Closeout under control","Bump cutters","No ball-side doubles"],
     "WHY: Team defense habits.\nDO: Help, recover, communicate.\nCONSEQUENCE: Quiet teams get scored on.",
-    "Ghost option: coach or chair holds a spot. Still rotate on pass. Demand talk: BALL/HELP/DENY."
+    "Ghost option: coach/chair holds a spot. Still rotate on pass. Demand talk: BALL/HELP/DENY."
   ),
   mkDrill("d22","2-2-1 Press Rotation Breakdown (5–6)","Press",["2-2-1","Rotations"],5,6,
     "Walk-to-jog press rotations: trap zones, middle safety, sprint recovery. Then live at 70–80%.",
@@ -717,69 +854,74 @@ const DRILLS = [
     "WHY: Press is positioning.\nDO: Arrive on time.\nCONSEQUENCE: Late = layup.",
     "Teach: angles. Don’t chase. Communicate ‘TRAP!’ ‘MIDDLE!’ ‘I GOT BACK!’"
   ),
-  mkDrill("d23","1-2-2 Press Reads (5–6)","Press",["1-2-2","Contain"],5,6,
-    "Set up 1-2-2. Work on steering ball to sideline and closing gaps. Add live for 4 passes max.",
-    ["Force sideline","No straight-line middle","Back line talks","Recover to matchups"],
-    "WHY: Press sets your defense.\nDO: Force where you want.\nCONSEQUENCE: Middle = broken press.",
-    "Keep it short, high reps. If they gamble and miss, stop and correct—discipline > steals."
-  ),
-  mkDrill("d24","4-1 Post Feed & Relocate (Small Group)","Offense",["4-1","Post Entry"],5,6,
-    "Wing entry, look post, relocate on denial. Post seals. Rotate positions every rep.",
-    ["Seal before call","Ball fake before entry","Cut to empty after pass","Strong pivot + chin"],
-    "WHY: Post touches collapse defense.\nDO: Seal + fake.\nCONSEQUENCE: Lazy seals = turnovers.",
-    "No standing. If the post is dead, reverse and re-enter. Keep corners/top moving through empty."
-  ),
   mkDrill("d25","NFHS Game-Clock Conditioning (5–6)","Conditioning",["NFHS","Pace"],5,6,
     "2 minutes ‘game’: 20s burst / 20s jog / 20s burst / 20s walk. Repeat 4 rounds. Add ball last round.",
     ["Bursts are 100%","Talk through fatigue","No hands on knees","Last round best round"],
     "WHY: Conditioning shows late.\nDO: Win late.\nCONSEQUENCE: Tired teams foul and turn it over.",
-    "Hold them accountable. If someone coasts, stop and restart that rep for the group."
+    "Hold them accountable. If someone coasts, restart that rep for the group."
   ),
   mkDrill("d26","Charge Circle + Recover","Defense",["Charges","Help"],5,6,
     "Drive from wing. Help steps up to circle, takes charge position, then immediately recovers to shooter.",
     ["Arrive early, chest up","Hands protect face","Pop up fast","Recover under control"],
     "WHY: Charges change games.\nDO: Step up.\nCONSEQUENCE: Late help = layups or fouls.",
-    "Teach timing: step up on first step downhill. Don’t slide under last second."
+    "Timing: step up on first downhill step. Don’t slide under late."
   ),
 
-  // ===== 7+ (future) =====
-  mkDrill("d30","5v5 Shell (Full)","Defense",["Shell","Team"],7,14,
+  // ===== 7–9 (small-sided team) =====
+  mkDrill("d27","4v4 + 1 Advantage (Rotate Extra)","Team",["Spacing","Reads"],7,9,
+    "Play 4v4 with 1 rotating advantage player (offense). Forces spacing, decisions, and defensive communication.",
+    ["No standing","Paint touch before 3 (optional)","Talk matchups","Box out every shot"],
+    "WHY: Game reads without needing 10.\nDO: Move, talk, compete.\nCONSEQUENCE: Stand = dead rep.",
+    "Rotate the advantage player every possession. Grade decision speed and spacing."
+  ),
+  mkDrill("d28","Shell to Live (4v4, subs rotate)","Defense",["Shell","Talk"],7,9,
+    "Run 4v4 shell rules, then go live for 8 seconds. Rotate subs quickly. High reps, no dead time.",
+    ["Feet in paint help side","Closeout under control","Bump cutters","Finish with rebound"],
+    "WHY: Habits + pressure.\nDO: Talk + rebound.\nCONSEQUENCE: Quiet = buckets.",
+    "Use a timer. Make it measurable: stops + rebounds are points."
+  ),
+
+  // ===== 10+ (true 5v5 eligible) =====
+  mkDrill("d30","5v5 Shell (Full)","Defense",["Shell","Team"],10,14,
     "Full shell: pass-cut-fill, deny one pass away, help side in paint, recover on skip, finish with rebound.",
-    ["Talk every pass","Deny one away","Feet in paint on help side","Box out hard"],
+    ["Talk every pass","Deny one away","Feet in paint help side","Box out hard"],
     "WHY: This is your defense.\nDO: Deny, help, recover.\nCONSEQUENCE: No talk = buckets.",
     "Add constraints: no middle drives, under all screens, bump cutters. Grade talk + box-outs."
   ),
-  mkDrill("d31","5v5 Transition Matchups","Defense",["Transition","Communication"],7,14,
+  mkDrill("d31","5v5 Transition Matchups","Defense",["Transition","Communication"],10,14,
     "Change ends. Must sprint back, find ball, match up, talk. Score only counts if defense set correctly first.",
     ["First 3 steps are sprints","Find ball then match","Talk matchups","No jogging"],
     "WHY: Transition kills you.\nDO: Sprint + talk.\nCONSEQUENCE: Jog = layup.",
-    "Put a stopwatch on the first sprint-back. Make it measurable."
+    "Put a stopwatch on sprint-back. Make it measurable."
   )
 ];
 
 /* =========================
-   ATTENDANCE BANDS (fixed)
+   ATTENDANCE BANDS
+   - 10+ enables 5v5
 ========================= */
 function getBand(n){
   if (n <= 2) return "1–2";
   if (n <= 4) return "3–4";
   if (n <= 6) return "5–6";
-  return "7+";
+  if (n <= 9) return "7–9";
+  return "10+";
 }
 function bandMinMax(band){
   if (band==="1–2") return [1,2];
   if (band==="3–4") return [3,4];
   if (band==="5–6") return [5,6];
-  return [7,99];
+  if (band==="7–9") return [7,9];
+  return [10,99];
 }
 
 /* =========================
    DRILL PREFS (like/dislike)
 ========================= */
 function getPrefMap(){ return loadJSON(KEY_DRILL_PREF, {}); }
-function setPref(id, val){ // val: -1 dislike, 0 neutral, 1 like
+function setPref(id, val){
   const m = getPrefMap();
-  m[id] = val;
+  m[id] = val; // -1,0,1
   saveJSON(KEY_DRILL_PREF, m);
 }
 
@@ -803,11 +945,42 @@ function markWeeklyUsed(ids){
 }
 
 /* =========================
-   FAILURES LOGGING
+   FAILURES
 ========================= */
 let failContext = { drillId:null, selected:new Set(), practiceId:null };
 function getFailures(){ return loadJSON(KEY_FAILURES, []); }
 function saveFailures(list){ saveJSON(KEY_FAILURES, list); }
+
+/* =========================
+   GRADES (1–5) per player per drill
+========================= */
+function getGrades(){ return loadJSON(KEY_GRADES, []); }
+function saveGrades(list){ saveJSON(KEY_GRADES, list); }
+
+function upsertGrade(practiceId, drillId, playerId, grade, note=""){
+  const list = getGrades();
+  const idx = list.findIndex(g => g.practiceId===practiceId && g.drillId===drillId && g.playerId===playerId);
+  const entry = {
+    id: idx>=0 ? list[idx].id : uid(),
+    ts: Date.now(),
+    weekId: getWeekId(),
+    practiceId,
+    drillId,
+    playerId,
+    grade: clampInt(Number(grade),1,5),
+    note: (note||"").trim()
+  };
+  if (idx>=0) list[idx] = { ...list[idx], ...entry };
+  else list.push(entry);
+  saveGrades(list);
+}
+
+function getDrillAvg(practiceId, drillId){
+  const list = getGrades().filter(g => g.practiceId===practiceId && g.drillId===drillId);
+  if (!list.length) return null;
+  const avg = list.reduce((s,g)=>s+Number(g.grade||0),0) / list.length;
+  return Math.round(avg*10)/10;
+}
 
 /* =========================
    WEEK OBJECT (counts)
@@ -820,7 +993,6 @@ function ensureWeek(){
     record: "0–0",
     issue: "Second-chance points",
     practices: 0,
-    drills: 0,
     fails: 0
   };
   saveJSON(KEY_WEEK, init);
@@ -828,20 +1000,51 @@ function ensureWeek(){
 }
 
 /* =========================
-   TABS
+   EMPHASIS persist
+========================= */
+function saveEmphasis(){
+  const state = {
+    def: em_def.checked,
+    reb: em_reb.checked,
+    off: em_off.checked,
+    press: em_press.checked,
+    cond: em_cond.checked,
+    shoot: em_shoot.checked
+  };
+  saveJSON(KEY_EMPHASIS, state);
+}
+function loadEmphasis(){
+  const s = loadJSON(KEY_EMPHASIS, null);
+  if (!s) return;
+  em_def.checked = !!s.def;
+  em_reb.checked = !!s.reb;
+  em_off.checked = !!s.off;
+  em_press.checked = !!s.press;
+  em_cond.checked = !!s.cond;
+  em_shoot.checked = !!s.shoot;
+}
+
+/* =========================
+   REGEN seed
+========================= */
+function bumpRegenSeed(){
+  const n = (parseInt(localStorage.getItem(KEY_REGEN_SEED)||"0",10) || 0) + 1;
+  localStorage.setItem(KEY_REGEN_SEED, String(n));
+  return n;
+}
+function getRegenSeed(){
+  return parseInt(localStorage.getItem(KEY_REGEN_SEED)||"0",10) || 0;
+}
+
+/* =========================
+   TABS (bottom bar)
 ========================= */
 function showTab(tab){
   ["home","roster","practice","progress"].forEach(t=>{
     document.getElementById(`tab-${t}`).classList.toggle("hidden", t!==tab);
     const btn = document.getElementById(`tabBtn-${t}`);
     if (!btn) return;
-    if (t===tab){
-      btn.classList.add("ring-gold");
-      btn.style.borderColor = "rgba(245,197,66,0.35)";
-    } else {
-      btn.classList.remove("ring-gold");
-      btn.style.borderColor = "rgba(148,163,184,0.18)";
-    }
+    btn.classList.toggle("active", t===tab);
   });
 
   if (tab==="roster") renderRoster();
@@ -851,21 +1054,7 @@ function showTab(tab){
 }
 
 /* =========================
-   QUOTES / TIPS
-========================= */
-function rotateQuote(forceRandom=false){
-  quoteIndex = forceRandom ? Math.floor(Math.random()*quotes.length) : (quoteIndex+1)%quotes.length;
-  document.getElementById("quoteText").textContent = quotes[quoteIndex].text;
-  document.getElementById("quoteSub").textContent = quotes[quoteIndex].sub;
-}
-function rotateTip(forceRandom=false){
-  tipIndex = forceRandom ? Math.floor(Math.random()*tips.length) : (tipIndex+1)%tips.length;
-  document.getElementById("tipText").textContent = tips[tipIndex].text;
-  document.getElementById("tipSub").textContent = tips[tipIndex].sub;
-}
-
-/* =========================
-   HOME: weekly + tiles + recap + today focus
+   HOME
 ========================= */
 function openWeeklySettings(){
   const w = ensureWeek();
@@ -880,10 +1069,9 @@ function openWeeklySettings(){
   renderHome();
 }
 function resetWeek(){
-  if (!confirm("Reset week counters (practices/drills/fails) to 0?")) return;
+  if (!confirm("Reset week counters (practices/fails) to 0?")) return;
   const w = ensureWeek();
-  saveJSON(KEY_WEEK, { ...w, practices:0, drills:0, fails:0 });
-  // also clear weekly used for current week
+  saveJSON(KEY_WEEK, { ...w, practices:0, fails:0 });
   const weekId = getWeekId();
   const all = loadJSON(KEY_WEEKLY_USED, {});
   all[weekId] = [];
@@ -896,7 +1084,6 @@ function saveHomeNotes(){
 }
 
 function computeBiggestNeedThisWeek(){
-  // based on failure logs by category
   const fails = getFailures();
   const weekId = getWeekId();
   const thisWeek = fails.filter(f => f.weekId===weekId);
@@ -904,7 +1091,7 @@ function computeBiggestNeedThisWeek(){
   const score = {};
   for (const f of thisWeek){
     const drill = DRILLS.find(d=>d.id===f.drillId);
-    const cat = drill?.category || "Other";
+    const cat = normalizeCat(drill?.category || "Other");
     score[cat] = (score[cat]||0) + (f.players?.length || 0) + 1;
   }
   const top = Object.entries(score).sort((a,b)=>b[1]-a[1])[0];
@@ -912,12 +1099,10 @@ function computeBiggestNeedThisWeek(){
 }
 
 function computeMostImproved(){
-  // simple: player with greatest drop in failures from previous week to this week
   const roster = getRoster();
   if (!roster.length) return "—";
   const allFails = getFailures();
   const curWeek = getWeekId();
-  // naive previous week: subtract 7 days
   const prevWeek = getWeekId(new Date(Date.now() - 7*86400000));
   const cur = {};
   const prev = {};
@@ -939,7 +1124,6 @@ function computeMostImproved(){
 }
 
 function inferTodayFocus(){
-  // If practice exists today, use it. Else base on weekly need + your DNA.
   const today = loadJSON(KEY_TODAY, null);
   if (today && today.focus) return today.focus;
 
@@ -969,7 +1153,7 @@ function renderRecap(){
   const r = loadJSON(KEY_LAST_RECAP, null);
   if (!r){
     document.getElementById("recapTitle").textContent = "No practice logged yet";
-    document.getElementById("recapMeta").textContent = "Build a practice and log failures to populate this.";
+    document.getElementById("recapMeta").textContent = "Build a practice, grade drills, log failures.";
     document.getElementById("recapWorstArea").textContent = "—";
     document.getElementById("recapTopDrill").textContent = "—";
     document.getElementById("recapWorstDrill").textContent = "—";
@@ -1004,7 +1188,7 @@ function renderHome(){
   document.getElementById("tileNeed").textContent = computeBiggestNeedThisWeek();
   document.getElementById("tileImproved").textContent = computeMostImproved();
 
-  document.getElementById("tileDrills").textContent = String(w.drills || 0);
+  document.getElementById("tilePractices").textContent = String(w.practices || 0);
   document.getElementById("tileFails").textContent = String(w.fails || 0);
 
   const todayObj = loadJSON(KEY_TODAY, null);
@@ -1035,7 +1219,7 @@ function togglePresent(pid){
   if (set.has(pid)) set.delete(pid); else set.add(pid);
   savePresentIds(Array.from(set));
   renderRoster();
-  renderPracticeControls(); // update pills/band if open
+  renderPracticeControls();
   renderHome();
 }
 
@@ -1059,13 +1243,20 @@ function renderRoster(){
     const row = document.createElement("div");
     row.className = "chip rounded-2xl p-4 flex items-start justify-between gap-3";
     row.innerHTML = `
-      <div>
-        <div class="font-extrabold text-lg">${escapeHtml(p.name)} <span class="muted2 text-xs mono">#${escapeHtml(p.number||"--")}</span></div>
-        <div class="muted2 text-sm mt-1">Pos: <span class="font-semibold">${escapeHtml(p.pos||"—")}</span> • ${escapeHtml(p.notes||"")}</div>
+      <div class="min-w-0">
+        <div class="font-extrabold text-lg">
+          ${escapeHtml(p.name)}
+          <span class="muted2 text-xs mono">#${escapeHtml(p.number||"--")}</span>
+        </div>
+        <div class="muted2 text-sm mt-1">
+          Pos: <span class="font-semibold">${escapeHtml(p.pos||"—")}</span>
+          • H/W: <span class="font-semibold">${escapeHtml(p.height||"—")}</span> / <span class="font-semibold">${escapeHtml(p.weight||"—")}</span>
+        </div>
+        <div class="muted2 text-sm mt-1">${escapeHtml(p.notes||"")}</div>
       </div>
       <div class="flex flex-col gap-2 items-end">
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold">${isHere ? "Present ✅" : "Mark Present"}</button>
-        <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" title="Edit">Edit</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold">${isHere ? "Present ✅" : "Mark Present"}</button>
+        <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" title="Edit">Edit</button>
       </div>
     `;
     const [presentBtn, editBtn] = row.querySelectorAll("button");
@@ -1094,6 +1285,8 @@ function openAddPlayer(){
   document.getElementById("pmNumber").value = "";
   document.getElementById("pmPos").value = "G";
   document.getElementById("pmNotes").value = "";
+  document.getElementById("pmHeight").value = "";
+  document.getElementById("pmWeight").value = "";
   document.getElementById("pmDeleteBtn").classList.add("hidden");
   document.getElementById("playerModal").classList.remove("hidden");
 }
@@ -1108,27 +1301,29 @@ function openEditPlayer(pid){
   document.getElementById("pmNumber").value = p.number || "";
   document.getElementById("pmPos").value = p.pos || "G";
   document.getElementById("pmNotes").value = p.notes || "";
+  document.getElementById("pmHeight").value = p.height ?? "";
+  document.getElementById("pmWeight").value = p.weight ?? "";
   document.getElementById("pmDeleteBtn").classList.remove("hidden");
   document.getElementById("playerModal").classList.remove("hidden");
 }
-function closePlayerModal(){
-  document.getElementById("playerModal").classList.add("hidden");
-}
+function closePlayerModal(){ document.getElementById("playerModal").classList.add("hidden"); }
 function savePlayer(){
   const name = (document.getElementById("pmName").value||"").trim();
   if (!name){ alert("Name required."); return; }
   const number = (document.getElementById("pmNumber").value||"").trim();
   const pos = document.getElementById("pmPos").value;
   const notes = (document.getElementById("pmNotes").value||"").trim();
+  const height = (document.getElementById("pmHeight").value||"").trim();
+  const weight = (document.getElementById("pmWeight").value||"").trim();
 
   const roster = getRoster();
   if (playerModalId){
     const idx = roster.findIndex(p=>p.id===playerModalId);
     if (idx>=0){
-      roster[idx] = { ...roster[idx], name, number, pos, notes };
+      roster[idx] = { ...roster[idx], name, number, pos, notes, height, weight };
     }
   } else {
-    roster.push({ id: crypto.randomUUID(), name, number, pos, notes });
+    roster.push({ id: uid(), name, number, pos, notes, height, weight });
   }
   saveRoster(roster);
   closePlayerModal();
@@ -1157,13 +1352,11 @@ function deletePlayerFromModal(){
    PRACTICE: controls + builder
 ========================= */
 function renderPracticeControls(){
-  // inputs
-  const today = loadJSON(KEY_TODAY, { duration:90, focus:"", drills:[], notes:"" });
+  const today = loadJSON(KEY_TODAY, { duration:90, focus:"", drills:[], notes:"", presentIds: getPresentIds(), id: uid() });
   document.getElementById("practiceDuration").value = today.duration ?? 90;
   document.getElementById("practiceFocus").value = today.focus ?? "";
   document.getElementById("practiceNotes").value = today.notes ?? "";
 
-  // present pills
   const roster = getRoster();
   const present = new Set(getPresentIds());
   const pills = document.getElementById("presentPills");
@@ -1175,7 +1368,7 @@ function renderPracticeControls(){
     roster.forEach(p=>{
       const isHere = present.has(p.id);
       const b = document.createElement("button");
-      b.className = `px-3 py-1 rounded-full text-xs font-semibold ${isHere ? "okbadge" : "chip"}`;
+      b.className = `px-3 py-2 rounded-full text-xs font-semibold bigTouch ${isHere ? "okbadge" : "chip"}`;
       b.textContent = isHere ? `${p.name} ✅` : p.name;
       b.onclick = ()=>togglePresent(p.id);
       pills.appendChild(b);
@@ -1185,7 +1378,6 @@ function renderPracticeControls(){
   const n = present.size;
   document.getElementById("bandLabel").textContent = getBand(n);
 
-  // show plan (if exists)
   renderPracticePlan(today.drills || []);
   updatePlanMeta();
 }
@@ -1207,7 +1399,6 @@ function getEmphasis(){
   if (document.getElementById("em_press").checked) cats.push("Press");
   if (document.getElementById("em_cond").checked) cats.push("Conditioning");
   if (document.getElementById("em_shoot").checked) cats.push("Shooting");
-  // map “Team” too if needed
   return cats;
 }
 
@@ -1223,43 +1414,40 @@ function buildPractice(){
   const emphasis = getEmphasis();
   const focus = focusInput || inferTodayFocus();
 
-  // choose drills (weighted by like/dislike, avoid repeats this week)
   const pref = getPrefMap();
   const { used } = getWeeklyUsed();
+  const regenSeed = getRegenSeed();
 
   const pool = DRILLS
     .filter(d => d.minPlayers <= maxP && d.maxPlayers >= minP)
     .filter(d => {
       if (!emphasis.length) return true;
-      // normalize categories
       const cat = normalizeCat(d.category);
       return emphasis.includes(cat) || (emphasis.includes("Defense") && cat==="Team") || (emphasis.includes("Offense") && cat==="Skill");
     });
 
+  // Desired drill count
   const desiredCount = duration <= 60 ? 5 : duration <= 90 ? 6 : 7;
 
-  // score drills:
+  // Score drills: likes + avoid repeats + regenSeed jitter
   const scored = pool.map(d=>{
-    const like = pref[d.id] ?? 0; // -1,0,1
-    const usedPenalty = used.has(d.id) ? -2 : 0; // discourage repeats
-    // small variety: favor not-used
+    const like = pref[d.id] ?? 0;
+    const usedPenalty = used.has(d.id) ? -2 : 0;
     const base = 1 + (like*0.8) + usedPenalty;
-    const jitter = (Math.random()*0.6) - 0.3;
+    const jitter = ((((Math.random() + regenSeed*0.137) % 1) * 0.6) - 0.3);
     return { d, score: base + jitter };
   }).sort((a,b)=>b.score-a.score);
 
-  // pick unique drills, but if pool too small, allow some repeats
   const selected = [];
   const pickedIds = new Set();
+
   for (const item of scored){
     if (selected.length >= desiredCount) break;
     if (pickedIds.has(item.d.id)) continue;
-    // if used and we have plenty options, skip early
     if (used.has(item.d.id) && selected.length < Math.floor(desiredCount*0.6)) continue;
     selected.push(item.d);
     pickedIds.add(item.d.id);
   }
-  // fallback fill
   if (selected.length < desiredCount){
     for (const item of scored){
       if (selected.length >= desiredCount) break;
@@ -1269,26 +1457,19 @@ function buildPractice(){
     }
   }
 
-  // build timed blocks
   const plan = toTimedPlan(selected, duration);
 
   const todayObj = {
-    id: crypto.randomUUID(),
+    id: uid(),
     date: new Date().toISOString(),
     duration,
     focus,
     notes,
     presentIds: getPresentIds(),
-    drills: plan.map(x=>({ ...x })) // copy
+    drills: plan.map(x=>({ ...x }))
   };
   saveJSON(KEY_TODAY, todayObj);
 
-  // update week counters
-  const w = ensureWeek();
-  w.drills = (w.drills||0) + plan.length;
-  saveJSON(KEY_WEEK, w);
-
-  // mark weekly used
   markWeeklyUsed(plan.map(p=>p.id));
 
   renderPracticeControls();
@@ -1296,52 +1477,55 @@ function buildPractice(){
 }
 
 function regeneratePractice(){
-  // same settings, new selection
+  bumpRegenSeed();
   buildPractice();
 }
 
 function toTimedPlan(drills, duration){
-  // structure: warmup + skill/def + team + situation + conditioning + ft
   const blocks = [];
   const n = drills.length;
 
-  // suggested minutes by duration
   const warm = duration<=60 ? 8 : 10;
   const cond = duration<=60 ? 6 : 10;
-  const ft = 6;
+  const ft   = 6;
+
   const remaining = Math.max(duration - warm - cond - ft, 20);
+  const coreSlots = Math.max(n - 2, 2);
+  const coreEach  = Math.floor(remaining / coreSlots);
+  const extra     = remaining - (coreEach * coreSlots);
 
-  // split remaining across n-2 drills (keep last two as situation/compete)
-  const coreCount = Math.max(n-2, 3);
-  const coreEach = Math.floor(remaining / coreCount);
-  const extra = remaining - (coreEach*coreCount);
+  let coreIndex = 0;
 
-  // First block: always warmup from library if possible (choose a drill tagged Conditioning or Skill in band)
-  // We'll just take first drill as warmup when short.
   for (let i=0;i<n;i++){
-    const mins = (i===0) ? warm :
-                 (i===n-1) ? ft :
-                 (i===n-2) ? cond :
-                 coreEach + (i<=extra ? 1 : 0);
+    let mins;
+    if (i===0) mins = warm;
+    else if (i===n-2) mins = cond;
+    else if (i===n-1) mins = ft;
+    else {
+      mins = coreEach + (coreIndex < extra ? 1 : 0);
+      coreIndex++;
+    }
 
+    const d = drills[i];
     blocks.push({
-      id: drills[i].id,
-      title: drills[i].title,
-      category: normalizeCat(drills[i].category),
-      tags: drills[i].tags,
+      id: d.id,
+      title: d.title,
+      category: normalizeCat(d.category),
+      tags: d.tags,
       mins,
-      explain: drills[i].explain,
-      standards: drills[i].standards,
-      coachShort: drills[i].coachShort,
-      coachLong: drills[i].coachLong,
-      minPlayers: drills[i].minPlayers,
-      maxPlayers: drills[i].maxPlayers
+      explain: d.explain,
+      standards: d.standards,
+      coachShort: d.coachShort,
+      coachLong: d.coachLong,
+      minPlayers: d.minPlayers,
+      maxPlayers: d.maxPlayers
     });
   }
-  // If minutes drift, adjust last block
+
   const total = blocks.reduce((s,b)=>s+b.mins,0);
   const diff = duration - total;
-  if (diff !== 0 && blocks.length) blocks[blocks.length-1].mins += diff;
+  if (diff && blocks.length) blocks[blocks.length-1].mins += diff;
+
   return blocks;
 }
 
@@ -1349,17 +1533,19 @@ function renderPracticePlan(plan){
   const wrap = document.getElementById("practicePlan");
   wrap.innerHTML = "";
   if (!plan || !plan.length){
-    wrap.innerHTML = `<div class="chip rounded-2xl p-4"><div class="text-sm muted2">No plan yet. Hit “Build Practice”.</div></div>`;
+    wrap.innerHTML = `<div class="chip rounded-2xl p-4"><div class="text-sm muted2">No plan yet. Hit “Build”.</div></div>`;
     return;
   }
 
   const pref = getPrefMap();
+  const today = loadJSON(KEY_TODAY, null);
 
   plan.forEach((d, idx)=>{
     const like = pref[d.id] ?? 0;
     const likeTxt = like===1 ? "Liked" : like===-1 ? "Disliked" : "Neutral";
     const likeBadge = like===1 ? "okbadge" : like===-1 ? "danger" : "chip";
     const bandTxt = `${d.minPlayers}–${d.maxPlayers} players`;
+    const avg = today ? getDrillAvg(today.id, d.id) : null;
 
     const row = document.createElement("div");
     row.className = "chip rounded-2xl p-4";
@@ -1370,6 +1556,7 @@ function renderPracticePlan(plan){
             <div class="font-extrabold text-lg">${idx+1}. ${escapeHtml(d.title)}</div>
             <span class="badge px-2 py-1 rounded-full text-xs font-semibold">${escapeHtml(d.category)}</span>
             <span class="${likeBadge} px-2 py-1 rounded-full text-xs font-semibold">${likeTxt}</span>
+            ${avg ? `<span class="okbadge px-2 py-1 rounded-full text-xs font-semibold">Avg ${avg}/5</span>` : ``}
             <span class="chip px-2 py-1 rounded-full text-xs font-semibold">${bandTxt}</span>
             <span class="badge px-2 py-1 rounded-full text-xs font-semibold">${d.mins} min</span>
           </div>
@@ -1378,32 +1565,26 @@ function renderPracticePlan(plan){
         </div>
 
         <div class="flex flex-wrap gap-2">
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" data-act="explain">Explain</button>
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" data-act="fail">Log Failures</button>
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" data-act="like">👍</button>
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" data-act="dislike">👎</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" data-act="explain">Explain</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" data-act="grade">Grade</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" data-act="fail">Failures</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" data-act="like">👍</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" data-act="dislike">👎</button>
         </div>
       </div>
     `;
 
-    const explainBtn = row.querySelector('[data-act="explain"]');
-    const failBtn = row.querySelector('[data-act="fail"]');
-    const likeBtn = row.querySelector('[data-act="like"]');
-    const dislikeBtn = row.querySelector('[data-act="dislike"]');
+    row.querySelector('[data-act="explain"]').onclick = ()=>openDrillModal(d.id);
+    row.querySelector('[data-act="grade"]').onclick = ()=>openGradeModal(d.id);
+    row.querySelector('[data-act="fail"]').onclick = ()=>openFailModal(d.id);
 
-    explainBtn.onclick = ()=>openDrillModal(d.id);
-    failBtn.onclick = ()=>openFailModal(d.id);
-    likeBtn.onclick = ()=>{
+    row.querySelector('[data-act="like"]').onclick = ()=>{
       setPref(d.id, (pref[d.id]===1) ? 0 : 1);
-      renderPracticeControls();
-      renderHome();
-      renderProgress();
+      renderPracticeControls(); renderHome(); renderProgress();
     };
-    dislikeBtn.onclick = ()=>{
+    row.querySelector('[data-act="dislike"]').onclick = ()=>{
       setPref(d.id, (pref[d.id]===-1) ? 0 : -1);
-      renderPracticeControls();
-      renderHome();
-      renderProgress();
+      renderPracticeControls(); renderHome(); renderProgress();
     };
 
     wrap.appendChild(row);
@@ -1420,7 +1601,6 @@ function logPracticeComplete(){
   w.practices = (w.practices||0) + 1;
   saveJSON(KEY_WEEK, w);
 
-  // build recap
   const failures = getFailures();
   const practiceId = today.id;
   const related = failures.filter(f=>f.practiceId===practiceId);
@@ -1489,9 +1669,7 @@ function openDrillModal(drillId){
 
   document.getElementById("drillModal").classList.remove("hidden");
 }
-function closeDrillModal(){
-  document.getElementById("drillModal").classList.add("hidden");
-}
+function closeDrillModal(){ document.getElementById("drillModal").classList.add("hidden"); }
 
 /* =========================
    FAILURE LOG MODAL
@@ -1521,15 +1699,15 @@ function openFailModal(drillId){
   } else {
     presentPlayers.forEach(p=>{
       const btn = document.createElement("button");
-      btn.className = "chip px-3 py-2 rounded-full text-sm font-semibold";
+      btn.className = "chip px-3 py-2 rounded-full text-sm font-semibold bigTouch";
       btn.textContent = p.name;
       btn.onclick = ()=>{
         if (failContext.selected.has(p.id)){
           failContext.selected.delete(p.id);
-          btn.className = "chip px-3 py-2 rounded-full text-sm font-semibold";
+          btn.className = "chip px-3 py-2 rounded-full text-sm font-semibold bigTouch";
         } else {
           failContext.selected.add(p.id);
-          btn.className = "danger px-3 py-2 rounded-full text-sm font-semibold";
+          btn.className = "danger px-3 py-2 rounded-full text-sm font-semibold bigTouch";
         }
       };
       wrap.appendChild(btn);
@@ -1538,12 +1716,9 @@ function openFailModal(drillId){
 
   document.getElementById("failModal").classList.remove("hidden");
 }
-function closeFailModal(){
-  document.getElementById("failModal").classList.add("hidden");
-}
+function closeFailModal(){ document.getElementById("failModal").classList.add("hidden"); }
 function clearFailureSelection(){
   failContext.selected = new Set();
-  // re-render the modal quickly by reopening
   const d = failContext.drillId;
   closeFailModal();
   openFailModal(d);
@@ -1556,7 +1731,7 @@ function saveFailureLog(){
   const drill = DRILLS.find(d=>d.id===failContext.drillId);
 
   const entry = {
-    id: crypto.randomUUID(),
+    id: uid(),
     ts: Date.now(),
     date: new Date().toISOString(),
     weekId: getWeekId(),
@@ -1582,7 +1757,71 @@ function saveFailureLog(){
 }
 
 /* =========================
-   PROGRESS: show per player weaknesses
+   GRADE MODAL
+========================= */
+function openGradeModal(drillId){
+  const today = loadJSON(KEY_TODAY, null);
+  if (!today || !(today.drills||[]).length){
+    alert("Build a practice first.");
+    return;
+  }
+
+  const drill = today.drills.find(d=>d.id===drillId) || DRILLS.find(d=>d.id===drillId);
+  document.getElementById("gmTitle").textContent = drill?.title || "Drill";
+
+  const roster = getRoster();
+  const presentIds = new Set(today.presentIds || getPresentIds());
+  const presentPlayers = roster.filter(p=>presentIds.has(p.id));
+
+  const wrap = document.getElementById("gmBody");
+  wrap.innerHTML = "";
+
+  const gradeList = getGrades().filter(g => g.practiceId===today.id && g.drillId===drillId);
+  const gradeMap = new Map(gradeList.map(g => [g.playerId, g]));
+
+  if (!presentPlayers.length){
+    wrap.innerHTML = `<div class="text-sm muted2">No present players set.</div>`;
+  } else {
+    presentPlayers.forEach(p=>{
+      const existing = gradeMap.get(p.id);
+
+      const row = document.createElement("div");
+      row.className = "chip rounded-2xl p-3 flex flex-col gap-2";
+      row.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <div class="font-bold">${escapeHtml(p.name)} <span class="muted2 text-xs mono">#${escapeHtml(p.number||"--")} • ${escapeHtml(p.pos||"—")}</span></div>
+          <div class="text-xs muted2">Saved: <span class="font-semibold" id="gmSaved-${p.id}">${existing ? existing.grade : "—"}</span></div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          ${[1,2,3,4,5].map(n=>`
+            <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-extrabold" data-g="${n}">${n}</button>
+          `).join("")}
+        </div>
+        <input class="w-full rounded-xl p-2 text-sm inp bigTouch" id="gmNote-${p.id}" placeholder="Optional note…" value="${escapeHtml(existing?.note||"")}" />
+      `;
+
+      row.querySelectorAll("button[data-g]").forEach(btn=>{
+        btn.onclick = ()=>{
+          const grade = parseInt(btn.getAttribute("data-g"),10);
+          const note = (document.getElementById(`gmNote-${p.id}`).value||"").trim();
+          upsertGrade(today.id, drillId, p.id, grade, note);
+          document.getElementById(`gmSaved-${p.id}`).textContent = String(grade);
+          renderPracticeControls();
+          renderProgress();
+          renderHome();
+        };
+      });
+
+      wrap.appendChild(row);
+    });
+  }
+
+  document.getElementById("gradeModal").classList.remove("hidden");
+}
+function closeGradeModal(){ document.getElementById("gradeModal").classList.add("hidden"); }
+
+/* =========================
+   PROGRESS
 ========================= */
 function renderProgress(){
   const roster = getRoster();
@@ -1595,59 +1834,92 @@ function renderProgress(){
   }
 
   const fails = getFailures();
-  const pref = getPrefMap();
+  const grades = getGrades();
   const weekId = getWeekId();
 
-  // player -> category -> count (this week + all-time)
-  const byPlayerWeek = {};
-  const byPlayerAll = {};
+  const byPlayerWeekFails = {};
+  const byPlayerAllFails = {};
+  const byPlayerWeekGrade = {}; // avg grade this week (all drills)
+  const byPlayerAllGrade = {};
 
   for (const f of fails){
     for (const pid of (f.players||[])){
-      byPlayerAll[pid] = byPlayerAll[pid] || {};
-      byPlayerAll[pid][f.category] = (byPlayerAll[pid][f.category]||0) + 1;
+      byPlayerAllFails[pid] = byPlayerAllFails[pid] || {};
+      byPlayerAllFails[pid][f.category] = (byPlayerAllFails[pid][f.category]||0) + 1;
 
       if (f.weekId===weekId){
-        byPlayerWeek[pid] = byPlayerWeek[pid] || {};
-        byPlayerWeek[pid][f.category] = (byPlayerWeek[pid][f.category]||0) + 1;
+        byPlayerWeekFails[pid] = byPlayerWeekFails[pid] || {};
+        byPlayerWeekFails[pid][f.category] = (byPlayerWeekFails[pid][f.category]||0) + 1;
       }
     }
   }
 
-  roster.forEach(p=>{
-    const w = byPlayerWeek[p.id] || {};
-    const a = byPlayerAll[p.id] || {};
+  // grade averages
+  function addGrade(bucket, pid, g){
+    bucket[pid] = bucket[pid] || { sum:0, n:0 };
+    bucket[pid].sum += Number(g.grade||0);
+    bucket[pid].n += 1;
+  }
+  for (const g of grades){
+    addGrade(byPlayerAllGrade, g.playerId, g);
+    if (g.weekId===weekId) addGrade(byPlayerWeekGrade, g.playerId, g);
+  }
+  function avg(b, pid){
+    const x = b[pid];
+    if (!x || !x.n) return null;
+    return Math.round((x.sum/x.n)*10)/10;
+  }
 
+  roster.forEach(p=>{
+    const w = byPlayerWeekFails[p.id] || {};
+    const a = byPlayerAllFails[p.id] || {};
     const topWeek = topEntries(w, 3);
     const topAll = topEntries(a, 3);
+
+    const wAvg = avg(byPlayerWeekGrade, p.id);
+    const aAvg = avg(byPlayerAllGrade, p.id);
 
     const row = document.createElement("div");
     row.className = "chip rounded-2xl p-4";
     row.innerHTML = `
       <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div class="min-w-0">
-          <div class="font-extrabold text-lg">${escapeHtml(p.name)} <span class="muted2 text-xs mono">#${escapeHtml(p.number||"--")} • ${escapeHtml(p.pos||"—")}</span></div>
+          <div class="font-extrabold text-lg">
+            ${escapeHtml(p.name)}
+            <span class="muted2 text-xs mono">#${escapeHtml(p.number||"--")} • ${escapeHtml(p.pos||"—")} • H/W ${escapeHtml(p.height||"—")}/${escapeHtml(p.weight||"—")}</span>
+          </div>
           <div class="text-sm muted2 mt-1">${escapeHtml(p.notes||"")}</div>
 
-          <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
             <div class="chip rounded-xl p-3">
               <div class="text-xs uppercase tracking-wider muted2">This Week Needs</div>
-              <div class="text-sm mt-2 ${topWeek.length ? "muted" : "muted2"}">${topWeek.length ? topWeek.map(([k,v])=>`${k} (${v})`).join(" • ") : "No failures logged this week."}</div>
+              <div class="text-sm mt-2 ${topWeek.length ? "muted" : "muted2"}">
+                ${topWeek.length ? topWeek.map(([k,v])=>`${k} (${v})`).join(" • ") : "No failures logged this week."}
+              </div>
             </div>
             <div class="chip rounded-xl p-3">
               <div class="text-xs uppercase tracking-wider muted2">All-Time Needs</div>
-              <div class="text-sm mt-2 ${topAll.length ? "muted" : "muted2"}">${topAll.length ? topAll.map(([k,v])=>`${k} (${v})`).join(" • ") : "No failures logged yet."}</div>
+              <div class="text-sm mt-2 ${topAll.length ? "muted" : "muted2"}">
+                ${topAll.length ? topAll.map(([k,v])=>`${k} (${v})`).join(" • ") : "No failures logged yet."}
+              </div>
+            </div>
+            <div class="chip rounded-xl p-3">
+              <div class="text-xs uppercase tracking-wider muted2">Grade Avg</div>
+              <div class="text-sm mt-2 muted">
+                Week: <span class="font-semibold">${wAvg ?? "—"}</span> /5 • All: <span class="font-semibold">${aAvg ?? "—"}</span> /5
+              </div>
+              <div class="text-xs muted2 mt-1">Grades reflect execution quality, not just effort.</div>
             </div>
           </div>
         </div>
 
         <div class="flex flex-col gap-2 min-w-[180px]">
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" data-act="viewlogs">View Logs</button>
-          <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" data-act="ask">Ask Coach (about him)</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" data-act="viewlogs">View Failure Logs</button>
+          <button class="btn bigTouch px-3 py-2 rounded-xl text-sm font-semibold" data-act="ask">Ask Coach (about him)</button>
         </div>
       </div>
 
-      <div class="mt-3 text-xs muted2">Tip: log failures during live drills. That’s your “film” for practice planning.</div>
+      <div class="mt-3 text-xs muted2">Tip: grade players live in the Grade modal. Use failures only for “standard broken”.</div>
     `;
 
     row.querySelector('[data-act="viewlogs"]').onclick = ()=>alert(buildPlayerLogText(p.id));
@@ -1658,22 +1930,6 @@ function renderProgress(){
 
     wrap.appendChild(row);
   });
-
-  // drill preference summary
-  const prefRow = document.createElement("div");
-  prefRow.className = "chip rounded-2xl p-4";
-  const liked = Object.entries(pref).filter(([,v])=>v===1).length;
-  const disliked = Object.entries(pref).filter(([,v])=>v===-1).length;
-  prefRow.innerHTML = `
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-      <div>
-        <div class="text-xs uppercase tracking-wider muted2">Drill Ratings</div>
-        <div class="text-sm muted mt-1">Liked: <span class="font-semibold">${liked}</span> • Disliked: <span class="font-semibold">${disliked}</span></div>
-      </div>
-      <button class="btn px-3 py-2 rounded-xl text-sm font-semibold" onclick="resetPrefs()">Reset Ratings</button>
-    </div>
-  `;
-  wrap.prepend(prefRow);
 }
 
 function buildPlayerLogText(pid){
@@ -1689,17 +1945,10 @@ function buildPlayerLogText(pid){
   return lines.join("\n");
 }
 
-function resetPrefs(){
-  if (!confirm("Reset all drill likes/dislikes?")) return;
-  localStorage.removeItem(KEY_DRILL_PREF);
-  renderPracticeControls();
-  renderProgress();
-  renderHome();
-}
-
 function clearProgress(){
-  if (!confirm("Clear all failure logs AND recap? (Roster stays)")) return;
+  if (!confirm("Clear all failure logs + grades + recap? (Roster stays)")) return;
   localStorage.removeItem(KEY_FAILURES);
+  localStorage.removeItem(KEY_GRADES);
   localStorage.removeItem(KEY_LAST_RECAP);
   const w = ensureWeek();
   w.fails = 0;
@@ -1716,7 +1965,10 @@ function exportData(){
     today: loadJSON(KEY_TODAY, null),
     prefs: getPrefMap(),
     failures: getFailures(),
-    recap: loadJSON(KEY_LAST_RECAP, null)
+    grades: getGrades(),
+    recap: loadJSON(KEY_LAST_RECAP, null),
+    regenSeed: getRegenSeed(),
+    emphasis: loadJSON(KEY_EMPHASIS, null)
   };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
@@ -1735,9 +1987,7 @@ function openAskCoachModal(){
   document.getElementById("coachAnswer").classList.add("hidden");
   document.getElementById("coachQuestion").focus();
 }
-function closeAskCoachModal(){
-  document.getElementById("askCoachModal").classList.add("hidden");
-}
+function closeAskCoachModal(){ document.getElementById("askCoachModal").classList.add("hidden"); }
 
 function answerCoachOffline(){
   const qRaw = (document.getElementById("coachQuestion").value||"").trim();
@@ -1746,8 +1996,7 @@ function answerCoachOffline(){
 
   let short = "";
   let expand = "";
-
-  const addExpandFooter = () => "\n\nExpand: If you need the longer version, open a drill’s Explain modal and use the cues.";
+  const addExpandFooter = () => "\n\nExpand: Open a drill’s Explain modal for standards + cues.";
 
   if (q.includes("help") || q.includes("help side")){
     short =
@@ -1773,11 +2022,11 @@ CONSEQUENCE: Fly-by = straight-line drive.`;
     expand =
 `Cues:
 - Arrive under control, don’t jump past him.
-- Angle your hips to force sideline / away from middle.
+- Angle hips to force sideline / away from middle.
 - Feet beat hands. No reaching.
 
 Fixes:
-- If you fly by, start the rep over.
+- If you fly by, restart rep.
 - If you stand tall, you’re late. Low stance.` + addExpandFooter();
   } else if (q.includes("screen")){
     short =
@@ -1792,8 +2041,8 @@ CONSEQUENCE: Chasing = open looks.`;
 
 Mistakes:
 - Late call
-- Going under slow
-- Getting hit because you’re standing upright.` + addExpandFooter();
+- Under slow
+- Standing upright gets you hit.` + addExpandFooter();
   } else if (q.includes("press")){
     short =
 `WHY: Press creates chaos on your terms.
@@ -1818,7 +2067,7 @@ CONSEQUENCE: Lazy habits = losses.`;
 - Under screens. Bump cutters.
 - Deny one pass away.
 - Box hard. Secure rebounds.
-- Conditioning is standards — not optional.` + addExpandFooter();
+- Conditioning is standards.` + addExpandFooter();
   }
 
   box.textContent = `${short}\n\n${expand}`;
@@ -1854,6 +2103,22 @@ function escapeHtml(s){
 }
 
 /* =========================
+   MODAL close behavior (iPad feel)
+========================= */
+function wireModalClose(modalId, closeFn){
+  const m = document.getElementById(modalId);
+  m.addEventListener("click", (e)=>{ if (e.target === m) closeFn(); });
+}
+document.addEventListener("keydown", (e)=>{
+  if (e.key !== "Escape") return;
+  if (!drillModal.classList.contains("hidden")) closeDrillModal();
+  if (!failModal.classList.contains("hidden")) closeFailModal();
+  if (!gradeModal.classList.contains("hidden")) closeGradeModal();
+  if (!askCoachModal.classList.contains("hidden")) closeAskCoachModal();
+  if (!playerModal.classList.contains("hidden")) closePlayerModal();
+});
+
+/* =========================
    BOOT
 ========================= */
 (function init(){
@@ -1861,9 +2126,22 @@ function escapeHtml(s){
   rotateQuote(true);
   rotateTip(true);
 
-  // Ensure TODAY exists (for home meta)
+  // Ensure TODAY exists
   const today = loadJSON(KEY_TODAY, null);
-  if (!today) saveJSON(KEY_TODAY, { duration: 90, focus:"", notes:"", drills:[], presentIds: getPresentIds() });
+  if (!today) saveJSON(KEY_TODAY, { id: uid(), duration: 90, focus:"", notes:"", drills:[], presentIds: getPresentIds(), date:new Date().toISOString() });
+
+  // Emphasis persisted
+  loadEmphasis();
+  ["em_def","em_reb","em_off","em_press","em_cond","em_shoot"].forEach(id=>{
+    document.getElementById(id).addEventListener("change", ()=>{ saveEmphasis(); });
+  });
+
+  // Modal close wiring
+  wireModalClose("drillModal", closeDrillModal);
+  wireModalClose("failModal", closeFailModal);
+  wireModalClose("gradeModal", closeGradeModal);
+  wireModalClose("askCoachModal", closeAskCoachModal);
+  wireModalClose("playerModal", closePlayerModal);
 
   // Initial renders
   renderRoster();
