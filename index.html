@@ -1,1836 +1,2550 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Practice Command Center (iPad App)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <title>Practice Builder Pro (V1)</title>
   <style>
-    /* ===== iPad-app style (no page scrolling) ===== */
-    html, body { height: 100%; overflow: hidden; }
-    body{
-      background:
-        radial-gradient(1200px 700px at 15% 0%, rgba(34,211,238,.12), transparent 60%),
-        radial-gradient(900px 600px at 85% 10%, rgba(168,85,247,.12), transparent 55%),
-        radial-gradient(900px 700px at 70% 95%, rgba(34,197,94,.10), transparent 60%),
-        linear-gradient(180deg,#070814 0%, #050611 100%);
-      color: #EAF0FF;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-    }
-    .glass{
-      background: rgba(12, 14, 30, .70);
-      border: 1px solid rgba(148,163,184,.16);
-      box-shadow: 0 16px 45px rgba(0,0,0,.45);
-      backdrop-filter: blur(14px);
-    }
-    .chip{
-      background: rgba(2,6,23,.35);
-      border: 1px solid rgba(148,163,184,.18);
-    }
-    .btn{
-      background: rgba(2,6,23,.35);
-      border: 1px solid rgba(148,163,184,.18);
-      transition: transform .04s ease, background .15s ease, border-color .15s ease;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn:active{ transform: scale(.98); }
-    .btn:hover{ background: rgba(2,6,23,.55); }
-    .btnPrimary{
-      background: rgba(34,211,238,.16);
-      border: 1px solid rgba(34,211,238,.35);
-    }
-    .btnPrimary:hover{ background: rgba(34,211,238,.24); }
-    .btnDanger{
-      background: rgba(239,68,68,.14);
-      border: 1px solid rgba(239,68,68,.32);
-    }
-    .btnDanger:hover{ background: rgba(239,68,68,.20); }
-    .muted{ color: rgba(234,240,255,.70); }
-    .muted2{ color: rgba(234,240,255,.56); }
-    .divider{ border-color: rgba(148,163,184,.16); }
-    .badgeCyan{
-      border: 1px solid rgba(34,211,238,.35);
-      background: rgba(34,211,238,.12);
-      color: rgba(165,243,252,.95);
-    }
-    .badgePurple{
-      border: 1px solid rgba(168,85,247,.35);
-      background: rgba(168,85,247,.12);
-      color: rgba(233,213,255,.95);
-    }
-    .badgeGreen{
-      border: 1px solid rgba(34,197,94,.30);
-      background: rgba(34,197,94,.12);
-      color: rgba(187,247,208,.95);
-    }
-    .badgeAmber{
-      border: 1px solid rgba(245,158,11,.28);
-      background: rgba(245,158,11,.12);
-      color: rgba(254,215,170,.95);
-    }
-    .badgeRed{
-      border: 1px solid rgba(239,68,68,.30);
-      background: rgba(239,68,68,.12);
-      color: rgba(254,202,202,.95);
-    }
-    .inp{
-      background: rgba(0,0,0,.25);
-      border:1px solid rgba(148,163,184,.18);
-      outline:none;
-    }
-    .inp:focus{
-      box-shadow: 0 0 0 2px rgba(34,211,238,.25);
-      border-color: rgba(34,211,238,.40);
-    }
-    .mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
+    :root{
+      --bg:#05070c;
+      --panel:#071021;
+      --panel2:#050b18;
+      --text:#eaf1ff;
+      --muted:rgba(234,241,255,.68);
+      --line:rgba(234,241,255,.10);
 
-    /* Big tap targets */
-    .tap{ padding: 14px 16px; border-radius: 18px; font-weight: 800; }
-    .tapSm{ padding: 10px 12px; border-radius: 14px; font-weight: 800; }
+      --accent:#3b82f6;  /* main pop */
+      --blue:#60a5fa;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+
+      --chip:rgba(255,255,255,.06);
+      --shadow:0 16px 42px rgba(0,0,0,.58);
+      --r:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(900px 450px at 12% 0%, rgba(59,130,246,.18), transparent 62%),
+        radial-gradient(900px 450px at 92% 8%, rgba(96,165,250,.12), transparent 58%),
+        radial-gradient(900px 650px at 60% 95%, rgba(37,99,235,.10), transparent 60%),
+        linear-gradient(180deg,#05070c 0%, #040611 100%);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      -webkit-font-smoothing:antialiased;
+      overflow:hidden;
+    }
+
+    .app{
+      height:100dvh;
+      display:flex;
+      flex-direction:column;
+      padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)) 12px;
+      gap:10px;
+      max-width: 980px;
+      margin:0 auto;
+    }
+
+    .header{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background:rgba(7,16,33,.76);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .title{display:flex;flex-direction:column;gap:2px}
+    .title h1{margin:0;font-size:15px;letter-spacing:.2px}
+    .title .sub{font-size:12px;color:var(--muted)}
+
+    .brandRight{
+      display:flex; align-items:center; gap:10px;
+    }
+
+    .logoLockup{
+      display:flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border-radius:14px;
+      border:1px solid rgba(96,165,250,.28);
+      background: linear-gradient(180deg, rgba(96,165,250,.10), rgba(59,130,246,.07));
+      box-shadow: 0 0 0 2px rgba(59,130,246,.10) inset;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .logoMark{
+      width:22px; height:22px; border-radius:8px;
+      background:
+        radial-gradient(12px 10px at 30% 30%, rgba(255,255,255,.22), transparent 60%),
+        linear-gradient(135deg, rgba(96,165,250,.9), rgba(59,130,246,.55));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 18px rgba(0,0,0,.35);
+    }
+    .logoText{
+      display:flex; flex-direction:column; line-height:1.05;
+      font-weight:1000; letter-spacing:.8px;
+      text-transform:uppercase;
+      font-size:10px;
+      color:rgba(234,241,255,.92);
+    }
+    .logoText span:last-child{
+      font-size:9px;
+      letter-spacing:1.2px;
+      color:rgba(234,241,255,.72);
+      font-weight:900;
+    }
+
+    .pill{
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      display:inline-flex;align-items:center;gap:8px;
+      white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:99px;background:var(--good)}
+
+    .content{
+      flex:1 1 auto;
+      overflow:auto;
+      padding-bottom:10px;
+    }
+    .content::-webkit-scrollbar{width:0;height:0}
+
+    .nav{
+      flex:0 0 auto;
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:8px;
+      padding:10px;
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background:rgba(7,16,33,.76);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .nav button{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      padding:10px 8px;
+      border-radius:14px;
+      font-weight:950;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .nav button.active{
+      color:var(--text);
+      border-color:rgba(59,130,246,.45);
+      box-shadow: 0 0 0 2px rgba(59,130,246,.14) inset;
+      background:rgba(59,130,246,.10);
+    }
+
+    .section{display:none; gap:10px}
+    .section.active{display:flex; flex-direction:column}
+
+    .card{
+      border:1px solid var(--line);
+      background:rgba(7,16,33,.76);
+      border-radius:var(--r);
+      padding:14px;
+      box-shadow: var(--shadow);
+    }
+    .row{display:flex; gap:10px; align-items:center; justify-content:space-between}
+    .row.wrap{flex-wrap:wrap}
+    .h2{margin:0; font-size:14px; letter-spacing:.2px; font-weight:1000}
+    .muted{color:var(--muted); font-size:12px}
+    .tiny{font-size:11px;color:var(--muted);line-height:1.35}
+    .divider{height:1px;background:var(--line); margin:10px 0}
+
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
+    @media (max-width:560px){ .grid2,.grid3{grid-template-columns:1fr} }
+
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:1000;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .btn.primary{ background:rgba(59,130,246,.14); border-color:rgba(59,130,246,.45); }
+    .btn.good{ background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.40); }
+    .btn.warn{ background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.40); }
+    .btn.bad{ background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.45); }
+
+    .chipRow{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      border:1px solid var(--line);
+      background:var(--chip);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      cursor:pointer;
+      user-select:none;
+      font-weight:950;
+    }
+    .chip.on{
+      color:var(--text);
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.45);
+      box-shadow:0 0 0 2px rgba(59,130,246,.10) inset;
+    }
+    .chip.present.on{ background:rgba(34,197,94,.10); border-color:rgba(34,197,94,.40); box-shadow:0 0 0 2px rgba(34,197,94,.08) inset;}
+    .chip.bad.on{ background:rgba(239,68,68,.10); border-color:rgba(239,68,68,.40); }
+
+    .tag{
+      font-size:11px;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      white-space:nowrap;
+      font-weight:950;
+    }
+    .tag.blue{border-color:rgba(59,130,246,.45); background:rgba(59,130,246,.10); color:rgba(234,241,255,.92)}
+    .tag.good{border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.10); color:rgba(234,241,255,.92)}
+    .tag.warn{border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.10); color:rgba(234,241,255,.92)}
+    .tag.bad{border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.10); color:rgba(234,241,255,.92)}
+
+    .input, select, textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      padding:12px;
+      font-size:14px;
+      outline:none;
+      font-weight:850;
+    }
+    textarea{resize:none}
+    .input::placeholder{color:rgba(234,241,255,.35)}
+
+    .list{display:flex;flex-direction:column;gap:8px}
+    .item{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:12px;
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      align-items:flex-start;
+    }
+    .left{min-width:0}
+    .name{font-weight:1000}
+    .meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.3}
+    .right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+    /* Run Practice */
+    .runCard{
+      border:1px solid rgba(59,130,246,.28);
+      background: linear-gradient(180deg, rgba(7,16,33,.92), rgba(5,11,24,.92));
+      border-radius:22px;
+      padding:14px;
+      box-shadow:0 30px 70px rgba(0,0,0,.60);
+    }
+    .bigTitle{
+      font-size:18px;
+      font-weight:1000;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .timer{
+      font-variant-numeric: tabular-nums;
+      font-weight:1000;
+      padding:8px 10px;
+      border-radius:14px;
+      border:1px solid rgba(59,130,246,.35);
+      background:rgba(59,130,246,.10);
+      color:rgba(234,241,255,.95);
+    }
+    .stdList{
+      margin:10px 0 0 0;
+      padding:0 0 0 18px;
+      color:rgba(234,241,255,.90);
+      font-size:13px;
+      line-height:1.35;
+    }
 
     /* Modal */
-    .modalBg{ background: rgba(0,0,0,.72); }
-    .shadowTop{ box-shadow: 0 -10px 30px rgba(0,0,0,.40); }
-
-    /* Prevent accidental page scroll on iOS */
-    .noScroll{ overscroll-behavior: none; }
+    .modalWrap{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.68);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding:12px;
+      padding-bottom:max(12px, env(safe-area-inset-bottom));
+      z-index:50;
+    }
+    .modalWrap.show{display:flex}
+    .modal{
+      width:100%;
+      max-width:900px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:rgba(7,16,33,.96);
+      box-shadow:0 30px 90px rgba(0,0,0,.65);
+      padding:14px;
+    }
+    .modalHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .modalTitle{font-weight:1000}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    canvas{max-width:100%; background:rgba(255,255,255,.02); border:1px solid var(--line); border-radius:14px;}
   </style>
 </head>
 
-<body class="noScroll">
-  <!-- App shell -->
-  <div class="h-full flex flex-col">
-    <!-- Top bar -->
-    <header class="px-4 pt-4 pb-3">
-      <div class="glass rounded-3xl px-4 py-4 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="text-2xl">🏀</div>
-          <div class="min-w-0">
-            <div class="text-xl sm:text-2xl font-extrabold tracking-tight truncate">
-              Practice Command Center
-            </div>
-            <div class="text-sm muted2 truncate" id="topSub">Smart plans • No repeats • Player-based</div>
-          </div>
-        </div>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="title">
+      <h1>CoachBoard</h1>
+      <div class="sub">Build practice fast. Talk less. Rep more.</div>
+    </div>
 
-        <div class="flex items-center gap-2">
-          <div class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-full badgeCyan text-xs font-extrabold">
-            <span class="w-2.5 h-2.5 rounded-full bg-cyan-300"></span>
-            Offline (iPad App)
-          </div>
-          <button class="btn tapSm btnPrimary" onclick="openQuickBuild()">Build</button>
+    <div class="brandRight">
+      <div class="pill"><span class="dot"></span> Offline / Free</div>
+      <div class="logoLockup" title="Practice Builder Pro">
+        <div class="logoMark" aria-hidden="true"></div>
+        <div class="logoText">
+          <span>PRACTICE</span>
+          <span>BUILDER PRO</span>
         </div>
       </div>
-    </header>
+    </div>
+  </div>
 
-    <!-- Main area (no page scroll; views scroll internally if needed) -->
-    <main class="flex-1 px-4 pb-2 overflow-hidden">
-      <div class="h-full glass rounded-3xl p-4 flex flex-col overflow-hidden">
-        <!-- View header -->
-        <div class="flex items-center justify-between gap-3 pb-3">
+  <div class="content">
+    <!-- HOME -->
+    <section id="sec-home" class="section active">
+      <div class="card">
+        <div class="row wrap">
           <div>
-            <div class="text-xs uppercase tracking-wider muted2">View</div>
-            <div class="text-xl font-extrabold" id="viewTitle">Dashboard</div>
+            <div class="h2">Today</div>
+            <div class="muted" id="homeLine">—</div>
           </div>
-          <div class="flex gap-2">
-            <button class="btn tapSm" onclick="exportData()">Export</button>
-            <button class="btn tapSm btnDanger" onclick="hardReset()">Reset</button>
+          <div class="chipRow">
+            <span class="tag blue" id="tagBand">Band: —</span>
+            <span class="tag good" id="tagNeed">Need: Auto</span>
+            <button class="btn primary" onclick="go('build')">BUILD</button>
+            <button class="btn good" onclick="go('run')">RUN</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+
+        <div class="grid3">
+          <div class="card" style="background:rgba(255,255,255,.03); box-shadow:none">
+            <div class="muted">Present</div>
+            <div style="font-weight:1000;font-size:22px" id="homePresent">0</div>
+          </div>
+          <div class="card" style="background:rgba(255,255,255,.03); box-shadow:none">
+            <div class="muted">Logs (7d)</div>
+            <div style="font-weight:1000;font-size:16px" id="homeLogs">0</div>
+          </div>
+          <div class="card" style="background:rgba(255,255,255,.03); box-shadow:none">
+            <div class="muted">Last Plan</div>
+            <div style="font-weight:1000;font-size:16px" id="homeLastPlan">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Program DNA</div>
+            <div class="muted">Hard standards. No excuses.</div>
+          </div>
+          <div class="chipRow">
+            <span class="tag blue">No middle</span>
+            <span class="tag blue">Feet in paint</span>
+            <span class="tag blue">Under screens</span>
+            <span class="tag blue">Bump cutters</span>
+            <span class="tag blue">Deny 1 away</span>
+            <span class="tag blue">Box hard</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="muted">
+          Man-to-man first. Force away from middle. Help side: both feet in paint then recover on air time.
+          Help the helper. Bump cutters. Go under screens. Don’t chase.
+          One pass away deny. 3/4 deny in the post. No ball-side doubles. Box hard. Secure rebounds.
+          Reward charges. Communicate switches when needed.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Quick Actions</div>
+            <div class="muted">Roster → Present → Build → Run → Log → Progress</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn" onclick="go('roster')">Roster</button>
+            <button class="btn primary" onclick="go('build')">Build</button>
+            <button class="btn good" onclick="go('run')">Run</button>
+            <button class="btn" onclick="go('log')">Log</button>
+            <button class="btn" onclick="go('progress')">Progress</button>
+            <button class="btn" onclick="go('reports')">Reports</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROSTER -->
+    <section id="sec-roster" class="section">
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Roster</div>
+            <div class="muted">Tap “Here” to mark who’s present today.</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn primary" onclick="openPlayerModal()">+ Add Player</button>
+            <button class="btn bad" onclick="resetData()">Reset Data</button>
+          </div>
+        </div>
+      </div>
+      <div id="rosterList" class="list"></div>
+    </section>
+
+    <!-- BUILD -->
+    <section id="sec-build" class="section">
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Build Practice</div>
+            <div class="muted">Attendance-aware. No repeat spam. Adapts to weaknesses.</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn primary" onclick="buildPractice(false)">BUILD</button>
+            <button class="btn" onclick="buildPractice(true)">REGENERATE</button>
+            <button class="btn good" onclick="go('run')">RUN</button>
           </div>
         </div>
 
-        <div class="border-t divider mb-3"></div>
+        <div class="divider"></div>
 
-        <!-- Views container -->
-        <div class="flex-1 overflow-hidden">
-          <!-- DASHBOARD -->
-          <section id="view-dashboard" class="h-full flex flex-col gap-3 overflow-hidden">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <div class="chip rounded-3xl p-4">
-                <div class="text-xs uppercase tracking-wider muted2">Present Today</div>
-                <div class="text-3xl font-extrabold mt-1" id="dashPresent">0</div>
-                <div class="text-xs muted2 mt-1" id="dashBand">Band: —</div>
-              </div>
-              <div class="chip rounded-3xl p-4">
-                <div class="text-xs uppercase tracking-wider muted2">Today Situation</div>
-                <div class="text-lg font-extrabold mt-1" id="dashSituation">—</div>
-                <div class="text-xs muted2 mt-1">Auto-rotates daily</div>
-              </div>
-              <div class="chip rounded-3xl p-4">
-                <div class="text-xs uppercase tracking-wider muted2">Biggest Need</div>
-                <div class="text-lg font-extrabold mt-1" id="dashNeed">—</div>
-                <div class="text-xs muted2 mt-1">Based on present players</div>
-              </div>
-              <div class="chip rounded-3xl p-4">
-                <div class="text-xs uppercase tracking-wider muted2">No-Repeat Meter</div>
-                <div class="text-lg font-extrabold mt-1" id="dashVariety">—</div>
-                <div class="text-xs muted2 mt-1">This week</div>
-              </div>
-            </div>
+        <div class="grid2">
+          <div>
+            <div class="muted">Minutes</div>
+            <input id="inpMinutes" class="input" type="number" min="30" max="150" value="90"/>
+          </div>
+          <div>
+            <div class="muted">Focus (optional)</div>
+            <input id="inpFocus" class="input" placeholder="Leave blank = Auto (based on logs)"/>
+          </div>
+        </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 flex-1 overflow-hidden">
-              <!-- Today plan preview -->
-              <div class="chip rounded-3xl p-4 lg:col-span-2 flex flex-col overflow-hidden">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="min-w-0">
-                    <div class="text-xs uppercase tracking-wider muted2">Today Plan</div>
-                    <div class="text-lg font-extrabold mt-1 truncate" id="dashPlanTitle">No plan yet</div>
-                    <div class="text-sm muted2 mt-1" id="dashPlanMeta">Tap Build to create one.</div>
-                  </div>
-                  <button class="btn tapSm btnPrimary" onclick="go('practice')">Open</button>
-                </div>
-                <div class="border-t divider my-3"></div>
-                <div class="flex-1 overflow-hidden">
-                  <div id="dashPlanList" class="h-full overflow-auto pr-1 space-y-2"></div>
-                </div>
-              </div>
+        <div style="margin-top:10px">
+          <div class="muted">Emphasis (lock what you want today)</div>
+          <div class="chipRow" style="margin-top:8px" id="emphasisChips"></div>
+          <div class="tiny" style="margin-top:8px">
+            If you lock nothing, it auto-prioritizes what your guys are missing (last 7 days).
+          </div>
+        </div>
 
-              <!-- Quick actions -->
-              <div class="chip rounded-3xl p-4 flex flex-col gap-3 overflow-hidden">
-                <div>
-                  <div class="text-xs uppercase tracking-wider muted2">Quick Actions</div>
-                  <div class="text-sm muted2 mt-1">Big buttons, fast coaching.</div>
-                </div>
+        <div class="divider"></div>
+        <div class="muted">Present Today</div>
+        <div class="chipRow" id="presentChips" style="margin-top:8px"></div>
+        <div class="tiny" style="margin-top:8px">
+          Band logic: 1–2 / 3–4 / 5–6 (future: 7+). No big drills when numbers are small.
+        </div>
 
-                <div class="grid grid-cols-1 gap-3">
-                  <button class="btn tap btnPrimary text-left" onclick="go('roster')">
-                    <div class="text-sm muted2">👥 Roster</div>
-                    <div class="text-xl font-extrabold">Add / Present</div>
-                    <div class="text-sm muted2">Height • Weight • Position</div>
-                  </button>
-                  <button class="btn tap text-left" onclick="openQuickBuild()">
-                    <div class="text-sm muted2">🧠 Smart Build</div>
-                    <div class="text-xl font-extrabold">Build / Regenerate</div>
-                    <div class="text-sm muted2">No repeats • weakness-based</div>
-                  </button>
-                  <button class="btn tap text-left" onclick="go('grades')">
-                    <div class="text-sm muted2">📊 Grades</div>
-                    <div class="text-xl font-extrabold">Grade Per Drill</div>
-                    <div class="text-sm muted2">Tap 1–5 for each player</div>
-                  </button>
-                </div>
-
-                <div class="border-t divider"></div>
-
-                <div class="text-sm muted2">
-                  Rule: <span class="font-extrabold text-slate-50">5v5 drills require 10+ players.</span><br/>
-                  Your app will <span class="font-extrabold text-slate-50">never</span> pick 5v5 for 8 players.
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ROSTER -->
-          <section id="view-roster" class="hidden h-full overflow-hidden">
-            <div class="h-full flex flex-col gap-3 overflow-hidden">
-              <!-- Roster controls -->
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                <div class="chip rounded-3xl p-4">
-                  <div class="text-xs uppercase tracking-wider muted2">Roster Tools</div>
-                  <div class="mt-3 flex flex-wrap gap-2">
-                    <button class="btn tapSm btnPrimary" onclick="openPlayerModal()">+ Add Player</button>
-                    <button class="btn tapSm" onclick="clearPresent()">Clear Present</button>
-                    <button class="btn tapSm btnDanger" onclick="clearRoster()">Clear Roster</button>
-                  </div>
-                  <div class="text-sm muted2 mt-3">Tap a player to edit. Use Present toggles for today.</div>
-                </div>
-
-                <div class="chip rounded-3xl p-4">
-                  <div class="text-xs uppercase tracking-wider muted2">Present Today</div>
-                  <div class="text-2xl font-extrabold mt-1" id="rosterPresentCount">0</div>
-                  <div class="mt-2">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full badgePurple text-xs font-extrabold">
-                      Band <span id="rosterBand">—</span>
-                    </span>
-                  </div>
-                  <div class="text-sm muted2 mt-3">Your practice builder uses ONLY the players marked present.</div>
-                </div>
-
-                <div class="chip rounded-3xl p-4">
-                  <div class="text-xs uppercase tracking-wider muted2">Composition</div>
-                  <div class="mt-2 text-sm muted2" id="rosterComposition">—</div>
-                  <div class="mt-3 text-sm muted2">
-                    If you only have guards → no post-only drills.<br/>
-                    If you only have bigs → hybrid big-guard development drills are prioritized.
-                  </div>
-                </div>
-              </div>
-
-              <!-- Roster list (internal scroll) -->
-              <div class="chip rounded-3xl p-4 flex-1 overflow-hidden">
-                <div class="flex items-center justify-between gap-2">
-                  <div>
-                    <div class="text-xs uppercase tracking-wider muted2">Players</div>
-                    <div class="text-sm muted2">Big tap rows • Present toggle • Edit</div>
-                  </div>
-                </div>
-                <div class="border-t divider my-3"></div>
-                <div id="rosterList" class="h-full overflow-auto pr-1 space-y-2"></div>
-              </div>
-            </div>
-          </section>
-
-          <!-- PRACTICE -->
-          <section id="view-practice" class="hidden h-full overflow-hidden">
-            <div class="h-full flex flex-col gap-3 overflow-hidden">
-              <!-- Builder -->
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                <div class="chip rounded-3xl p-4 lg:col-span-2">
-                  <div class="flex items-start justify-between gap-2">
-                    <div class="min-w-0">
-                      <div class="text-xs uppercase tracking-wider muted2">Smart Builder</div>
-                      <div class="text-xl font-extrabold mt-1">Build Today’s Plan</div>
-                      <div class="text-sm muted2 mt-1" id="practiceMetaTop">—</div>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                      <button class="btn tapSm btnPrimary" onclick="buildPractice(false)">Build</button>
-                      <button class="btn tapSm" onclick="buildPractice(true)">Regenerate</button>
-                    </div>
-                  </div>
-
-                  <div class="border-t divider my-3"></div>
-
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <div class="text-xs uppercase tracking-wider muted2">Duration</div>
-                      <div class="mt-2 flex gap-2">
-                        <button class="btn tapSm" onclick="setDuration(60)">60</button>
-                        <button class="btn tapSm btnPrimary" onclick="setDuration(90)">90</button>
-                        <button class="btn tapSm" onclick="setDuration(110)">110</button>
-                      </div>
-                      <input id="practiceDuration" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" type="number" min="45" max="150" value="90"/>
-                    </div>
-
-                    <div>
-                      <div class="text-xs uppercase tracking-wider muted2">Focus</div>
-                      <input id="practiceFocus" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" placeholder="ex: Help Defense + Rebounding"/>
-                      <div class="text-xs muted2 mt-2">Leave blank → auto situation + needs</div>
-                    </div>
-
-                    <div>
-                      <div class="text-xs uppercase tracking-wider muted2">Emphasis</div>
-                      <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
-                        <label class="btn tapSm chip flex items-center gap-2"><input id="em_def" type="checkbox" checked />Defense</label>
-                        <label class="btn tapSm chip flex items-center gap-2"><input id="em_reb" type="checkbox" checked />Rebound</label>
-                        <label class="btn tapSm chip flex items-center gap-2"><input id="em_off" type="checkbox" />Offense</label>
-                        <label class="btn tapSm chip flex items-center gap-2"><input id="em_press" type="checkbox" />Press</label>
-                        <label class="btn tapSm chip flex items-center gap-2"><input id="em_cond" type="checkbox" checked />Condition</label>
-                        <label class="btn tapSm chip flex items-center gap-2"><input id="em_shoot" type="checkbox" />Shoot</label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="mt-3">
-                    <div class="text-xs uppercase tracking-wider muted2">Coach Note</div>
-                    <input id="practiceNotes" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" placeholder="ex: Feet in paint help side. No fly-bys."/>
-                  </div>
-                </div>
-
-                <!-- Present pills -->
-                <div class="chip rounded-3xl p-4 overflow-hidden">
-                  <div class="text-xs uppercase tracking-wider muted2">Present Players</div>
-                  <div class="text-sm muted2 mt-1">Tap to toggle (quick).</div>
-                  <div class="border-t divider my-3"></div>
-                  <div id="presentPills" class="h-[265px] overflow-auto pr-1 flex flex-wrap gap-2"></div>
-                  <div class="mt-3 text-sm muted2">
-                    Band: <span class="font-extrabold text-slate-50" id="bandLabel">—</span><br/>
-                    5v5 requires <span class="font-extrabold text-slate-50">10+</span>.
-                  </div>
-                </div>
-              </div>
-
-              <!-- Plan -->
-              <div class="chip rounded-3xl p-4 flex-1 overflow-hidden">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="min-w-0">
-                    <div class="text-xs uppercase tracking-wider muted2">Today’s Plan</div>
-                    <div class="text-sm muted2 mt-1" id="planMeta">Build to see plan.</div>
-                  </div>
-                  <div class="flex gap-2">
-                    <button class="btn tapSm" onclick="go('grades')">Grade Plan</button>
-                    <button class="btn tapSm btnPrimary" onclick="logPracticeComplete()">Log Complete</button>
-                  </div>
-                </div>
-                <div class="border-t divider my-3"></div>
-                <div id="practicePlan" class="h-full overflow-auto pr-1 space-y-2"></div>
-              </div>
-            </div>
-          </section>
-
-          <!-- GRADES / PROGRESS -->
-          <section id="view-grades" class="hidden h-full overflow-hidden">
-            <div class="h-full flex flex-col gap-3 overflow-hidden">
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                <div class="chip rounded-3xl p-4 lg:col-span-2">
-                  <div class="flex items-start justify-between gap-2">
-                    <div class="min-w-0">
-                      <div class="text-xs uppercase tracking-wider muted2">Grades</div>
-                      <div class="text-xl font-extrabold mt-1">Grade Each Player Per Drill</div>
-                      <div class="text-sm muted2 mt-1">Tap 1–5. These grades drive future practice selection.</div>
-                    </div>
-                    <div class="flex gap-2">
-                      <button class="btn tapSm" onclick="clearGrades()">Clear Grades</button>
-                      <button class="btn tapSm btnPrimary" onclick="recomputeInsights()">Refresh</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="chip rounded-3xl p-4">
-                  <div class="text-xs uppercase tracking-wider muted2">Insights</div>
-                  <div class="text-sm muted2 mt-2" id="insightsBox">Build a plan and start grading.</div>
-                </div>
-              </div>
-
-              <div class="chip rounded-3xl p-4 flex-1 overflow-hidden">
-                <div class="flex items-center justify-between gap-2">
-                  <div>
-                    <div class="text-xs uppercase tracking-wider muted2">Grade Board</div>
-                    <div class="text-sm muted2">Shows only Today’s drills and Today’s present players.</div>
-                  </div>
-                </div>
-                <div class="border-t divider my-3"></div>
-                <div id="gradeBoard" class="h-full overflow-auto pr-1 space-y-3"></div>
-              </div>
-            </div>
-          </section>
-
+        <div class="divider"></div>
+        <div class="row wrap">
+          <div>
+            <div class="muted">Last Build</div>
+            <div class="tiny mono" id="buildMeta">—</div>
+          </div>
+          <button class="btn" onclick="go('plan')">View Plan</button>
         </div>
       </div>
-    </main>
+    </section>
 
-    <!-- Bottom nav -->
-    <footer class="px-4 pb-4">
-      <div class="glass rounded-3xl p-2 shadowTop">
-        <div class="grid grid-cols-4 gap-2">
-          <button id="nav-dashboard" class="btn tap text-center btnPrimary" onclick="go('dashboard')">
-            <div class="text-lg">🏠</div><div class="text-sm font-extrabold">Home</div>
-          </button>
-          <button id="nav-roster" class="btn tap text-center" onclick="go('roster')">
-            <div class="text-lg">👥</div><div class="text-sm font-extrabold">Roster</div>
-          </button>
-          <button id="nav-practice" class="btn tap text-center" onclick="go('practice')">
-            <div class="text-lg">🧠</div><div class="text-sm font-extrabold">Practice</div>
-          </button>
-          <button id="nav-grades" class="btn tap text-center" onclick="go('grades')">
-            <div class="text-lg">📊</div><div class="text-sm font-extrabold">Grades</div>
-          </button>
+    <!-- PLAN -->
+    <section id="sec-plan" class="section">
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Today’s Plan</div>
+            <div class="muted" id="planHeader">—</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn good" onclick="go('run')">RUN</button>
+            <button class="btn" onclick="go('log')">LOG</button>
+            <button class="btn primary" onclick="go('build')">ADJUST</button>
+          </div>
         </div>
       </div>
-    </footer>
+      <div id="planList" class="list"></div>
+    </section>
+
+    <!-- RUN PRACTICE -->
+    <section id="sec-run" class="section">
+      <div class="runCard">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Run Practice</div>
+            <div class="muted" id="runMeta">Load a plan to run it.</div>
+          </div>
+          <div class="chipRow">
+            <div class="timer" id="runTimer">00:00</div>
+            <button class="btn" onclick="runPrev()">Prev</button>
+            <button class="btn" onclick="runNext()">Next</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row wrap">
+          <div>
+            <div class="tag blue" id="runStep">Drill 0/0</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn primary" onclick="toggleTimer()"><span id="timerBtnText">Start</span></button>
+            <button class="btn" onclick="openExplain()">Explain</button>
+            <button class="btn bad" onclick="openQuickLog()">Log Misses</button>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <h3 class="bigTitle" id="runTitle">—</h3>
+          <div class="muted" id="runSub">—</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row wrap">
+          <div class="chipRow" id="runTags"></div>
+          <div class="chipRow">
+            <span class="tag warn" id="runMinutesTag">0 min</span>
+            <span class="tag good" id="runBandTag">Band —</span>
+          </div>
+        </div>
+
+        <ul class="stdList" id="runStandards"></ul>
+
+        <div class="divider"></div>
+        <div class="tiny">
+          Coach rule: teach fast → rep hard. If it’s sloppy, restart rep. If it’s soft, raise standard.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Micro Prompts (Coach Assistant)</div>
+            <div class="muted">Auto reminders based on misses today.</div>
+          </div>
+          <button class="btn" onclick="refreshPrompts()">Refresh</button>
+        </div>
+        <div class="divider"></div>
+        <div id="promptList" class="list"></div>
+      </div>
+    </section>
+
+    <!-- LOG -->
+    <section id="sec-log" class="section">
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Log (Standards Missed)</div>
+            <div class="muted">Pick drill → tap who failed → save. Optional: which standard.</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn" onclick="go('run')">Run</button>
+            <button class="btn" onclick="openAskCoach()">Ask Coach</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="muted">Select Drill</div>
+        <div class="chipRow" id="logDrillChips" style="margin-top:8px"></div>
+
+        <div class="divider"></div>
+
+        <div class="muted">Players Present</div>
+        <div class="chipRow" id="logPlayerChips" style="margin-top:8px"></div>
+
+        <div class="divider"></div>
+
+        <div class="grid2">
+          <div>
+            <div class="muted">Standard (optional)</div>
+            <select id="selStandard"></select>
+            <div class="tiny" style="margin-top:6px">Leave “General miss” for max speed.</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:flex-end; justify-content:flex-end">
+            <button class="btn" onclick="clearLogSelection()">Clear</button>
+            <button class="btn primary" onclick="saveLog()">Save Log</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Recent Logs</div>
+            <div class="muted">Last 10. This fuels the next build.</div>
+          </div>
+          <button class="btn" onclick="renderRecentLogs()">Refresh</button>
+        </div>
+        <div id="recentLogs" class="list" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="sec-progress" class="section">
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Progress</div>
+            <div class="muted">Needs work = most missed standards (7d + all-time).</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn" onclick="exportJSON()">Export JSON</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Team Needs (7d)</div>
+            <div class="muted" id="teamNeedsLine">—</div>
+          </div>
+          <div class="chipRow">
+            <span class="tag blue" id="teamNeedTag">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="playerProgress" class="list"></div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="sec-reports" class="section">
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Reports (Monthly PDF)</div>
+            <div class="muted">Weekly view: 4 points per month. Category charts (not drill charts).</div>
+          </div>
+          <div class="chipRow">
+            <button class="btn primary" onclick="renderMonthlyPreview()">Preview</button>
+            <button class="btn" onclick="printMonthlyPDF()">Export PDF</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid2">
+          <div>
+            <div class="muted">Month</div>
+            <input id="repMonth" class="input" type="month"/>
+          </div>
+          <div>
+            <div class="muted">Players</div>
+            <select id="repWho"></select>
+            <div class="tiny" style="margin-top:6px">Team = all players on each chart.</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="tiny">
+          Export uses your browser/iPad “Print → Save as PDF”. Still offline and free.
+        </div>
+      </div>
+
+      <div class="card" id="reportPreviewCard">
+        <div class="row wrap">
+          <div>
+            <div class="h2">Preview</div>
+            <div class="muted" id="repMeta">Pick month → Preview.</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div id="repPreview" class="list"></div>
+      </div>
+    </section>
+
   </div>
 
-  <!-- Player Modal -->
-  <div id="playerModal" class="hidden fixed inset-0 modalBg flex items-center justify-center px-4">
-    <div class="glass w-full max-w-2xl rounded-3xl p-5">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <div class="text-xs uppercase tracking-wider muted2" id="pmMode">Add Player</div>
-          <div class="text-2xl font-extrabold mt-1" id="pmTitle">Player</div>
-          <div class="text-sm muted2 mt-1">Height/weight drives drill selection.</div>
-        </div>
-        <button class="btn tapSm" onclick="closePlayerModal()">Close</button>
+  <div class="nav">
+    <button id="nav-home" class="active" onclick="go('home')">Home</button>
+    <button id="nav-roster" onclick="go('roster')">Roster</button>
+    <button id="nav-build" onclick="go('build')">Build</button>
+    <button id="nav-plan" onclick="go('plan')">Plan</button>
+    <button id="nav-run" onclick="go('run')">Run</button>
+    <button id="nav-progress" onclick="go('progress')">Progress</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modalWrap" class="modalWrap">
+  <div class="modal">
+    <div class="modalHeader">
+      <div>
+        <div class="modalTitle" id="mTitle">—</div>
+        <div class="tiny" id="mSub">—</div>
       </div>
-      <div class="border-t divider my-4"></div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <div class="text-xs uppercase tracking-wider muted2">Name</div>
-          <input id="pmName" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" placeholder="Quin Coykendal" />
-        </div>
-        <div>
-          <div class="text-xs uppercase tracking-wider muted2">Number</div>
-          <input id="pmNumber" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" placeholder="23" />
-        </div>
-
-        <div>
-          <div class="text-xs uppercase tracking-wider muted2">Position</div>
-          <select id="pmPos" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold">
-            <option value="G">G (Guard)</option>
-            <option value="W">W (Wing)</option>
-            <option value="F">F (Forward)</option>
-            <option value="C">C (Center)</option>
-          </select>
-        </div>
-        <div>
-          <div class="text-xs uppercase tracking-wider muted2">Height</div>
-          <input id="pmHeight" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" placeholder="6'2 or 74" />
-          <div class="text-xs muted2 mt-1">Type feet/inches or total inches</div>
-        </div>
-
-        <div>
-          <div class="text-xs uppercase tracking-wider muted2">Weight (lb)</div>
-          <input id="pmWeight" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" placeholder="185" />
-        </div>
-        <div>
-          <div class="text-xs uppercase tracking-wider muted2">Notes</div>
-          <input id="pmNotes" class="mt-2 w-full rounded-2xl p-3 text-lg inp font-extrabold" placeholder="Great rebounder / needs ball pressure" />
-        </div>
-      </div>
-
-      <div class="mt-4 flex gap-2">
-        <button class="btn tapSm btnPrimary flex-1" onclick="savePlayer()">Save</button>
-        <button id="pmDeleteBtn" class="btn tapSm btnDanger hidden" onclick="deletePlayer()">Delete</button>
-      </div>
+      <button class="btn" onclick="closeModal()">Close</button>
     </div>
+    <div class="divider"></div>
+    <div id="mBody"></div>
   </div>
-
-  <!-- Drill Detail Modal -->
-  <div id="drillModal" class="hidden fixed inset-0 modalBg flex items-center justify-center px-4">
-    <div class="glass w-full max-w-3xl rounded-3xl p-5 overflow-hidden">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <div class="text-xs uppercase tracking-wider muted2">Drill</div>
-          <div class="text-2xl font-extrabold mt-1" id="dmTitle">—</div>
-          <div class="text-sm muted2 mt-1" id="dmMeta">—</div>
-        </div>
-        <button class="btn tapSm" onclick="closeDrillModal()">Close</button>
-      </div>
-      <div class="border-t divider my-4"></div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[62vh] overflow-auto pr-1">
-        <div class="chip rounded-3xl p-4">
-          <div class="text-sm font-extrabold">Explanation</div>
-          <div class="mt-2 text-sm muted leading-relaxed" id="dmExplain"></div>
-        </div>
-        <div class="chip rounded-3xl p-4">
-          <div class="text-sm font-extrabold">Standards (non-negotiables)</div>
-          <ul class="mt-2 text-sm muted list-disc pl-5 space-y-1" id="dmStandards"></ul>
-        </div>
-        <div class="chip rounded-3xl p-4">
-          <div class="text-sm font-extrabold">Coach Short</div>
-          <div class="mt-2 text-sm muted whitespace-pre-line" id="dmShort"></div>
-        </div>
-        <div class="chip rounded-3xl p-4">
-          <div class="text-sm font-extrabold">Teaching Cues</div>
-          <div class="mt-2 text-sm muted whitespace-pre-line" id="dmLong"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
 <script>
 /* =========================================================
-   STORAGE KEYS
+   STORAGE
 ========================================================= */
-const KEY_ROSTER = "pcc_roster_v3";
-const KEY_PRESENT = "pcc_present_v3";
-const KEY_TODAY = "pcc_today_v3";
-const KEY_GRADES = "pcc_grades_v3";
-const KEY_WEEKLY_USED = "pcc_weekly_used_v3";
-const KEY_REGEN_SEED = "pcc_regen_seed_v3";
+const K = {
+  roster: "pbp_roster_v1",
+  present: "pbp_present_v1",
+  plan: "pbp_plan_v1",
+  logs: "pbp_logs_v1",
+  history: "pbp_history_v1",
+  settings: "pbp_settings_v1"
+};
+const load = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
 /* =========================================================
-   UTIL: Storage
+   TEAM DNA (coach explain defaults)
 ========================================================= */
-function loadJSON(key, fallback){
-  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-  catch { return fallback; }
+const TEAM_DNA = {
+  defense: [
+    "Man-to-man first. Force away from middle.",
+    "Help side: both feet in paint. Recover on air time.",
+    "Help the helper. Bump cutters.",
+    "Go under screens. Don’t chase.",
+    "One pass away deny. 3/4 deny in the post.",
+    "No ball-side doubles. Box hard. Secure rebounds.",
+    "Reward charges. Communicate switches when needed."
+  ],
+  offense: [
+    "4–1 motion: pass, V-cut to empty, feed post from wing if available.",
+    "14 motion: wing entry, first cutter backdoor, wing ball screen, big flashes top."
+  ],
+  presses: [
+    "2–2–1 press and 1–2–2 press. Full court man when needed.",
+    "1–3–1 zone if you must. (Also 1–3–1 offense if needed.)"
+  ]
+};
+
+/* =========================================================
+   CATEGORIES / EMPHASIS
+========================================================= */
+const CATS = ["Defense","Rebounding","Offense","Press","Conditioning","Shooting","Team","Skill"];
+const EMPHASIS = ["Defense","Rebounding","Offense","Press","Conditioning","Shooting"];
+const CAT_COLOR = {
+  Defense:"#60a5fa",
+  Rebounding:"#3b82f6",
+  Offense:"#93c5fd",
+  Press:"#2563eb",
+  Conditioning:"#1d4ed8",
+  Shooting:"#7dd3fc"
+};
+
+/* =========================================================
+   ATTENDANCE BANDS
+========================================================= */
+function bandFor(n){
+  if (n <= 2) return "1–2";
+  if (n <= 4) return "3–4";
+  if (n <= 6) return "5–6";
+  return "7+";
 }
-function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
-function uid(){
-  return (crypto?.randomUUID?.() || ("id-" + Math.random().toString(16).slice(2) + Date.now()));
+function bandMinMax(b){
+  if (b==="1–2") return [1,2];
+  if (b==="3–4") return [3,4];
+  if (b==="5–6") return [5,6];
+  return [7,99];
+}
+
+/* =========================================================
+   UTIL
+========================================================= */
+const uid = () => (crypto?.randomUUID ? crypto.randomUUID() : (Date.now()+"-"+Math.random()).replace(".",""));
+const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
+const now = () => Date.now();
+function fmtDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
 }
 function escapeHtml(s){
   return String(s ?? "")
     .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
     .replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
-function clampInt(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
 /* =========================================================
-   WEEK ID
+   ROSTER
 ========================================================= */
-function getWeekId(d=new Date()){
-  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
-  const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1)/7);
-  return `${date.getUTCFullYear()}-W${String(weekNo).padStart(2,"0")}`;
-}
-
-/* =========================================================
-   SEEDED RNG (regen always changes)
-========================================================= */
-function hashStringToInt(str){
-  let h = 2166136261;
-  for (let i=0;i<str.length;i++){
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return (h >>> 0);
-}
-function mulberry32(seed){
-  let a = seed >>> 0;
-  return function(){
-    a |= 0;
-    a = (a + 0x6D2B79F5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function getRegenSeed(){ return loadJSON(KEY_REGEN_SEED, 1); }
-function bumpRegenSeed(){ saveJSON(KEY_REGEN_SEED, getRegenSeed()+1); }
-
-/* =========================================================
-   ATTENDANCE BANDS
-========================================================= */
-function getBand(n){
-  if (n <= 2) return "1–2";
-  if (n <= 4) return "3–4";
-  if (n <= 6) return "5–6";
-  if (n <= 9) return "7–9";
-  return "10+";
-}
-function bandMinMax(band){
-  if (band==="1–2") return [1,2];
-  if (band==="3–4") return [3,4];
-  if (band==="5–6") return [5,6];
-  if (band==="7–9") return [7,9];
-  return [10,99];
-}
-
-/* =========================================================
-   SITUATION ROTATION (daily variety)
-========================================================= */
-const WEEKLY_SITUATIONS = [
-  { key:"closeouts", label:"Closeouts + Contain", skills:["closeout","onball","defense"] },
-  { key:"help", label:"Help Side + Recover", skills:["help","defense","communication"] },
-  { key:"rebound", label:"Box Out + Outlet", skills:["rebounding","passing","conditioning"] },
-  { key:"screen", label:"Screen Defense", skills:["screening","defense","communication"] },
-  { key:"late", label:"Late-Game Execution", skills:["situational","spacing","freeThrows"] },
-  { key:"transition", label:"Transition Defense", skills:["transition","defense","conditioning"] },
-  { key:"turnovers", label:"Ball Security + Pressure", skills:["ballhandling","passing","defense"] },
-  { key:"press", label:"Press Rotations", skills:["press","communication","conditioning"] },
-  { key:"zone", label:"Zone Concepts", skills:["spacing","passing","situational","defense"] },
-];
-function getTodaySituation(){
-  const d = new Date();
-  const key = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}-${getWeekId()}`;
-  const idx = hashStringToInt(key) % WEEKLY_SITUATIONS.length;
-  return WEEKLY_SITUATIONS[idx];
-}
-
-/* =========================================================
-   ROSTER + PRESENT
-========================================================= */
-function getRoster(){ return loadJSON(KEY_ROSTER, []); }
-function saveRoster(list){ saveJSON(KEY_ROSTER, list); }
-function getPresentIds(){ return loadJSON(KEY_PRESENT, []); }
-function savePresentIds(list){ saveJSON(KEY_PRESENT, list); }
-
-function parseHeightToInches(input){
-  const s = String(input||"").trim().toLowerCase();
-  if (!s) return null;
-  // If pure number => inches
-  if (/^\d+$/.test(s)) return clampInt(parseInt(s,10), 48, 96);
-  // Feet'inches formats: 6'2, 6’2, 6ft 2, 6 2
-  const m = s.match(/(\d+)\s*(?:ft|')\s*(\d+)?/);
-  if (m){
-    const ft = parseInt(m[1],10);
-    const inch = m[2] ? parseInt(m[2],10) : 0;
-    return clampInt(ft*12 + inch, 48, 96);
-  }
-  const m2 = s.match(/(\d+)\s+(\d+)/);
-  if (m2){
-    const ft = parseInt(m2[1],10);
-    const inch = parseInt(m2[2],10);
-    return clampInt(ft*12 + inch, 48, 96);
-  }
-  return null;
-}
-
-function getPresentPlayers(){
-  const roster = getRoster();
-  const present = new Set(getPresentIds());
-  return roster.filter(p => present.has(p.id));
-}
+function getRoster(){ return load(K.roster, []); }
+function setRoster(v){ save(K.roster, v); }
+function getPresent(){ return load(K.present, []); }
+function setPresent(v){ save(K.present, v); }
 
 function togglePresent(pid){
-  const set = new Set(getPresentIds());
+  const set = new Set(getPresent());
   if (set.has(pid)) set.delete(pid); else set.add(pid);
-  savePresentIds(Array.from(set));
+  setPresent([...set]);
   renderAll();
 }
 
 /* =========================================================
-   PLAYER CLASSIFICATION (guards vs bigs)
+   DRILL LIBRARY + VARIANTS (prevents repeats)
 ========================================================= */
-function classifyPlayer(p){
-  const pos = (p.pos||"").toUpperCase();
-  const h = Number(p.height || 0);
-  const w = Number(p.weight || 0);
-
-  if (pos === "C") return "BIG";
-  if (pos === "G") return "GUARD";
-  if (pos === "F" || pos === "W"){
-    if (h >= 76 || w >= 215) return "BIG";
-    return "WING";
-  }
-  if (h >= 78 || w >= 225) return "BIG";
-  if (h && h <= 73) return "GUARD";
-  return "WING";
+function mkDrill(base){ return base; }
+function addConstraint(d, text){
+  return { ...d, steps: d.steps + " | CONSTRAINT: " + text, _constraint:text };
 }
-function analyzeTeam(presentPlayers){
-  const counts = { GUARD:0, WING:0, BIG:0 };
-  let avgH=0, avgW=0;
-  presentPlayers.forEach(p=>{
-    const t = classifyPlayer(p);
-    counts[t] = (counts[t]||0) + 1;
-    avgH += Number(p.height||0);
-    avgW += Number(p.weight||0);
-  });
-  const n = presentPlayers.length || 1;
-  avgH /= n; avgW /= n;
-
-  return {
-    n: presentPlayers.length,
-    counts,
-    onlyGuards: counts.BIG===0 && (counts.GUARD + counts.WING)>0,
-    onlyBigs: (counts.GUARD + counts.WING)===0 && counts.BIG>0,
-    mixed: counts.BIG>0 && (counts.GUARD + counts.WING)>0,
-    avgH, avgW
-  };
-}
-
-/* =========================================================
-   GRADES (per player per drill) 1–5
-========================================================= */
-function getGrades(){ return loadJSON(KEY_GRADES, []); }
-function saveGrades(list){ saveJSON(KEY_GRADES, list); }
-
-function setGrade(practiceId, drillId, playerId, grade){
-  const list = getGrades();
-  const idx = list.findIndex(x => x.practiceId===practiceId && x.drillId===drillId && x.playerId===playerId);
-  const rec = {
-    id: idx>=0 ? list[idx].id : uid(),
-    ts: Date.now(),
-    weekId: getWeekId(),
-    practiceId, drillId, playerId,
-    grade: clampInt(Number(grade), 1, 5)
-  };
-  if (idx>=0) list[idx] = { ...list[idx], ...rec };
-  else list.push(rec);
-  saveGrades(list);
-}
-
-function getAvgGradeForPlayerSkills(playerId){
-  // Returns weighted skill weaknesses based on low grades
-  const grades = getGrades().filter(g => g.playerId===playerId);
-  const skillScore = {}; // higher = worse
-  const by = {};
-  for (const g of grades){
-    const d = DRILLS.find(x => x.id===g.drillId);
-    if (!d) continue;
-    const deficit = Math.max(0, 3.6 - Number(g.grade||0)); // below 3.6 signals weakness
-    const w = deficit * 2.2;
-    (d.meta?.skills || []).forEach(s=>{
-      skillScore[s] = (skillScore[s]||0) + w;
-      by[s] = (by[s]||0) + 1;
-    });
-  }
-  return { skillScore, by };
-}
-
-/* =========================================================
-   WEEKLY NO-REPEAT TRACKING (IDs + tags + skills + categories)
-========================================================= */
-function getWeeklyUsed(){
-  const weekId = getWeekId();
-  const all = loadJSON(KEY_WEEKLY_USED, {});
-  if (!all[weekId]){
-    all[weekId] = { ids:[], categories:[], tags:[], skills:[] };
-    saveJSON(KEY_WEEKLY_USED, all);
-  }
-  const w = all[weekId];
-  return {
-    weekId,
-    all,
-    usedIds: new Set(w.ids || []),
-    usedCats: new Set(w.categories || []),
-    usedTags: new Set(w.tags || []),
-    usedSkills: new Set(w.skills || [])
-  };
-}
-function markWeeklyUsed(drills){
-  const { weekId, all } = getWeeklyUsed();
-  const w = all[weekId];
-
-  const asObjs = drills.map(x => typeof x === "string" ? DRILLS.find(d=>d.id===x) : x).filter(Boolean);
-
-  const ids = new Set(w.ids || []);
-  const cats = new Set(w.categories || []);
-  const tags = new Set(w.tags || []);
-  const skills = new Set(w.skills || []);
-
-  for (const d of asObjs){
-    ids.add(d.id);
-    cats.add(normalizeCat(d.category));
-    (d.tags || []).forEach(t => tags.add(String(t)));
-    (d.meta?.skills || []).forEach(s => skills.add(String(s)));
-  }
-
-  w.ids = Array.from(ids);
-  w.categories = Array.from(cats);
-  w.tags = Array.from(tags);
-  w.skills = Array.from(skills);
-  all[weekId] = w;
-  saveJSON(KEY_WEEKLY_USED, all);
-}
-
-/* =========================================================
-   DRILL LIBRARY (BIG variety + situations)
-   - IMPORTANT: true 5v5 drills have minPlayers=10 AND tag "5v5"
-========================================================= */
-function mkDrill(id,title,category,tags,minPlayers,maxPlayers,meta,explain,standards,coachShort,coachLong){
-  return { id,title,category,tags,minPlayers,maxPlayers,meta,explain,standards,coachShort,coachLong };
-}
-const META = (skills, roles, intensity="med", type="small") => ({ skills, roles, intensity, type });
-
-const DRILLS = [
-  // ===== 1–2 Individual/Small =====
-  mkDrill("i01","Two-Ball Handle Circuit","Skill",["Ball Handling","Guards"],1,2,
-    META(["ballhandling","conditioning"],["MIXED","GUARD_ONLY","HYBRID_BIG_GUARD"],"high","individual"),
-    "Two balls: pound, alternate, cross, between, behind. Finish each set with a 10-yard burst + hard stop.",
-    ["No eyes down for 10s","Low hips","No dribble above waist","3 full-speed bursts"],
-    "WHY: Control under pressure.\nDO: Low, strong, fast.\nCONSEQUENCE: Sloppy handle = turnovers.",
-    "Progress: weak-hand only, timer, add shadow defender."
-  ),
-  mkDrill("i02","Form Shooting Ladder","Shooting",["Mechanics","Consistency"],1,2,
-    META(["shooting"],["MIXED","GUARD_ONLY","BIG_ONLY","HYBRID_BIG_GUARD"],"low","individual"),
-    "5 spots close range. Make 5 in a row to advance. Miss resets one step.",
-    ["Hold follow-through 2s","No drifting","Elbow under ball"],
-    "WHY: Mechanics hold under pressure.\nDO: Perfect reps.\nCONSEQUENCE: Lazy form = bricks.",
-    "Add: one-dribble pull-ups, catch-to-shot speed."
-  ),
-  mkDrill("i03","Big Guard Handle: Pound→Cross→Burst","Hybrid",["Big Guard","Handle"],1,2,
-    META(["ballhandling","conditioning"],["HYBRID_BIG_GUARD","BIG_ONLY","MIXED"],"high","individual"),
-    "Even bigs: pound-cross-behind into a burst. Stop on balance, protect the ball.",
-    ["No high dribbles","Explode after move","Stop under control"],
-    "WHY: Multifunctional bigs.\nDO: Low handle.\nCONSEQUENCE: High handle = steals.",
-    "Add retreat dribble + re-attack."
-  ),
-  mkDrill("i04","FT Under Fatigue","Shooting",["Free Throws","Conditioning"],1,2,
-    META(["freeThrows","shooting","conditioning"],["MIXED","GUARD_ONLY","BIG_ONLY","HYBRID_BIG_GUARD"],"med","individual"),
-    "Sprint 10 seconds → 2 FTs. Repeat 10 rounds. Track makes.",
-    ["Same routine","Breathe","Hold follow-through","No excuse misses"],
-    "WHY: Close games.\nDO: Routine.\nCONSEQUENCE: Lazy routine = misses.",
-    "Make it competitive: miss both = 1 down-and-back."
-  ),
-
-  // ===== 2–4 Small-sided =====
-  mkDrill("d01","Partner Closeout → Contain (1v1)","Defense",["Closeouts","On-ball"],2,2,
-    META(["defense","closeout","onball"],["MIXED","GUARD_ONLY","HYBRID_BIG_GUARD"],"high","small"),
-    "Defender sprints closeout to shooter, chops, contains without reaching. Shooter attacks.",
-    ["Sprint 2/3, chop 1/3","High hands","Contain 3 slides","No reaching"],
-    "WHY: Closeout wins possessions.\nDO: Sprint, chop, contain.\nCONSEQUENCE: Fly-by = layup.",
-    "Fix: If you open hips early, restart rep."
-  ),
-  mkDrill("d02","2v2 No-Middle Contain + Recover","Defense",["No Middle","Help"],2,4,
-    META(["defense","help","onball","communication"],["MIXED","GUARD_ONLY","HYBRID_BIG_GUARD"],"high","small"),
-    "2v2 wing+corner. Force sideline. Help steps in paint then recovers on pass.",
-    ["No middle drives","Help feet in paint","Talk every rep","Box out finish"],
-    "WHY: Stops layups.\nDO: Force + help.\nCONSEQUENCE: Middle = breakdown.",
-    "Recover on air-time. No ball-watching."
-  ),
-  mkDrill("o01","Finishing: Contact + Two-Foot Stops","Offense",["Finishing","Toughness"],1,3,
-    META(["finishing","footwork"],["MIXED","GUARD_ONLY","BIG_ONLY","HYBRID_BIG_GUARD"],"med","small"),
-    "Attack from wing/top. Finish through contact (pad/body). Land balanced two-foot stop.",
-    ["Two-foot landing","Use both hands","No fading","10 makes each side"],
-    "WHY: Tough buckets win.\nDO: Two feet.\nCONSEQUENCE: Soft = no bucket.",
-    "Add: euro, reverse, inside-hand."
-  ),
-  mkDrill("o02","Short-Roll Read (Big Playmaking)","Hybrid",["PnR","Reads"],2,4,
-    META(["passing","spacing","finishing"],["HYBRID_BIG_GUARD","BIG_ONLY","MIXED"],"med","small"),
-    "Ball screen. Roller catches at foul line: 1 dribble max → floater/kick/dump-off.",
-    ["Eyes up on catch","1 dribble max","Hit corner on help","Finish strong if open"],
-    "WHY: Bigs become hubs.\nDO: Catch & decide.\nCONSEQUENCE: Hold ball = turnover.",
-    "Rotate roles so bigs also handle."
-  ),
-  mkDrill("r01","Rebound & Outlet War","Rebounding",["Box Out","Outlet"],3,4,
-    META(["rebounding","passing","conditioning"],["MIXED","BIG_ONLY","HYBRID_BIG_GUARD"],"high","small"),
-    "Shot goes up. Hit first, pursue. Secure with 2 hands. Outlet within 2 seconds.",
-    ["Contact first","Two hands","Chin it","Outlet fast"],
-    "WHY: End possessions.\nDO: Hit first.\nCONSEQUENCE: No box = 2nd chance.",
-    "Score clean box-outs."
-  ),
-
-  // ===== 3–6 Competitive / Teaching =====
-  mkDrill("t01","3v3 Continuous (Stop = Point)","Team",["Compete","Conditioning"],5,6,
-    META(["defense","rebounding","conditioning","finishing"],["MIXED","HYBRID_BIG_GUARD"],"high","team"),
-    "3v3: defense gets point with stop+rebound. Offense scores for a point. Winner stays.",
-    ["Box out every shot","Talk","No jogging","Make layups"],
-    "WHY: Compete like game.\nDO: Earn stops.\nCONSEQUENCE: Soft = lose.",
-    "Constraint options: no middle, paint touch before 3."
-  ),
-  mkDrill("t02","4v4 Shell (Ghost if needed)","Defense",["Shell","Help"],5,6,
-    META(["defense","help","communication","rebounding"],["MIXED"],"med","team"),
-    "Shell: deny one away, help feet in paint, bump cutters, recover on pass, finish with rebound.",
-    ["Feet in paint help side","Closeout under control","Bump cutters","No ball-side doubles"],
-    "WHY: Your defense habits.\nDO: Help+recover+talk.\nCONSEQUENCE: Quiet teams get scored on.",
-    "Demand talk: BALL / HELP / DENY."
-  ),
-  mkDrill("d03","Closeout Chaos (3 shooters)","Defense",["Closeouts","Rotation"],3,6,
-    META(["closeout","defense","communication","conditioning"],["MIXED","GUARD_ONLY","HYBRID_BIG_GUARD"],"high","small"),
-    "Coach passes to random perimeter. Defense must closeout and rotate on each pass (10 passes).",
-    ["Sprint-chop","Hands high","No fly-bys","Talk every pass"],
-    "WHY: You get tired and stop closing out.\nDO: Close out anyway.\nCONSEQUENCE: Open shots.",
-    "Score: open catch = -1 for defense."
-  ),
-  mkDrill("d04","Tag & Recover (Help the Helper)","Defense",["Help","Recover"],3,6,
-    META(["help","defense","communication"],["MIXED","HYBRID_BIG_GUARD"],"med","small"),
-    "Drive from wing. Help tags to stop ball. On kick-out, recover with high hands. Rotate.",
-    ["Feet in paint early","Chest up","Recover on air-time","No ball watching"],
-    "WHY: Stops layups + threes.\nDO: Tag + recover.\nCONSEQUENCE: Late = 3 or layup.",
-    "Keep reps short and fast."
-  ),
-  mkDrill("d05","Screen Defense: Under + Re-square","Defense",["Screens","Communication"],3,6,
-    META(["screening","defense","communication"],["MIXED","GUARD_ONLY","HYBRID_BIG_GUARD"],"med","small"),
-    "Call screen early. Defender goes under fast. Re-square in front. No chasing.",
-    ["Early call","Under with urgency","Shortcut path","Re-square"],
-    "WHY: Don’t die on screens.\nDO: Under + recover.\nCONSEQUENCE: Chasing = open looks.",
-    "Bigs also rep on-ball to develop mobility."
-  ),
-  mkDrill("p01","Post Seal → Finish","Offense",["Post","Finishing"],2,4,
-    META(["post","finishing","rebounding"],["BIG_ONLY","MIXED","HYBRID_GUARD_POST"],"med","small"),
-    "Work seals, two-foot power finish, quick second jump. Rotate.",
-    ["Seal low and wide","Two-foot finish","Chin + kick if doubled"],
-    "WHY: Easy buckets.\nDO: Seal early.\nCONSEQUENCE: Late seal = no touch.",
-    "Guards learn entry angles; bigs learn seal timing."
-  ),
-  mkDrill("hb01","Grab & Go (Rebound → Push → Read)","Hybrid",["Big Guard","Transition"],3,6,
-    META(["rebounding","ballhandling","passing","finishing","transition"],["HYBRID_BIG_GUARD","BIG_ONLY","MIXED"],"high","small"),
-    "Big rebounds, pushes in transition, must read: finish/kick/trailer.",
-    ["Two hands rebound","Eyes up push","No charge","Simple read"],
-    "WHY: Multifunctional bigs.\nDO: Rebound and run.\nCONSEQUENCE: Only outlet = limited.",
-    "Constraint: big initiates every other rep."
-  ),
-
-  // ===== 7–9 “No 10 players” Team Options =====
-  mkDrill("x01","4v4 + 1 Advantage (Rotate Extra)","Team",["Advantage","Reads"],7,9,
-    META(["spacing","passing","defense","rebounding"],["MIXED"],"high","team"),
-    "4v4 with 1 rotating advantage player (offense). Creates game reads without 5v5.",
-    ["No standing","Talk matchups","Box out"],
-    "WHY: Game-like reps without 10.\nDO: Move + talk.\nCONSEQUENCE: Stand = dead rep.",
-    "Rotate advantage player each possession."
-  ),
-  mkDrill("x02","3v3 + 2 Outlet Runners (Transition)","Team",["Transition","Conditioning"],7,9,
-    META(["transition","conditioning","passing","defense"],["MIXED","HYBRID_BIG_GUARD"],"high","team"),
-    "3v3 live. Two extra are outlets/runners. On rebound, outlet and sprint lanes.",
-    ["Outlet in 2s","Sprint lanes","Talk matchups","No jogging"],
-    "WHY: Transition habits.\nDO: Sprint.\nCONSEQUENCE: Walk = layup.",
-    "Rotate outlets every rep."
-  ),
-  mkDrill("x03","4v4 ‘No Dribble’ Motion","Offense",["Spacing","Cuts"],7,9,
-    META(["spacing","passing","situational"],["MIXED","GUARD_ONLY","BIG_ONLY","HYBRID_BIG_GUARD"],"med","team"),
-    "4v4. No dribbles. Must cut, screen away, and pass on time to score.",
-    ["No standing","Hard cuts","Legal screens","Talk"],
-    "WHY: Movement offense.\nDO: Cut and pass.\nCONSEQUENCE: Stand = turnover.",
-    "Only bigs? Use DHO + backcuts."
-  ),
-
-  // ===== Press / Zone / Situational (5–9) =====
-  mkDrill("pr01","2-2-1 Trap Timing (3-step rule)","Press",["Trap","Angles"],5,9,
-    META(["press","communication","conditioning","defense"],["MIXED","GUARD_ONLY","HYBRID_BIG_GUARD"],"high","team"),
-    "Trap must arrive in 3 steps after the ball is forced to sideline. Late = restart rep.",
-    ["Sprint to trap","Hands high","Middle safety disciplined","No gambling"],
-    "WHY: Press is timing.\nDO: Arrive.\nCONSEQUENCE: Late = layup.",
-    "Keep live reps short (4 passes max)."
-  ),
-  mkDrill("zn01","Zone Shell Concepts (1-3-1 pinch)","Defense",["Zone","Talk"],5,9,
-    META(["defense","communication","situational"],["MIXED"],"med","team"),
-    "Zone shell: talk on passes, pinch middle, recover corners, rebound out of zone.",
-    ["Talk every pass","Pinch middle","Hands active","Rebound"],
-    "WHY: Zone fails without talk.\nDO: Communicate.\nCONSEQUENCE: Silence = open corner.",
-    "Even if you play man, this teaches spacing/vision."
-  ),
-  mkDrill("lg01","Late Game: Down 2, 22 sec (No TO)","Situational",["Late Game","Execution"],5,9,
-    META(["situational","spacing","freeThrows","transition"],["MIXED","GUARD_ONLY","HYBRID_BIG_GUARD"],"high","team"),
-    "Sim down 2, 22 seconds, no timeouts. Must get a great shot and sprint back.",
-    ["No hero shots","Sprint back","Talk matchups","Rebound on miss"],
-    "WHY: You must execute.\nDO: Great shot.\nCONSEQUENCE: Panic = loss.",
-    "Run from different inbound spots."
-  ),
-
-  // ===== TRUE 5v5 (10+) =====
-  mkDrill("5v5a","5v5 Shell (Full)","Defense",["Shell","Team","5v5"],10,14,
-    META(["defense","help","rebounding","communication"],["MIXED"],"high","team"),
-    "Full shell: deny one away, help feet in paint, recover on skip, finish with rebound.",
-    ["Talk every pass","Deny one away","Feet in paint help","Box out hard"],
-    "WHY: This is your defense.\nDO: Deny, help, recover.\nCONSEQUENCE: No talk = buckets.",
-    "Add constraints: no middle, under all screens."
-  ),
-  mkDrill("5v5b","5v5 Transition Matchups","Defense",["Transition","Communication","5v5"],10,14,
-    META(["transition","defense","communication","conditioning"],["MIXED"],"high","team"),
-    "Change ends. Must sprint back, find ball, match up, talk. Score counts only if defense is set.",
-    ["First 3 steps sprint","Find ball then match","Talk matchups","No jogging"],
-    "WHY: Transition kills you.\nDO: Sprint + talk.\nCONSEQUENCE: Jog = layup.",
-    "Time the sprint-back. Make it measurable."
-  ),
+const VARIANTS = [
+  { suffix:" (No Middle)", apply:(d)=>addConstraint(d, "No middle drives. Restart if broken.") },
+  { suffix:" (2-Dribble Max)", apply:(d)=>addConstraint(d, "2 dribbles max before pass/shot.") },
+  { suffix:" (Shot Clock 5s)", apply:(d)=>addConstraint(d, "5-second decision clock.") },
+  { suffix:" (Score It)", apply:(d)=>addConstraint(d, "Track points. Loser runs. Keep it ruthless.") },
+  { suffix:" (Talk Rule)", apply:(d)=>addConstraint(d, "Silent rep = automatic fail.") },
+  { suffix:" (Perfect Reps Only)", apply:(d)=>addConstraint(d, "One sloppy rep resets the count.") },
 ];
 
+const DRILLS = [
+  // 1–2
+  mkDrill({
+    id:"bh_1",
+    title:"Two-Ball Handle Circuit",
+    cat:"Skill",
+    band:"1–2",
+    tags:["ballhandling","pressure"],
+    steps:"Two balls: pound/alt/cross/between/behind. Finish each set with 10-yard burst + hard stop.",
+    standards:["Eyes up 10s at a time","Low hips, strong stance","No dribble above waist","Finish burst full speed"],
+    coachShort:"WHY: control under pressure.\nDO: low + violent dribbles.\nCONSEQUENCE: sloppy = turnovers.",
+    coachExpand:"CUES: snap wrists, protect ball.\nFIX: eyes down → reset rep.\nAdd: shadow defender + timer."
+  }),
+  mkDrill({
+    id:"def_1",
+    title:"Closeout → Contain (1v1)",
+    cat:"Defense",
+    band:"1–2",
+    tags:["closeout","no-middle","onball"],
+    steps:"Defender starts help spot, sprints closeout, chops, high hands. Offense attacks. Contain w/out reaching.",
+    standards:["Sprint 2/3 then chop","No fly-by","Force away from middle","No reach fouls"],
+    coachShort:"WHY: stop open shots + straight drives.\nDO: sprint, chop, contain.\nCONSEQUENCE: fly-by = layup.",
+    coachExpand:"CUES: hips low, chest in front.\nIf you open early → cooked.\nRestart fly-bys."
+  }),
+  mkDrill({
+    id:"fin_1",
+    title:"Finishing: Two-Foot Stops + Contact",
+    cat:"Offense",
+    band:"1–2",
+    tags:["finishing","toughness"],
+    steps:"Attack from wing/top, finish through contact, land balanced on two-foot stop. Alternate hands.",
+    standards:["Two-foot landing every rep","Strong + weak hand","No fading away","Finish high off glass"],
+    coachShort:"WHY: tough finishes win games.\nDO: two feet + strong eyes.\nCONSEQUENCE: soft = no bucket.",
+    coachExpand:"Fix fading: stop on two, THEN go up.\nAdd: euro/reverse/inside-hand."
+  }),
+  mkDrill({
+    id:"cond_1",
+    title:"NFHS Burst Conditioning (Solo/Pair)",
+    cat:"Conditioning",
+    band:"1–2",
+    tags:["nfhs","pace"],
+    steps:"20s full burst + 40s walk x 10–14. Optional ball last 3 rounds.",
+    standards:["Bursts are 100%","No hands on knees","Last 3 same pace as first","Talk through fatigue"],
+    coachShort:"WHY: late-game wins.\nDO: full bursts.\nCONSEQUENCE: gas = bad decisions.",
+    coachExpand:"Timer on. If someone coasts: repeat that round.\nAdd ball: sprint-dribble + stop/pivot."
+  }),
+  mkDrill({
+    id:"shoot_12",
+    title:"Form Ladder (Close Range)",
+    cat:"Shooting",
+    band:"1–2",
+    tags:["mechanics","repeatability"],
+    steps:"5 spots close. Make 5 in a row to advance. Miss resets a step.",
+    standards:["Hold follow-through 2s","No drifting","Elbow under ball","Track makes out loud"],
+    coachShort:"WHY: mechanics hold under pressure.\nDO: perfect reps.\nCONSEQUENCE: lazy form = bricks.",
+    coachExpand:"Progress: one-dribble pullups.\nAdd fatigue: 10s sprint between spots."
+  }),
+
+  // 3–4
+  mkDrill({
+    id:"shell_34",
+    title:"2v2 Closeout + Help (No Middle)",
+    cat:"Defense",
+    band:"3–4",
+    tags:["help","closeout","talk"],
+    steps:"Start help spots. Coach passes. Closeout. Drive attack. Help steps in paint then recover.",
+    standards:["Feet in paint on help side","No middle drive","Talk BALL/HELP/DENY","Box out after shot"],
+    coachShort:"WHY: team defense habits.\nDO: help early + recover hard.\nCONSEQUENCE: late help = layups.",
+    coachExpand:"If you help, recover on AIR TIME.\nBump cutters. No silent reps."
+  }),
+  mkDrill({
+    id:"reb_34",
+    title:"Rebound + Outlet War (3–4)",
+    cat:"Rebounding",
+    band:"3–4",
+    tags:["boxout","outlet","physical"],
+    steps:"Shot up: find body, hit first, pursue. Outlet within 2 seconds. Repeat fast.",
+    standards:["Contact first then ball","Two hands, chin it","Outlet in 2 seconds","No watching rebounds"],
+    coachShort:"WHY: end possessions.\nDO: hit first.\nCONSEQUENCE: no box = second chances.",
+    coachExpand:"Score it: +1 boxout +1 secure.\nIf no contact, stop and correct."
+  }),
+  mkDrill({
+    id:"off_34",
+    title:"4–1 Motion: V-Cut Timing",
+    cat:"Offense",
+    band:"3–4",
+    tags:["4-1","vcuts","spacing"],
+    steps:"Pass to wing, cutter V-cuts to empty, fill behind. Look post window on wing.",
+    standards:["Hard V-cut (sell it)","Fill empty immediately","Eyes to post window","Catch ready to pass/drive"],
+    coachShort:"WHY: motion only works if cuts are hard.\nDO: cut hard, fill fast.\nCONSEQUENCE: soft cuts = dead offense.",
+    coachExpand:"Corners/top aren’t 'spots'—flow through empty.\nTeach: pass → cut → fill."
+  }),
+  mkDrill({
+    id:"scr_34",
+    title:"Screen Defense: UNDER + Re-Square",
+    cat:"Defense",
+    band:"3–4",
+    tags:["screens","under","talk"],
+    steps:"Offense sets ball screen. Defender calls it, goes under hard, re-squares chest in front.",
+    standards:["Call screen early","Go under with urgency","No chasing over top","Re-square in front"],
+    coachShort:"WHY: screens create easy shots.\nDO: early call + under hard.\nCONSEQUENCE: chasing = open looks.",
+    coachExpand:"Shortcut path. Talk: 'SCREEN!' 'UNDER!'\nLate call = restart rep."
+  }),
+  mkDrill({
+    id:"adv_34",
+    title:"3v2 Advantage Reads (Rotate)",
+    cat:"Offense",
+    band:"3–4",
+    tags:["decision","spacing"],
+    steps:"3 attack vs 2. Quick reads: layup, kick, extra. Rotate defenders every rep.",
+    standards:["First two passes on time","No dribble into traffic","Finish strong","Spacing: fill/replace"],
+    coachShort:"WHY: punish advantage fast.\nDO: attack gaps.\nCONSEQUENCE: slow reads = turnovers.",
+    coachExpand:"Drive-kick-swing. No standing.\nAfter pass: cut or fill."
+  }),
+
+  // 5–6
+  mkDrill({
+    id:"comp_56",
+    title:"3v3 Continuous (Stop = Point)",
+    cat:"Team",
+    band:"5–6",
+    tags:["compete","boxout","talk"],
+    steps:"3v3. Defense scores with stop + rebound. Offense scores with bucket. Winner stays. High pace.",
+    standards:["Box out every shot","Talk every possession","No jogging between games","Make layups"],
+    coachShort:"WHY: competition exposes habits.\nDO: earn stops.\nCONSEQUENCE: soft = lose.",
+    coachExpand:"Constraints: no middle drives; paint touch before 3.\nShort shot clock = pace."
+  }),
+  mkDrill({
+    id:"press_221",
+    title:"2–2–1 Press Rotations (5–6)",
+    cat:"Press",
+    band:"5–6",
+    tags:["2-2-1","angles","discipline"],
+    steps:"Walk → jog rotations: trap zones, middle safety, sprint recover. Then live 70–80%.",
+    standards:["Sprint into trap spots","Hands high in trap","Middle safety disciplined","No gambling out of shape"],
+    coachShort:"WHY: press is positioning.\nDO: arrive on time.\nCONSEQUENCE: middle = layup.",
+    coachExpand:"Talk: 'TRAP!' 'MIDDLE!' 'I GOT BACK!'\nDiscipline > steals."
+  }),
+  mkDrill({
+    id:"press_122",
+    title:"1–2–2 Press Reads (5–6)",
+    cat:"Press",
+    band:"5–6",
+    tags:["1-2-2","force-sideline"],
+    steps:"Set 1–2–2. Work steering to sideline and closing gaps. Live max 4 passes.",
+    standards:["Force sideline","No straight-line middle","Back line talks nonstop","Recover to matchups"],
+    coachShort:"WHY: press sets your defense.\nDO: force where you want.\nCONSEQUENCE: middle breaks press.",
+    coachExpand:"Keep reps short.\nIf gamble loses shape—stop immediately."
+  }),
+  mkDrill({
+    id:"charge_56",
+    title:"Charge Circle + Recover",
+    cat:"Defense",
+    band:"5–6",
+    tags:["charges","help","recover"],
+    steps:"Drive from wing. Help steps up early, shows charge, then immediate recover to shooter.",
+    standards:["Arrive early","Chest up, protect face","Pop up fast","Recover under control"],
+    coachShort:"WHY: charges change games.\nDO: step up early.\nCONSEQUENCE: late help = layup/foul.",
+    coachExpand:"Timing: step up on first downhill step.\nRecover on air time."
+  }),
+  mkDrill({
+    id:"cond_56",
+    title:"NFHS Game-Clock Conditioning (5–6)",
+    cat:"Conditioning",
+    band:"5–6",
+    tags:["nfhs","pace","toughness"],
+    steps:"2-minute ‘game’: 20s burst / 20s jog / 20s burst / 20s walk. Repeat 4 rounds. Add ball last round.",
+    standards:["Bursts are 100%","No hands on knees","Talk through fatigue","Last round best round"],
+    coachShort:"WHY: win late.\nDO: full bursts.\nCONSEQUENCE: tired teams foul + turn it over.",
+    coachExpand:"If anyone coasts: restart that round.\nHold the standard."
+  }),
+];
+
+/* Expand base drills into a “drill pool” with variants */
+function buildVariantPool(){
+  const pool = [];
+  for (const d of DRILLS){
+    pool.push({ ...d, vid:d.id, vlabel:"Base" });
+    for (const v of VARIANTS){
+      // Don’t variant conditioning too much
+      if (d.cat==="Conditioning" && (v.suffix.includes("Shot Clock") || v.suffix.includes("2-Dribble"))) continue;
+      const vd = v.apply(d);
+      pool.push({ ...vd, title: d.title + v.suffix, vid: d.id + "|" + v.suffix, vlabel:v.suffix.trim() });
+    }
+  }
+  return pool;
+}
+const DRILL_POOL = buildVariantPool();
+
 /* =========================================================
-   CATEGORY NORMALIZATION
+   HISTORY / ANTI-REPEAT
 ========================================================= */
-function normalizeCat(c){
-  const x = (c||"").toLowerCase();
-  if (x.includes("def")) return "Defense";
-  if (x.includes("reb")) return "Rebounding";
-  if (x.includes("press")) return "Press";
-  if (x.includes("cond")) return "Conditioning";
-  if (x.includes("shoot")) return "Shooting";
-  if (x.includes("off")) return "Offense";
-  if (x.includes("skill")) return "Skill";
-  if (x.includes("situ")) return "Situational";
-  if (x.includes("hyb")) return "Hybrid";
-  if (x.includes("team")) return "Team";
-  return c || "Other";
+function getHistory(){ return load(K.history, {}); } // vid -> lastUsedTs
+function setHistory(h){ save(K.history, h); }
+function markUsed(vid){
+  const h = getHistory();
+  h[vid] = now();
+  setHistory(h);
+}
+function recentlyUsedSet(limit=8){
+  const h = getHistory();
+  const entries = Object.entries(h).sort((a,b)=>b[1]-a[1]).slice(0,limit);
+  return new Set(entries.map(e=>e[0]));
 }
 
 /* =========================================================
-   EMPHASIS
+   LOGS (standards missed)
 ========================================================= */
-function getEmphasis(){
-  const cats = [];
-  if (document.getElementById("em_def").checked) cats.push("Defense");
-  if (document.getElementById("em_reb").checked) cats.push("Rebounding");
-  if (document.getElementById("em_off").checked) cats.push("Offense");
-  if (document.getElementById("em_press").checked) cats.push("Press");
-  if (document.getElementById("em_cond").checked) cats.push("Conditioning");
-  if (document.getElementById("em_shoot").checked) cats.push("Shooting");
-  return cats;
+function getLogs(){ return load(K.logs, []); }
+function setLogs(v){ save(K.logs, v); }
+
+/* =========================================================
+   PLAN
+========================================================= */
+function getPlan(){ return load(K.plan, null); }
+function setPlan(v){ save(K.plan, v); }
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+function getSettings(){ return load(K.settings, { emphasis:[], hardMode:true }); }
+function setSettings(v){ save(K.settings, v); }
+
+/* =========================================================
+   SMART NEEDS (7d)
+========================================================= */
+function logsLastNDays(days=7){
+  const cutoff = now() - days*24*60*60*1000;
+  return getLogs().filter(l => l.ts >= cutoff);
+}
+function teamNeed7d(){
+  const logs = logsLastNDays(7);
+  if (!logs.length) return { cat:"Defense", count:0 };
+  const counts = {};
+  for (const l of logs){
+    counts[l.cat] = (counts[l.cat]||0) + (l.players?.length||0);
+  }
+  // only show emphasis categories
+  let best = { cat:"Defense", count:-1 };
+  for (const c of EMPHASIS){
+    const v = counts[c] || 0;
+    if (v > best.count) best = { cat:c, count:v };
+  }
+  return best;
 }
 
 /* =========================================================
-   TODAY OBJECT
+   BUILDER (minutes + attendance + needs + rotation)
 ========================================================= */
-function getToday(){
-  return loadJSON(KEY_TODAY, {
-    id: uid(),
-    date: new Date().toISOString(),
-    duration: 90,
-    focus: "",
-    notes: "",
-    presentIds: getPresentIds(),
-    drills: []
-  });
+function normalizeCat(cat){
+  if (!cat) return "Team";
+  if (cat==="Skill") return "Offense"; // treat skills as offense emphasis
+  return cat;
 }
-function saveToday(obj){ saveJSON(KEY_TODAY, obj); }
 
-/* =========================================================
-   PRACTICE BUILDER (SMART + NO REPEATS + COMPOSITION + GRADES)
-========================================================= */
-function buildPractice(isRegen){
-  if (isRegen) bumpRegenSeed();
-
-  const duration = clampInt(parseInt(document.getElementById("practiceDuration").value || "90",10), 45, 150);
-  const focusInput = (document.getElementById("practiceFocus").value || "").trim();
-  const notes = (document.getElementById("practiceNotes").value || "").trim();
-
-  const presentPlayers = getPresentPlayers();
-  const team = analyzeTeam(presentPlayers);
-
-  const presentCount = team.n;
-  const band = getBand(presentCount);
+function pickPlanBlocks(minutes, presentCount, emphasisLocked, focusText){
+  const band = bandFor(presentCount);
   const [minP,maxP] = bandMinMax(band);
 
-  const emphasis = getEmphasis();
-  const emphasisSet = new Set(emphasis.map(normalizeCat));
+  const need = teamNeed7d().cat;
 
-  const todaySit = getTodaySituation();
+  // Desired block count scales with minutes (keeps it readable)
+  const blockCount = minutes <= 45 ? 5 : minutes <= 70 ? 6 : minutes <= 95 ? 7 : 8;
 
-  const autoFocus = `${todaySit.label}${emphasis.length ? " • " + emphasis.join(", ") : ""}`;
-  const focus = focusInput || autoFocus;
+  // Required slots (hard standards):
+  // - 1 warmup / skill
+  // - 1 defense habit
+  // - 1 rebounding (if you’re a “trad values” team, we keep it high)
+  // - 1 conditioning
+  // - 1 compete/team (if enough players; else competitive 1v1/2v2)
+  const required = [];
+  required.push({ want:["Skill","Shooting","Offense"], label:"Warm/Skill" });
+  required.push({ want:["Defense"], label:"Defense" });
+  required.push({ want:["Rebounding"], label:"Rebounding" });
+  required.push({ want:["Conditioning"], label:"Conditioning" });
+  required.push({ want:["Team","Press","Defense","Offense"], label:"Compete/Team" });
 
-  // Seed so regen always changes AND same inputs still produce variety
-  const seedBase =
-    getRegenSeed() +
-    hashStringToInt(
-      focus + "|" +
-      emphasis.join(",") + "|" +
-      presentPlayers.map(p=>p.id).join(",") + "|" +
-      getWeekId()
-    ) +
-    Math.floor(Date.now()/60000);
+  // Allowed categories based on emphasis
+  const allowedCats = emphasisLocked?.length ? emphasisLocked.slice() : EMPHASIS.slice();
+  // Always allow Conditioning + Rebounding (standards)
+  if (!allowedCats.includes("Conditioning")) allowedCats.push("Conditioning");
+  if (!allowedCats.includes("Rebounding")) allowedCats.push("Rebounding");
 
-  const rand = mulberry32(seedBase);
+  // Filter drill pool by band + emphasis
+  const pool = DRILL_POOL
+    .filter(d => d.band===band)
+    .filter(d => {
+      const cat = normalizeCat(d.cat);
+      return allowedCats.includes(cat) || d.cat==="Team" || d.cat==="Skill";
+    });
 
-  const weekly = getWeeklyUsed();
+  const recent = recentlyUsedSet(10);
 
-  // Weakness signals from grades for present players
-  const presentIds = new Set(presentPlayers.map(p=>p.id));
-  const grades = getGrades().filter(g => presentIds.has(g.playerId));
-  const gradeWeakSkills = {}; // skill -> weight (higher = more needed)
-  for (const g of grades){
-    const d = DRILLS.find(x => x.id===g.drillId);
-    if (!d) continue;
-    const deficit = Math.max(0, 3.6 - Number(g.grade||0));
-    if (deficit <= 0) continue;
-    const w = deficit * 3.0; // strong weight
-    (d.meta?.skills||[]).forEach(s => gradeWeakSkills[s] = (gradeWeakSkills[s]||0) + w);
-  }
-
-  // Build pool: player count compatibility is a HARD filter
-  let pool = DRILLS.filter(d => d.minPlayers <= maxP && d.maxPlayers >= minP);
-
-  // HARD rule: 5v5 drills require 10+
-  pool = pool.filter(d => {
-    const is5v5 = (d.tags||[]).some(t => String(t).toLowerCase() === "5v5");
-    if (is5v5 && presentCount < 10) return false;
-    return true;
-  });
-
-  // HARD composition filters:
-  pool = pool.filter(d=>{
-    const roles = d.meta?.roles || ["MIXED"];
-    if (team.onlyGuards && roles.includes("BIG_ONLY")) return false;
-    if (team.onlyBigs){
-      if (roles.includes("GUARD_ONLY") && !roles.includes("HYBRID_BIG_GUARD")) return false;
-    }
-    return true;
-  });
-
+  // Score function: prioritize need, avoid recent, and rotate categories
+  const catCounts = {};
   function scoreDrill(d){
-    const cat = normalizeCat(d.category);
-    const skills = d.meta?.skills || [];
-    const roles  = d.meta?.roles  || ["MIXED"];
-
-    let score = 0;
-
-    // Situation daily rotation boost
-    for (const s of skills){
-      if (todaySit.skills.includes(s)) score += 2.6;
-    }
-
-    // Emphasis boost (soft)
-    if (emphasisSet.size){
-      if (emphasisSet.has(cat)) score += 3.2;
-      if (emphasisSet.has("Defense") && (skills.includes("help") || skills.includes("closeout") || skills.includes("onball"))) score += 1.6;
-      if (emphasisSet.has("Rebounding") && skills.includes("rebounding")) score += 1.6;
-      if (emphasisSet.has("Conditioning") && skills.includes("conditioning")) score += 1.4;
-      if (emphasisSet.has("Shooting") && (skills.includes("shooting") || skills.includes("freeThrows"))) score += 1.4;
-      if (emphasisSet.has("Press") && skills.includes("press")) score += 1.8;
-    }
-
-    // Focus text boost
-    const f = focus.toLowerCase();
-    if (f.includes("def") && (cat==="Defense" || skills.includes("defense"))) score += 4.5;
-    if (f.includes("reb") && (cat==="Rebounding" || skills.includes("rebounding"))) score += 4.5;
-    if (f.includes("press") && (cat==="Press" || skills.includes("press"))) score += 3.6;
-    if (f.includes("shoot") && (cat==="Shooting" || skills.includes("shooting"))) score += 3.2;
-    if (f.includes("late") && skills.includes("situational")) score += 3.4;
-    if (f.includes("trans") && skills.includes("transition")) score += 3.4;
-
-    // Weakness boost (grades): if present players are low on these skills, prioritize
-    for (const s of skills){
-      score += (gradeWeakSkills[s] || 0) * 0.35;
-    }
-
-    // Composition nuance
-    if (team.onlyBigs && roles.includes("HYBRID_BIG_GUARD")) score += 3.0;
-    if (team.onlyGuards && (skills.includes("onball") || skills.includes("closeout") || skills.includes("ballhandling") || skills.includes("passing"))) score += 1.3;
-
-    // Weekly no-repeat penalties (harder than old version)
-    if (weekly.usedIds.has(d.id)) score -= 8.0;
-    if (weekly.usedCats.has(cat)) score -= 1.4;
-
-    let tagHits = 0; (d.tags||[]).forEach(t => { if (weekly.usedTags.has(String(t))) tagHits++; });
-    score -= tagHits * 0.35;
-
-    let skillHits = 0; skills.forEach(s => { if (weekly.usedSkills.has(String(s))) skillHits++; });
-    score -= skillHits * 0.45;
-
-    // Add randomness so regenerate feels different
-    score += (rand() - 0.5) * 2.4;
-
-    return score;
+    const cat = normalizeCat(d.cat);
+    const recPenalty = recent.has(d.vid) ? -2.2 : 0;
+    const needBonus = (cat===need) ? 1.6 : 0;
+    const focusBonus = focusText ? (d.title.toLowerCase().includes(focusText.toLowerCase()) ? 0.8 : 0) : 0;
+    const varietyPenalty = (catCounts[cat]||0) * -0.55; // discourage same-cat spam
+    const jitter = (Math.random()*0.6)-0.3;
+    return 1 + needBonus + focusBonus + recPenalty + varietyPenalty + jitter;
   }
 
-  // Score and pick
-  const scored = pool.map(d => ({ d, s: scoreDrill(d) })).sort((a,b)=>b.s - a.s);
+  const chosen = [];
+  const usedVid = new Set();
 
-  // Desired count by duration
-  const desiredCount = duration <= 70 ? 6 : duration <= 95 ? 7 : 8;
+  function pickFromWants(wants){
+    const candidates = pool
+      .filter(d => wants.includes(d.cat) || wants.includes(normalizeCat(d.cat)))
+      .filter(d => !usedVid.has(d.vid));
 
-  // Category balance caps
-  const selected = [];
-  const picked = new Set();
-  const catCount = {};
-  const capPerCat = Math.max(2, Math.ceil(desiredCount/3)); // prevents 7 straight defense drills
+    if (!candidates.length) return null;
 
-  for (const item of scored){
-    if (selected.length >= desiredCount) break;
-    const d = item.d;
-    if (picked.has(d.id)) continue;
-
-    const cat = normalizeCat(d.category);
-    if ((catCount[cat]||0) >= capPerCat) continue;
-
-    selected.push(d);
-    picked.add(d.id);
-    catCount[cat] = (catCount[cat]||0) + 1;
-  }
-  // Fill
-  for (const item of scored){
-    if (selected.length >= desiredCount) break;
-    if (picked.has(item.d.id)) continue;
-    selected.push(item.d);
-    picked.add(item.d.id);
+    let best = null, bestScore = -Infinity;
+    for (const d of candidates){
+      const s = scoreDrill(d);
+      if (s > bestScore){ bestScore = s; best = d; }
+    }
+    if (!best) return null;
+    const cat = normalizeCat(best.cat);
+    catCounts[cat] = (catCounts[cat]||0)+1;
+    usedVid.add(best.vid);
+    chosen.push(best);
+    return best;
   }
 
-  // Time blocks
-  const plan = toTimedPlan(selected, duration);
+  // Pick required blocks first
+  for (const r of required){
+    if (chosen.length >= blockCount) break;
+    pickFromWants(r.want);
+  }
 
-  const todayObj = {
-    id: uid(),
-    date: new Date().toISOString(),
-    duration,
-    focus,
-    notes,
-    presentIds: getPresentIds(),
-    drills: plan
-  };
-  saveToday(todayObj);
+  // Fill remaining blocks: rotate across allowedCats and include Press sometimes
+  while (chosen.length < blockCount){
+    const wantCat = allowedCats[(chosen.length + Math.floor(Math.random()*allowedCats.length)) % allowedCats.length];
+    const candidates = pool
+      .filter(d => normalizeCat(d.cat)===wantCat || (wantCat==="Offense" && d.cat==="Skill"))
+      .filter(d => !usedVid.has(d.vid));
 
-  // Mark weekly used with selected drills (IDs + tags + skills)
-  markWeeklyUsed(selected);
+    if (!candidates.length){
+      // fallback: any not used
+      const any = pool.filter(d => !usedVid.has(d.vid));
+      if (!any.length) break;
+      const d = any[Math.floor(Math.random()*any.length)];
+      usedVid.add(d.vid);
+      chosen.push(d);
+      catCounts[normalizeCat(d.cat)] = (catCounts[normalizeCat(d.cat)]||0)+1;
+      continue;
+    }
 
-  renderAll();
-}
+    let best = null, bestScore = -Infinity;
+    for (const d of candidates){
+      const s = scoreDrill(d);
+      if (s > bestScore){ bestScore = s; best = d; }
+    }
+    if (!best) break;
+    usedVid.add(best.vid);
+    chosen.push(best);
+    catCounts[normalizeCat(best.cat)] = (catCounts[normalizeCat(best.cat)]||0)+1;
+  }
 
-function toTimedPlan(drills, duration){
+  // Assign minutes across blocks: warm+core+cond+wrap
+  // Keep it simple + consistent
+  const warm = minutes <= 60 ? 8 : 10;
+  const cool = 6;
+  const condIdx = chosen.findIndex(d => normalizeCat(d.cat)==="Conditioning");
+  const cond = minutes <= 60 ? 8 : 10;
+
+  const coreMinutes = minutes - warm - cool - cond;
+  const coreBlocks = chosen.length - 3; // warm, cond, cool
+  const each = Math.max(6, Math.floor(coreMinutes / Math.max(1, coreBlocks)));
+  let leftover = coreMinutes - each*Math.max(1, coreBlocks);
+
   const blocks = [];
-  const n = drills.length;
-
-  // Minutes template (keeps things consistent and no-scroll friendly)
-  const warm = duration<=70 ? 8 : 10;
-  const cond = duration<=70 ? 6 : 10;
-  const ft = 6;
-  const remaining = Math.max(duration - warm - cond - ft, 24);
-
-  const coreCount = Math.max(n-2, 4);
-  const coreEach = Math.floor(remaining / coreCount);
-  const extra = remaining - (coreEach*coreCount);
-
-  for (let i=0;i<n;i++){
-    const mins = (i===0) ? warm :
-                 (i===n-1) ? ft :
-                 (i===n-2) ? cond :
-                 coreEach + (i<=extra ? 1 : 0);
-
-    const d = drills[i];
+  for (let i=0;i<chosen.length;i++){
+    let mins = each;
+    if (i===0) mins = warm;
+    if (i===chosen.length-1) mins = cool;
+    if (i===condIdx) mins = cond;
+    if (i!==0 && i!==condIdx && i!==chosen.length-1){
+      if (leftover > 0){ mins += 1; leftover -= 1; }
+    }
     blocks.push({
-      id: d.id,
-      title: d.title,
-      category: normalizeCat(d.category),
-      tags: d.tags,
+      idx:i,
+      vid: chosen[i].vid,
+      baseId: chosen[i].id,
+      title: chosen[i].title,
+      cat: normalizeCat(chosen[i].cat),
+      band,
+      tags: chosen[i].tags || [],
       mins,
-      explain: d.explain,
-      standards: d.standards,
-      coachShort: d.coachShort,
-      coachLong: d.coachLong,
-      minPlayers: d.minPlayers,
-      maxPlayers: d.maxPlayers,
-      meta: d.meta
+      steps: chosen[i].steps,
+      standards: chosen[i].standards,
+      coachShort: chosen[i].coachShort,
+      coachExpand: chosen[i].coachExpand
     });
   }
-  // Fix drift
-  const total = blocks.reduce((s,b)=>s+b.mins,0);
-  const diff = duration - total;
-  if (diff !== 0 && blocks.length) blocks[blocks.length-1].mins += diff;
-  return blocks;
+
+  // Normalize total minutes
+  const sum = blocks.reduce((a,b)=>a+b.mins,0);
+  const diff = minutes - sum;
+  if (blocks.length) blocks[blocks.length-1].mins += diff;
+
+  return { band, need, blocks };
 }
 
 /* =========================================================
-   LOG PRACTICE COMPLETE (simple marker)
+   UI STATE (log selection + run state)
 ========================================================= */
-function logPracticeComplete(){
-  const today = getToday();
-  if (!today.drills?.length){
-    alert("Build a practice first.");
-    return;
+let ui = {
+  tab:"home",
+  logSelectedVid:null,
+  logSelectedPlayers:new Set(),
+  runIndex:0,
+  runTimer: { running:false, endTs:0, remainSec:0, interval:null }
+};
+
+/* =========================================================
+   NAV
+========================================================= */
+function go(tab){
+  ui.tab = tab;
+  const tabs = ["home","roster","build","plan","run","log","progress","reports"];
+  for (const t of tabs){
+    const s = document.getElementById("sec-"+t);
+    if (s) s.classList.toggle("active", t===tab);
   }
-  alert("Practice logged ✅\n(Grades + plan saved automatically.)");
-  go("dashboard");
-}
-
-/* =========================================================
-   UI: Navigation
-========================================================= */
-function go(view){
-  const views = ["dashboard","roster","practice","grades"];
-  views.forEach(v=>{
-    document.getElementById(`view-${v}`).classList.toggle("hidden", v!==view);
-    const nav = document.getElementById(`nav-${v}`);
-    if (nav){
-      nav.classList.toggle("btnPrimary", v===view);
-    }
-  });
-  const titleMap = {
-    dashboard:"Dashboard",
-    roster:"Roster",
-    practice:"Practice Builder",
-    grades:"Grades & Progress"
-  };
-  document.getElementById("viewTitle").textContent = titleMap[view] || "View";
-  renderAll();
-}
-
-/* =========================================================
-   UI: Renders
-========================================================= */
-function renderAll(){
-  renderDashboard();
-  renderRoster();
-  renderPractice();
-  renderGrades();
-}
-
-function renderDashboard(){
-  const present = getPresentIds().length;
-  document.getElementById("dashPresent").textContent = String(present);
-  document.getElementById("dashBand").textContent = `Band: ${getBand(present)}`;
-
-  const sit = getTodaySituation();
-  document.getElementById("dashSituation").textContent = sit.label;
-
-  const need = computeBiggestNeedForPresent();
-  document.getElementById("dashNeed").textContent = need;
-
-  const weekly = getWeeklyUsed();
-  document.getElementById("dashVariety").textContent =
-    `${weekly.usedIds.size} drills • ${weekly.usedCats.size} cats • ${weekly.usedSkills.size} skills`;
-
-  const today = getToday();
-  const hasPlan = (today.drills||[]).length > 0;
-
-  document.getElementById("dashPlanTitle").textContent = hasPlan ? (today.focus || "Today Plan") : "No plan yet";
-  document.getElementById("dashPlanMeta").textContent =
-    hasPlan
-      ? `Present: ${(today.presentIds||[]).length} • Duration: ${today.duration} • Note: ${today.notes || "—"}`
-      : "Tap Build to create one.";
-
-  const list = document.getElementById("dashPlanList");
-  list.innerHTML = "";
-  if (!hasPlan){
-    list.innerHTML = `<div class="text-sm muted2">No drills yet.</div>`;
-    return;
+  // nav buttons (bottom only has 6)
+  const navs = ["home","roster","build","plan","run","progress"];
+  for (const n of navs){
+    const b = document.getElementById("nav-"+n);
+    if (b) b.classList.toggle("active", n===tab);
   }
-  today.drills.slice(0,10).forEach((d, i)=>{
-    const row = document.createElement("div");
-    row.className = "chip rounded-2xl p-3 flex items-center justify-between gap-2";
-    row.innerHTML = `
-      <div class="min-w-0">
-        <div class="font-extrabold truncate">${i+1}. ${escapeHtml(d.title)}</div>
-        <div class="text-xs muted2 truncate">${escapeHtml(d.category)} • ${d.mins} min</div>
-      </div>
-      <button class="btn tapSm" title="Open">→</button>
-    `;
-    row.querySelector("button").onclick = ()=>{ go("practice"); };
-    list.appendChild(row);
-  });
+  // special: reports lives under progress mentally (no bottom button)
+  if (tab==="reports"){
+    document.getElementById("nav-progress")?.classList.add("active");
+    document.getElementById("nav-home")?.classList.remove("active");
+    document.getElementById("nav-roster")?.classList.remove("active");
+    document.getElementById("nav-build")?.classList.remove("active");
+    document.getElementById("nav-plan")?.classList.remove("active");
+    document.getElementById("nav-run")?.classList.remove("active");
+  }
+  if (tab==="plan") renderPlan();
+  if (tab==="run") renderRun();
+  if (tab==="log") renderLogUI();
+  if (tab==="progress") renderProgress();
+  if (tab==="reports") initReportsUI();
+  renderHomeHeaderLine();
 }
 
+/* =========================================================
+   HOME
+========================================================= */
+function renderHomeHeaderLine(){
+  const roster = getRoster();
+  const presentCount = getPresent().length;
+  const band = bandFor(presentCount);
+  const need = teamNeed7d();
+  const logs7 = logsLastNDays(7);
+  const plan = getPlan();
+
+  document.getElementById("homePresent").textContent = String(presentCount);
+  document.getElementById("tagBand").textContent = "Band: " + band;
+  document.getElementById("tagNeed").textContent = "Need: " + (need.count>0 ? (need.cat+" ("+need.count+")") : "Auto");
+  document.getElementById("homeLogs").textContent = String(logs7.length);
+  document.getElementById("homeLastPlan").textContent = plan?.meta?.focus ? plan.meta.focus : (plan ? "Built" : "None");
+
+  const line = [
+    `Present ${presentCount} (${band})`,
+    `Roster ${roster.length}`,
+    `Need: ${need.cat}`,
+    plan ? `Plan: ${new Date(plan.meta.date).toLocaleDateString()}` : "Plan: none"
+  ].join(" • ");
+  document.getElementById("homeLine").textContent = line;
+}
+
+/* =========================================================
+   ROSTER UI
+========================================================= */
 function renderRoster(){
   const roster = getRoster();
-  const presentSet = new Set(getPresentIds());
-  const presentPlayers = getPresentPlayers();
-  const team = analyzeTeam(presentPlayers);
-
-  document.getElementById("rosterPresentCount").textContent = String(presentSet.size);
-  document.getElementById("rosterBand").textContent = getBand(presentSet.size);
-
-  const comp = `Guards: ${team.counts.GUARD} • Wings: ${team.counts.WING} • Bigs: ${team.counts.BIG}
-Avg H/W: ${team.avgH ? team.avgH.toFixed(1) : "—"} in • ${team.avgW ? team.avgW.toFixed(0) : "—"} lb`;
-  document.getElementById("rosterComposition").textContent = comp;
-
+  const present = new Set(getPresent());
   const wrap = document.getElementById("rosterList");
   wrap.innerHTML = "";
+
   if (!roster.length){
-    wrap.innerHTML = `<div class="text-sm muted2">No players yet. Tap “+ Add Player”.</div>`;
+    wrap.innerHTML = `<div class="card"><div class="muted">No players yet. Add your guys.</div></div>`;
     return;
   }
 
-  roster.forEach(p=>{
-    const isHere = presentSet.has(p.id);
-    const hTxt = p.height ? formatHeight(p.height) : "—";
-    const wTxt = p.weight ? `${p.weight} lb` : "—";
-    const type = classifyPlayer(p);
-    const badge = type==="BIG" ? "badgePurple" : type==="GUARD" ? "badgeCyan" : "badgeGreen";
-
-    const row = document.createElement("div");
-    row.className = "chip rounded-3xl p-4 flex items-center justify-between gap-3";
-    row.innerHTML = `
-      <div class="min-w-0">
-        <div class="flex flex-wrap items-center gap-2">
-          <div class="text-lg font-extrabold truncate">${escapeHtml(p.name)}</div>
-          <span class="px-2 py-1 rounded-full text-xs font-extrabold ${badge}"> ${type} </span>
-          <span class="px-2 py-1 rounded-full text-xs font-extrabold badgeAmber mono">#${escapeHtml(p.number||"--")}</span>
-        </div>
-        <div class="text-sm muted2 mt-1">
-          Pos: <span class="font-extrabold text-slate-50">${escapeHtml(p.pos||"—")}</span> •
-          H/W: <span class="font-extrabold text-slate-50">${hTxt}</span> / <span class="font-extrabold text-slate-50">${wTxt}</span>
-        </div>
-        <div class="text-sm muted2 mt-1 truncate">${escapeHtml(p.notes||"")}</div>
+  for (const p of roster){
+    const isHere = present.has(p.id);
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `
+      <div class="left">
+        <div class="name">${escapeHtml(p.name)} <span class="muted mono" style="font-size:11px">#${escapeHtml(p.number||"--")} • ${escapeHtml(p.pos||"—")}</span></div>
+        <div class="meta">${escapeHtml(p.notes||"")}</div>
       </div>
-
-      <div class="flex flex-col gap-2">
-        <button class="btn tapSm ${isHere ? "btnPrimary" : ""}">${isHere ? "Present ✅" : "Mark Present"}</button>
-        <button class="btn tapSm">Edit</button>
+      <div class="right">
+        <button class="btn ${isHere?'good':''}" data-act="here">${isHere ? "Here ✓" : "Mark Here"}</button>
+        <button class="btn" data-act="edit">Edit</button>
+        <button class="btn bad" data-act="del">Delete</button>
       </div>
     `;
-    const [btnPresent, btnEdit] = row.querySelectorAll("button");
-    btnPresent.onclick = ()=>togglePresent(p.id);
-    btnEdit.onclick = ()=>openPlayerModal(p.id);
-    wrap.appendChild(row);
-  });
+    item.querySelector('[data-act="here"]').onclick = ()=>togglePresent(p.id);
+    item.querySelector('[data-act="edit"]').onclick = ()=>openPlayerModal(p.id);
+    item.querySelector('[data-act="del"]').onclick = ()=>deletePlayer(p.id);
+    wrap.appendChild(item);
+  }
 }
 
-function renderPractice(){
-  const today = getToday();
+function deletePlayer(pid){
+  if (!confirm("Delete this player?")) return;
+  const roster = getRoster().filter(p=>p.id!==pid);
+  setRoster(roster);
+  const present = new Set(getPresent());
+  present.delete(pid);
+  setPresent([...present]);
+  renderAll();
+}
 
-  // top meta
-  const presentCount = getPresentIds().length;
-  const band = getBand(presentCount);
-  document.getElementById("practiceMetaTop").textContent =
-    `Present: ${presentCount} (Band ${band}) • Situation: ${getTodaySituation().label}`;
-
-  // sync inputs
-  document.getElementById("practiceDuration").value = today.duration ?? 90;
-  document.getElementById("practiceFocus").value = today.focus ?? "";
-  document.getElementById("practiceNotes").value = today.notes ?? "";
-
-  // pills
+/* Player modal */
+function openPlayerModal(pid=null){
   const roster = getRoster();
-  const present = new Set(getPresentIds());
-  const pills = document.getElementById("presentPills");
-  pills.innerHTML = "";
-  if (!roster.length){
-    pills.innerHTML = `<div class="text-sm muted2">Add players in Roster first.</div>`;
+  const p = pid ? roster.find(x=>x.id===pid) : null;
+
+  openModal(
+    pid ? "Edit Player" : "Add Player",
+    "Keep it simple. You can add detail later.",
+    `
+    <div class="grid2">
+      <div>
+        <div class="muted">Name</div>
+        <input id="pmName" class="input" value="${p ? escapeHtml(p.name) : ""}" placeholder="Quin Coykendal"/>
+      </div>
+      <div>
+        <div class="muted">Number</div>
+        <input id="pmNum" class="input" value="${p ? escapeHtml(p.number||"") : ""}" placeholder="23"/>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:10px">
+      <div>
+        <div class="muted">Position</div>
+        <select id="pmPos">
+          ${["G","W","F","C"].map(pos => `<option value="${pos}" ${p?.pos===pos ? "selected":""}>${pos}</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <div class="muted">Notes</div>
+        <input id="pmNotes" class="input" value="${p ? escapeHtml(p.notes||"") : ""}" placeholder="Needs help-side talk / strong rebounder"/>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="savePlayer('${pid||""}')">Save</button>
+    </div>
+    `
+  );
+}
+function savePlayer(pidStr){
+  const pid = pidStr || null;
+  const name = (document.getElementById("pmName").value||"").trim();
+  if (!name){ alert("Name required."); return; }
+  const number = (document.getElementById("pmNum").value||"").trim();
+  const pos = document.getElementById("pmPos").value;
+  const notes = (document.getElementById("pmNotes").value||"").trim();
+
+  const roster = getRoster();
+  if (pid){
+    const idx = roster.findIndex(p=>p.id===pid);
+    if (idx>=0) roster[idx] = { ...roster[idx], name, number, pos, notes };
   } else {
-    roster.forEach(p=>{
-      const isHere = present.has(p.id);
-      const b = document.createElement("button");
-      b.className = `btn tapSm ${isHere ? "btnPrimary" : ""}`;
-      b.textContent = isHere ? `${p.name} ✅` : p.name;
-      b.onclick = ()=>togglePresent(p.id);
-      pills.appendChild(b);
-    });
+    roster.push({ id:uid(), name, number, pos, notes });
   }
-  document.getElementById("bandLabel").textContent = band;
+  setRoster(roster);
+  closeModal();
+  renderAll();
+}
 
-  // plan meta
-  const focus = (today.focus||"").trim() || `${getTodaySituation().label}`;
-  document.getElementById("planMeta").textContent =
-    `Focus: ${focus} • Duration: ${today.duration} • Drills: ${(today.drills||[]).length}`;
-
-  // plan list
-  const wrap = document.getElementById("practicePlan");
+/* =========================================================
+   BUILD UI
+========================================================= */
+function renderBuildUI(){
+  // emphasis chips
+  const settings = getSettings();
+  const wrap = document.getElementById("emphasisChips");
   wrap.innerHTML = "";
-  if (!(today.drills||[]).length){
-    wrap.innerHTML = `<div class="text-sm muted2">No plan yet. Tap Build.</div>`;
-    return;
+  for (const e of EMPHASIS){
+    const chip = document.createElement("div");
+    chip.className = "chip " + (settings.emphasis.includes(e) ? "on" : "");
+    chip.textContent = e;
+    chip.onclick = ()=>{
+      const s = getSettings();
+      const set = new Set(s.emphasis);
+      if (set.has(e)) set.delete(e); else set.add(e);
+      s.emphasis = [...set];
+      setSettings(s);
+      renderBuildUI();
+    };
+    wrap.appendChild(chip);
   }
 
-  today.drills.forEach((d, idx)=>{
-    const is5v5 = (d.tags||[]).some(t => String(t).toLowerCase()==="5v5");
-    const badge = is5v5 ? "badgeRed" : d.category==="Defense" ? "badgeCyan" :
-                 d.category==="Rebounding" ? "badgeGreen" : d.category==="Press" ? "badgePurple" : "badgeAmber";
+  // present chips
+  const roster = getRoster();
+  const presentSet = new Set(getPresent());
+  const pwrap = document.getElementById("presentChips");
+  pwrap.innerHTML = "";
+  if (!roster.length){
+    pwrap.innerHTML = `<div class="muted">Add players in Roster first.</div>`;
+  } else {
+    for (const p of roster){
+      const on = presentSet.has(p.id);
+      const chip = document.createElement("div");
+      chip.className = "chip present " + (on ? "on":"");
+      chip.textContent = on ? (p.name+" ✓") : p.name;
+      chip.onclick = ()=>togglePresent(p.id);
+      pwrap.appendChild(chip);
+    }
+  }
 
-    const row = document.createElement("div");
-    row.className = "chip rounded-3xl p-4";
-    row.innerHTML = `
-      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
-        <div class="min-w-0">
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="text-lg font-extrabold">${idx+1}. ${escapeHtml(d.title)}</div>
-            <span class="px-2 py-1 rounded-full text-xs font-extrabold ${badge}">${escapeHtml(d.category)}</span>
-            <span class="px-2 py-1 rounded-full text-xs font-extrabold badgeAmber">${d.mins} min</span>
-            <span class="px-2 py-1 rounded-full text-xs font-extrabold chip">${d.minPlayers}–${d.maxPlayers} players</span>
-          </div>
-          <div class="text-sm muted2 mt-2">${escapeHtml(d.explain)}</div>
-          <div class="text-xs muted2 mt-2">Tags: ${escapeHtml((d.tags||[]).join(", "))}</div>
-        </div>
-
-        <div class="flex flex-wrap gap-2">
-          <button class="btn tapSm btnPrimary">Explain</button>
-          <button class="btn tapSm" title="Go grade this drill">Grade</button>
-        </div>
-      </div>
-    `;
-    const [btnExplain, btnGrade] = row.querySelectorAll("button");
-    btnExplain.onclick = ()=>openDrillModal(d.id);
-    btnGrade.onclick = ()=>{ go("grades"); scrollToDrillGrades(d.id); };
-    wrap.appendChild(row);
-  });
+  const plan = getPlan();
+  document.getElementById("buildMeta").textContent = plan ? (plan.meta.signature || "Built") : "—";
 }
 
-function renderGrades(){
-  const today = getToday();
-  const board = document.getElementById("gradeBoard");
-  board.innerHTML = "";
-
-  const drills = today.drills || [];
-  const presentPlayers = getPresentPlayers();
-
-  if (!drills.length){
-    board.innerHTML = `<div class="text-sm muted2">No plan yet. Build a practice first.</div>`;
-    document.getElementById("insightsBox").textContent = "Build a plan and start grading.";
+function buildPractice(regen){
+  const roster = getRoster();
+  const present = getPresent();
+  if (!roster.length){
+    alert("Add players first.");
+    go("roster");
     return;
   }
-  if (!presentPlayers.length){
-    board.innerHTML = `<div class="text-sm muted2">No present players. Set Present in Roster.</div>`;
-    document.getElementById("insightsBox").textContent = "Set Present players to grade them.";
+  if (!present.length){
+    alert("Mark who's here today (Roster or Present chips).");
+    go("roster");
     return;
   }
 
-  // insights
-  document.getElementById("insightsBox").textContent = buildInsightsText(today.id, drills, presentPlayers);
+  const minutes = clamp(parseInt(document.getElementById("inpMinutes").value || "90",10), 30, 150);
+  const focus = (document.getElementById("inpFocus").value || "").trim();
 
-  // Grade cards
-  drills.forEach(d=>{
-    const card = document.createElement("div");
-    card.className = "chip rounded-3xl p-4";
-    card.id = `grade-${d.id}`;
-    card.innerHTML = `
-      <div class="flex items-start justify-between gap-2">
-        <div class="min-w-0">
-          <div class="text-lg font-extrabold truncate">${escapeHtml(d.title)}</div>
-          <div class="text-sm muted2 mt-1">${escapeHtml(d.category)} • ${d.mins} min</div>
-        </div>
-        <button class="btn tapSm" onclick="openDrillModal('${d.id}')">Explain</button>
-      </div>
-      <div class="border-t divider my-3"></div>
-      <div class="space-y-2" id="gradeRows-${d.id}"></div>
-    `;
+  const settings = getSettings();
+  const emphasis = settings.emphasis;
 
-    board.appendChild(card);
+  // If not regen, still build; regen just forces stronger anti-repeat by marking recent set bigger
+  const { band, need, blocks } = pickPlanBlocks(minutes, present.length, emphasis, focus);
 
-    const rows = card.querySelector(`#gradeRows-${d.id}`);
-    rows.innerHTML = "";
+  // Mark used to avoid same spam next regen
+  for (const b of blocks){
+    markUsed(b.vid);
+  }
 
-    presentPlayers.forEach(p=>{
-      const current = getGrade(today.id, d.id, p.id);
-      const row = document.createElement("div");
-      row.className = "flex items-center justify-between gap-2 chip rounded-2xl p-3";
-      row.innerHTML = `
-        <div class="min-w-0">
-          <div class="font-extrabold truncate">${escapeHtml(p.name)} <span class="muted2 mono text-xs">#${escapeHtml(p.number||"--")}</span></div>
-          <div class="text-xs muted2">Pos ${escapeHtml(p.pos||"—")} • ${p.height ? formatHeight(p.height) : "—"} • ${p.weight ? p.weight+" lb" : "—"}</div>
-        </div>
-        <div class="flex gap-2">
-          ${[1,2,3,4,5].map(n=>{
-            const active = (current===n);
-            const cls = active ? "btnPrimary" : "";
-            return `<button class="btn tapSm ${cls}" data-g="${n}">${n}</button>`;
-          }).join("")}
-        </div>
-      `;
-      row.querySelectorAll("button[data-g]").forEach(b=>{
-        b.onclick = ()=>{
-          const g = Number(b.getAttribute("data-g"));
-          setGrade(today.id, d.id, p.id, g);
-          renderGrades();
-        };
-      });
-      rows.appendChild(row);
-    });
+  const signature = [
+    `Date=${new Date().toISOString()}`,
+    `Min=${minutes}`,
+    `Present=${present.length}`,
+    `Band=${band}`,
+    `Need=${need}`,
+    `Emphasis=${emphasis.length?emphasis.join(","):"Auto"}`,
+    `Focus=${focus||"Auto"}`,
+    `Blocks=${blocks.map(x=>x.title).join(" | ")}`
+  ].join(" • ");
+
+  setPlan({
+    meta:{
+      id:uid(),
+      date:Date.now(),
+      minutes,
+      presentIds: present.slice(),
+      band,
+      need,
+      focus: focus || (need ? (need+" Focus") : "Auto"),
+      emphasis: emphasis.slice(),
+      signature
+    },
+    blocks
   });
-}
 
-function getGrade(practiceId, drillId, playerId){
-  const list = getGrades();
-  const g = list.find(x => x.practiceId===practiceId && x.drillId===drillId && x.playerId===playerId);
-  return g ? Number(g.grade||0) : 0;
+  document.getElementById("inpMinutes").value = String(minutes);
+  renderAll();
+  go("plan");
 }
 
 /* =========================================================
-   INSIGHTS (biggest need for present players)
+   PLAN UI
 ========================================================= */
-function computeBiggestNeedForPresent(){
-  const presentPlayers = getPresentPlayers();
-  if (!presentPlayers.length) return "—";
+function renderPlan(){
+  const plan = getPlan();
+  const wrap = document.getElementById("planList");
+  wrap.innerHTML = "";
 
-  const presentIds = presentPlayers.map(p=>p.id);
-  const grades = getGrades().filter(g => presentIds.includes(g.playerId));
-
-  if (!grades.length) return "Grade-based needs will appear after you grade.";
-
-  const skillTotals = {};
-  for (const g of grades){
-    const d = DRILLS.find(x=>x.id===g.drillId);
-    if (!d) continue;
-    const deficit = Math.max(0, 3.6 - Number(g.grade||0));
-    if (deficit<=0) continue;
-    const w = deficit * 2.2;
-    (d.meta?.skills||[]).forEach(s => skillTotals[s] = (skillTotals[s]||0) + w);
-  }
-  const top = Object.entries(skillTotals).sort((a,b)=>b[1]-a[1])[0];
-  if (!top) return "—";
-  const map = {
-    defense:"Defense",
-    closeout:"Closeouts",
-    help:"Help Defense",
-    rebounding:"Rebounding",
-    ballhandling:"Ball Security",
-    passing:"Passing",
-    shooting:"Shooting",
-    freeThrows:"Free Throws",
-    transition:"Transition",
-    screening:"Screen Defense",
-    situational:"Late Game"
-  };
-  return map[top[0]] || top[0];
-}
-
-function buildInsightsText(practiceId, drills, presentPlayers){
-  // simple: show 1–2 lowest average players this week and their top weakness
-  const weekId = getWeekId();
-  const grades = getGrades().filter(g => g.weekId===weekId);
-
-  const byPlayer = {};
-  for (const p of presentPlayers){
-    const pg = grades.filter(x=>x.playerId===p.id);
-    const avg = pg.length ? (pg.reduce((s,x)=>s+Number(x.grade||0),0)/pg.length) : null;
-    const { skillScore } = getAvgGradeForPlayerSkills(p.id);
-    const topWeak = Object.entries(skillScore).sort((a,b)=>b[1]-a[1])[0]?.[0] || "—";
-    byPlayer[p.id] = { name: p.name, avg, topWeak };
+  if (!plan || !plan.blocks?.length){
+    document.getElementById("planHeader").textContent = "No plan built yet.";
+    wrap.innerHTML = `<div class="card"><div class="muted">Go to Build → BUILD.</div></div>`;
+    return;
   }
 
-  const arr = Object.values(byPlayer).filter(x=>x.avg!==null).sort((a,b)=>a.avg-b.avg);
-  const worst = arr.slice(0,2);
+  const roster = getRoster();
+  const present = new Set(plan.meta.presentIds || []);
+  const presentNames = roster.filter(p=>present.has(p.id)).map(p=>p.name).join(", ");
 
-  const need = computeBiggestNeedForPresent();
-  const sit = getTodaySituation().label;
+  document.getElementById("planHeader").textContent =
+    `Band ${plan.meta.band} • ${plan.meta.minutes} min • Need: ${plan.meta.need} • Present: ${presentNames || (plan.meta.presentIds?.length||0)}`;
 
-  let text = `Today: ${sit}\nBiggest Need: ${need}\n`;
-  if (!worst.length){
-    text += `\nNo grades yet this week.\nStart grading 1–5 to drive smart plans.`;
-    return text;
-  }
-  text += `\nLowest grades this week:\n`;
-  worst.forEach(w=>{
-    text += `• ${w.name}: avg ${w.avg.toFixed(2)} • weakness: ${w.topWeak}\n`;
+  plan.blocks.forEach((b,i)=>{
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `
+      <div class="left">
+        <div class="name">${i+1}. ${escapeHtml(b.title)}</div>
+        <div class="meta">
+          <span class="tag blue">${escapeHtml(b.cat)}</span>
+          <span class="tag warn">${b.mins} min</span>
+          <span class="tag good">Band ${escapeHtml(b.band)}</span>
+        </div>
+        <div class="meta" style="margin-top:6px">${escapeHtml(b.steps)}</div>
+      </div>
+      <div class="right">
+        <button class="btn" data-act="explain">Explain</button>
+        <button class="btn bad" data-act="log">Log</button>
+      </div>
+    `;
+    item.querySelector('[data-act="explain"]').onclick = ()=>openExplainForBlock(i);
+    item.querySelector('[data-act="log"]').onclick = ()=>{
+      ui.logSelectedVid = b.vid;
+      go("log");
+    };
+    wrap.appendChild(item);
   });
-  return text.trim();
-}
-
-function recomputeInsights(){
-  renderGrades();
-  alert("Insights refreshed ✅");
 }
 
 /* =========================================================
-   DRILL MODAL
+   RUN PRACTICE UI + TIMER
 ========================================================= */
-function openDrillModal(drillId){
-  const today = getToday();
-  const d = (today.drills||[]).find(x=>x.id===drillId) || DRILLS.find(x=>x.id===drillId);
-  if (!d) return;
+function getActiveBlock(){
+  const plan = getPlan();
+  if (!plan?.blocks?.length) return null;
+  const idx = clamp(ui.runIndex, 0, plan.blocks.length-1);
+  return { plan, block: plan.blocks[idx], idx };
+}
+function renderRun(){
+  const plan = getPlan();
+  if (!plan?.blocks?.length){
+    document.getElementById("runMeta").textContent = "No plan built. Build one first.";
+    document.getElementById("runTitle").textContent = "—";
+    document.getElementById("runSub").textContent = "—";
+    document.getElementById("runTags").innerHTML = "";
+    document.getElementById("runStandards").innerHTML = "";
+    document.getElementById("runStep").textContent = "Drill 0/0";
+    document.getElementById("runMinutesTag").textContent = "0 min";
+    document.getElementById("runBandTag").textContent = "Band —";
+    setTimerDisplay(0);
+    renderPrompts();
+    return;
+  }
 
-  document.getElementById("dmTitle").textContent = d.title;
-  document.getElementById("dmMeta").textContent =
-    `${normalizeCat(d.category)} • ${d.minPlayers}–${d.maxPlayers} players • ${(d.tags||[]).join(", ")}`;
+  ui.runIndex = clamp(ui.runIndex, 0, plan.blocks.length-1);
+  const b = plan.blocks[ui.runIndex];
 
-  document.getElementById("dmExplain").textContent = d.explain || "";
-  document.getElementById("dmShort").textContent = d.coachShort || "";
-  document.getElementById("dmLong").textContent = d.coachLong || "";
+  document.getElementById("runMeta").textContent = `Band ${plan.meta.band} • ${plan.meta.minutes} min • Need: ${plan.meta.need}`;
+  document.getElementById("runStep").textContent = `Drill ${ui.runIndex+1}/${plan.blocks.length}`;
+  document.getElementById("runTitle").textContent = b.title;
+  document.getElementById("runSub").textContent = b.steps;
+  document.getElementById("runMinutesTag").textContent = `${b.mins} min`;
+  document.getElementById("runBandTag").textContent = `Band ${b.band}`;
 
-  const ul = document.getElementById("dmStandards");
+  const tagsWrap = document.getElementById("runTags");
+  tagsWrap.innerHTML = "";
+  tagsWrap.appendChild(tagEl(b.cat, "blue"));
+  (b.tags||[]).slice(0,3).forEach(t=>tagsWrap.appendChild(tagEl("#"+t, "")));
+
+  const ul = document.getElementById("runStandards");
   ul.innerHTML = "";
-  (d.standards||[]).forEach(s=>{
+  (b.standards||[]).forEach(s=>{
     const li = document.createElement("li");
     li.textContent = s;
     ul.appendChild(li);
   });
 
-  document.getElementById("drillModal").classList.remove("hidden");
-}
-function closeDrillModal(){ document.getElementById("drillModal").classList.add("hidden"); }
-
-/* =========================================================
-   PLAYER MODAL
-========================================================= */
-let editingPlayerId = null;
-
-function openPlayerModal(pid=null){
-  const roster = getRoster();
-  editingPlayerId = pid;
-
-  const pmMode = document.getElementById("pmMode");
-  const pmTitle = document.getElementById("pmTitle");
-  const delBtn = document.getElementById("pmDeleteBtn");
-
-  if (!pid){
-    pmMode.textContent = "Add Player";
-    pmTitle.textContent = "Player";
-    delBtn.classList.add("hidden");
-    setPMFields({ name:"", number:"", pos:"G", height:"", weight:"", notes:"" });
-  } else {
-    const p = roster.find(x=>x.id===pid);
-    if (!p) return;
-    pmMode.textContent = "Edit Player";
-    pmTitle.textContent = p.name || "Player";
-    delBtn.classList.remove("hidden");
-    setPMFields(p);
+  // reset timer to block minutes (only if not running)
+  if (!ui.runTimer.running){
+    setTimerDisplay(b.mins*60);
+    ui.runTimer.remainSec = b.mins*60;
   }
 
-  document.getElementById("playerModal").classList.remove("hidden");
+  renderPrompts();
 }
-function closePlayerModal(){ document.getElementById("playerModal").classList.add("hidden"); }
-
-function setPMFields(p){
-  document.getElementById("pmName").value = p.name || "";
-  document.getElementById("pmNumber").value = p.number || "";
-  document.getElementById("pmPos").value = p.pos || "G";
-  document.getElementById("pmHeight").value = p.height ? formatHeight(p.height) : "";
-  document.getElementById("pmWeight").value = p.weight || "";
-  document.getElementById("pmNotes").value = p.notes || "";
+function tagEl(text, cls){
+  const sp = document.createElement("span");
+  sp.className = "tag " + cls;
+  sp.textContent = text;
+  return sp;
 }
 
-function savePlayer(){
-  const name = (document.getElementById("pmName").value||"").trim();
-  if (!name){ alert("Name required."); return; }
+function runNext(){
+  const plan = getPlan();
+  if (!plan?.blocks?.length) return;
+  ui.runIndex = clamp(ui.runIndex+1, 0, plan.blocks.length-1);
+  stopTimer();
+  renderRun();
+}
+function runPrev(){
+  const plan = getPlan();
+  if (!plan?.blocks?.length) return;
+  ui.runIndex = clamp(ui.runIndex-1, 0, plan.blocks.length-1);
+  stopTimer();
+  renderRun();
+}
 
-  const number = (document.getElementById("pmNumber").value||"").trim();
-  const pos = document.getElementById("pmPos").value;
-  const heightIn = parseHeightToInches(document.getElementById("pmHeight").value);
-  const weight = (document.getElementById("pmWeight").value||"").trim();
-  const weightLb = weight ? clampInt(parseInt(weight,10), 80, 350) : null;
-  const notes = (document.getElementById("pmNotes").value||"").trim();
+function setTimerDisplay(sec){
+  const s = Math.max(0, Math.floor(sec));
+  const mm = String(Math.floor(s/60)).padStart(2,"0");
+  const ss = String(s%60).padStart(2,"0");
+  document.getElementById("runTimer").textContent = `${mm}:${ss}`;
+}
 
-  const roster = getRoster();
+function toggleTimer(){
+  if (ui.runTimer.running) stopTimer();
+  else startTimer();
+}
+function startTimer(){
+  const active = getActiveBlock();
+  if (!active) return;
 
-  if (editingPlayerId){
-    const idx = roster.findIndex(p=>p.id===editingPlayerId);
-    if (idx>=0){
-      roster[idx] = {
-        ...roster[idx],
-        name, number, pos,
-        height: heightIn ?? roster[idx].height ?? null,
-        weight: weightLb ?? roster[idx].weight ?? null,
-        notes
-      };
+  // if remainSec is 0, reset to block minutes
+  if (!ui.runTimer.remainSec || ui.runTimer.remainSec<=0){
+    ui.runTimer.remainSec = active.block.mins*60;
+  }
+  ui.runTimer.running = true;
+  document.getElementById("timerBtnText").textContent = "Pause";
+
+  ui.runTimer.interval = setInterval(()=>{
+    ui.runTimer.remainSec -= 1;
+    setTimerDisplay(ui.runTimer.remainSec);
+    if (ui.runTimer.remainSec <= 0){
+      stopTimer();
+      // auto advance (optional) — keep it on but safe
+      // runNext();
     }
+  }, 1000);
+}
+function stopTimer(){
+  ui.runTimer.running = false;
+  document.getElementById("timerBtnText").textContent = "Start";
+  if (ui.runTimer.interval) clearInterval(ui.runTimer.interval);
+  ui.runTimer.interval = null;
+}
+function openExplain(){
+  const active = getActiveBlock();
+  if (!active) return;
+  openExplainForBlock(active.idx);
+}
+function openExplainForBlock(idx){
+  const plan = getPlan();
+  if (!plan?.blocks?.length) return;
+  const b = plan.blocks[idx];
+
+  const standards = (b.standards||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join("");
+  openModal(
+    b.title,
+    `${b.cat} • ${b.mins} min • Band ${b.band}`,
+    `
+      <div class="card" style="background:rgba(255,255,255,.03); box-shadow:none">
+        <div class="muted">How to run it</div>
+        <div style="margin-top:8px">${escapeHtml(b.steps)}</div>
+      </div>
+
+      <div class="card" style="background:rgba(255,255,255,.03); box-shadow:none; margin-top:10px">
+        <div class="muted">Standards (non-negotiable)</div>
+        <ul style="margin:8px 0 0 18px">${standards}</ul>
+      </div>
+
+      <div class="card" style="background:rgba(255,255,255,.03); box-shadow:none; margin-top:10px">
+        <div class="muted">Coach Script (fast)</div>
+        <div style="white-space:pre-line; margin-top:8px">${escapeHtml(b.coachShort||"")}</div>
+        <div class="divider"></div>
+        <div class="muted">Expand</div>
+        <div style="white-space:pre-line; margin-top:8px">${escapeHtml(b.coachExpand||"")}</div>
+      </div>
+    `
+  );
+}
+
+/* Quick log from Run screen */
+function openQuickLog(){
+  const active = getActiveBlock();
+  if (!active) return;
+  ui.logSelectedVid = active.block.vid;
+  go("log");
+}
+
+/* =========================================================
+   LOG UI
+========================================================= */
+function renderLogUI(){
+  const plan = getPlan();
+  const drillWrap = document.getElementById("logDrillChips");
+  const playerWrap = document.getElementById("logPlayerChips");
+  const sel = document.getElementById("selStandard");
+
+  drillWrap.innerHTML = "";
+  playerWrap.innerHTML = "";
+
+  if (!plan?.blocks?.length){
+    drillWrap.innerHTML = `<div class="muted">No plan. Build a plan first.</div>`;
+    playerWrap.innerHTML = `<div class="muted">—</div>`;
+    sel.innerHTML = `<option>General miss</option>`;
+    return;
+  }
+
+  // drill chips
+  for (const b of plan.blocks){
+    const chip = document.createElement("div");
+    chip.className = "chip " + (ui.logSelectedVid===b.vid ? "on" : "");
+    chip.textContent = b.title;
+    chip.onclick = ()=>{
+      ui.logSelectedVid = b.vid;
+      ui.logSelectedPlayers = new Set();
+      renderLogUI();
+    };
+    drillWrap.appendChild(chip);
+  }
+
+  // players present
+  const roster = getRoster();
+  const presentSet = new Set(plan.meta.presentIds || getPresent());
+  const presentPlayers = roster.filter(p=>presentSet.has(p.id));
+  if (!presentPlayers.length){
+    playerWrap.innerHTML = `<div class="muted">No present players set.</div>`;
   } else {
-    roster.push({
-      id: uid(),
-      name, number, pos,
-      height: heightIn ?? null,
-      weight: weightLb ?? null,
-      notes
+    presentPlayers.forEach(p=>{
+      const on = ui.logSelectedPlayers.has(p.id);
+      const chip = document.createElement("div");
+      chip.className = "chip bad " + (on ? "on" : "");
+      chip.textContent = p.name;
+      chip.onclick = ()=>{
+        if (ui.logSelectedPlayers.has(p.id)) ui.logSelectedPlayers.delete(p.id);
+        else ui.logSelectedPlayers.add(p.id);
+        renderLogUI();
+      };
+      playerWrap.appendChild(chip);
     });
   }
 
-  saveRoster(roster);
-  closePlayerModal();
-  renderAll();
+  // standards list based on selected drill
+  const b = plan.blocks.find(x=>x.vid===ui.logSelectedVid) || plan.blocks[0];
+  sel.innerHTML = "";
+  sel.appendChild(new Option("General miss", "General miss"));
+  (b.standards||[]).forEach(s => sel.appendChild(new Option(s, s)));
+
+  renderRecentLogs();
 }
 
-function deletePlayer(){
-  if (!editingPlayerId) return;
-  if (!confirm("Delete this player?")) return;
+function clearLogSelection(){
+  ui.logSelectedPlayers = new Set();
+  document.getElementById("selStandard").value = "General miss";
+  renderLogUI();
+}
 
-  const roster = getRoster().filter(p=>p.id!==editingPlayerId);
-  saveRoster(roster);
+function saveLog(){
+  const plan = getPlan();
+  if (!plan?.blocks?.length){ alert("Build a plan first."); return; }
 
-  const present = new Set(getPresentIds());
-  present.delete(editingPlayerId);
-  savePresentIds(Array.from(present));
+  const vid = ui.logSelectedVid || plan.blocks[0].vid;
+  const b = plan.blocks.find(x=>x.vid===vid) || plan.blocks[0];
 
-  // remove grades for player (optional cleanup)
-  const grades = getGrades().filter(g=>g.playerId!==editingPlayerId);
-  saveGrades(grades);
+  const players = [...ui.logSelectedPlayers];
+  if (!players.length){
+    alert("Select who missed the standard.");
+    return;
+  }
 
-  editingPlayerId = null;
-  closePlayerModal();
-  renderAll();
+  const standard = document.getElementById("selStandard").value || "General miss";
+  const roster = getRoster();
+  const playerNames = players.map(pid => roster.find(p=>p.id===pid)?.name || pid);
+
+  const entry = {
+    id:uid(),
+    ts:Date.now(),
+    planId:plan.meta.id,
+    vid:b.vid,
+    drillTitle:b.title,
+    cat:b.cat,
+    standard,
+    players,
+    playerNames
+  };
+
+  const logs = getLogs();
+  logs.push(entry);
+  setLogs(logs);
+
+  // clear selection fast
+  ui.logSelectedPlayers = new Set();
+  renderRecentLogs();
+  renderHomeHeaderLine();
+  refreshPrompts();
+}
+
+function renderRecentLogs(){
+  const wrap = document.getElementById("recentLogs");
+  const logs = getLogs().slice(-10).reverse();
+  wrap.innerHTML = "";
+  if (!logs.length){
+    wrap.innerHTML = `<div class="card"><div class="muted">No logs yet.</div></div>`;
+    return;
+  }
+  logs.forEach(l=>{
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `
+      <div class="left">
+        <div class="name">${escapeHtml(l.cat)} • ${escapeHtml(l.drillTitle)}</div>
+        <div class="meta">${escapeHtml(l.standard)} • ${escapeHtml(fmtDate(l.ts))}</div>
+        <div class="meta">Missed: <span class="mono">${escapeHtml((l.playerNames||[]).join(", "))}</span></div>
+      </div>
+      <div class="right">
+        <button class="btn bad">Undo</button>
+      </div>
+    `;
+    item.querySelector("button").onclick = ()=>{
+      if (!confirm("Delete this log?")) return;
+      const all = getLogs().filter(x=>x.id!==l.id);
+      setLogs(all);
+      renderRecentLogs();
+      renderAll();
+    };
+    wrap.appendChild(item);
+  });
 }
 
 /* =========================================================
-   MISC ACTIONS
+   COACH ASSISTANT PROMPTS (based on today logs)
 ========================================================= */
-function setDuration(n){
-  document.getElementById("practiceDuration").value = String(n);
+function promptsFromToday(){
+  const plan = getPlan();
+  if (!plan) return [];
+  const logs = getLogs().filter(l=>l.planId===plan.meta.id);
+  if (!logs.length) return [];
+
+  // count by standard + cat
+  const count = {};
+  for (const l of logs){
+    const key = `${l.cat}||${l.standard}`;
+    count[key] = (count[key]||0) + (l.players?.length||0);
+  }
+  const top = Object.entries(count).sort((a,b)=>b[1]-a[1]).slice(0,4);
+
+  return top.map(([k,v])=>{
+    const [cat, std] = k.split("||");
+    return {
+      title:`${cat}: ${std}`,
+      text:`Logged ${v} misses today. Hit it immediately: teach fast → rep hard → restart sloppy reps.`
+    };
+  });
 }
-function openQuickBuild(){
-  go("practice");
-  buildPractice(false);
+function renderPrompts(){
+  const wrap = document.getElementById("promptList");
+  wrap.innerHTML = "";
+  const ps = promptsFromToday();
+  if (!ps.length){
+    wrap.innerHTML = `<div class="card" style="background:rgba(255,255,255,.03); box-shadow:none"><div class="muted">No prompts yet. Log misses to get live coaching reminders.</div></div>`;
+    return;
+  }
+  ps.forEach(p=>{
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `
+      <div class="left">
+        <div class="name">${escapeHtml(p.title)}</div>
+        <div class="meta">${escapeHtml(p.text)}</div>
+      </div>
+      <div class="right">
+        <button class="btn">Explain</button>
+      </div>
+    `;
+    item.querySelector("button").onclick = ()=>{
+      openAskCoach(p.title);
+    };
+    wrap.appendChild(item);
+  });
 }
-function clearRoster(){
-  if (!confirm("Clear roster and present list?")) return;
-  localStorage.removeItem(KEY_ROSTER);
-  localStorage.removeItem(KEY_PRESENT);
-  renderAll();
+function refreshPrompts(){ renderPrompts(); }
+
+/* =========================================================
+   ASK COACH (offline templates)
+========================================================= */
+function openAskCoach(seed=""){
+  const prompt = seed ? `Give me a fast coach explanation for: ${seed}` : "";
+  openModal(
+    "Ask Coach",
+    "Offline coach brain. Fast + blunt. Expand at end.",
+    `
+      <div class="muted">Question</div>
+      <input id="acQ" class="input" placeholder="Ex: Explain help-side defense to a freshman." value="${escapeHtml(prompt)}"/>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px">
+        <button class="btn primary" onclick="answerCoach()">Answer</button>
+      </div>
+      <div class="divider"></div>
+      <div class="muted">Answer</div>
+      <div id="acA" class="card" style="background:rgba(255,255,255,.03); box-shadow:none; margin-top:8px; white-space:pre-line">—</div>
+    `
+  );
 }
-function clearPresent(){
-  if (!confirm("Clear present players?")) return;
-  localStorage.removeItem(KEY_PRESENT);
-  const t = getToday();
-  t.presentIds = [];
-  saveToday(t);
-  renderAll();
+function answerCoach(){
+  const q = (document.getElementById("acQ").value||"").toLowerCase();
+  let short = "";
+  let expand = "";
+  const footer = "\n\nExpand: Teach it in 10 seconds, then REP it at game speed. Sloppy reps don’t count.";
+
+  if (q.includes("help")){
+    short =
+`WHY: Stops layups.
+DO: Feet in the paint early, chest up, then recover on air time.
+CONSEQUENCE: Late help = layup or foul.`;
+    expand =
+`CUES:
+- “FEET IN PAINT!” (help side)
+- “I GOT BALL!” then “RECOVER!”
+- Help the helper. Bump cutters.
+
+FIX:
+- If you’re watching the ball, you’re wrong.
+- If you help late, you’re already beat.`;
+  } else if (q.includes("closeout")){
+    short =
+`WHY: Takes away open shots.
+DO: Sprint 2/3, chop last 1/3, hands high, no fly-by.
+CONSEQUENCE: Fly-by = straight-line drive.`;
+    expand =
+`CUES:
+- Arrive under control
+- Force away from middle
+- Feet beat hands (no reaching)
+
+FIX:
+- Fly-by? Restart rep.
+- Stand tall? You’re late.`;
+  } else if (q.includes("screen")){
+    short =
+`WHY: Screens create easy shots.
+DO: Call it early, go UNDER with urgency, re-square.
+CONSEQUENCE: Chasing = open looks.`;
+    expand =
+`CUES:
+- “SCREEN!” early
+- Shortcut path under
+- Re-square chest in front
+
+FIX:
+- Late call → restart.
+- Looping wide → tighten angle.`;
+  } else if (q.includes("box") || q.includes("rebound")){
+    short =
+`WHY: Rebounds win games.
+DO: Hit first, then pursue. Two hands. Chin it.
+CONSEQUENCE: No box = second chance points.`;
+    expand =
+`CUES:
+- “HIT!” then “GET!”
+- Find body every shot
+- Outlet fast (2 seconds)
+
+FIX:
+- Watching ball without contact = automatic fail.`;
+  } else if (q.includes("press")){
+    short =
+`WHY: Press creates chaos on your terms.
+DO: Force sideline, trap on time, safety protects middle.
+CONSEQUENCE: Middle breaks your press = layups.`;
+    expand =
+`CUES:
+- Sprint into trap spots
+- Hands high
+- Back line talks nonstop
+
+FIX:
+- Gambling out of shape? Stop it. Discipline > steals.`;
+  } else {
+    short =
+`WHY: Winning details.
+DO: Talk, box out, sprint between reps.
+CONSEQUENCE: Lazy habits = losses.`;
+    expand =
+`PROGRAM DNA:
+- No middle.
+- Feet in paint help side.
+- Under screens.
+- Deny one pass away.
+- Box hard.
+- Conditioning is standards.`;
+  }
+
+  document.getElementById("acA").textContent = short + "\n\n" + expand + footer;
 }
-function clearGrades(){
-  if (!confirm("Clear ALL grades? (This affects weaknesses)")) return;
-  localStorage.removeItem(KEY_GRADES);
-  renderAll();
+
+/* =========================================================
+   PROGRESS (7d + all-time)
+========================================================= */
+function renderProgress(){
+  const roster = getRoster();
+  const wrap = document.getElementById("playerProgress");
+  wrap.innerHTML = "";
+
+  const logs7 = logsLastNDays(7);
+  const all = getLogs();
+  const need = teamNeed7d();
+
+  document.getElementById("teamNeedsLine").textContent =
+    `Most missed category: ${need.cat} (${need.count}) • Based on standards logs last 7 days.`;
+  document.getElementById("teamNeedTag").textContent = need.cat;
+
+  if (!roster.length){
+    wrap.innerHTML = `<div class="card"><div class="muted">Add players first.</div></div>`;
+    return;
+  }
+
+  function countsByPlayer(logs){
+    const map = {}; // pid -> cat -> count
+    for (const l of logs){
+      for (const pid of (l.players||[])){
+        map[pid] = map[pid] || {};
+        map[pid][l.cat] = (map[pid][l.cat]||0) + 1;
+      }
+    }
+    return map;
+  }
+
+  const w7 = countsByPlayer(logs7);
+  const allC = countsByPlayer(all);
+
+  roster.forEach(p=>{
+    const a7 = w7[p.id] || {};
+    const aa = allC[p.id] || {};
+
+    const top7 = Object.entries(a7).sort((x,y)=>y[1]-x[1]).slice(0,3);
+    const topA = Object.entries(aa).sort((x,y)=>y[1]-x[1]).slice(0,3);
+
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `
+      <div class="left">
+        <div class="name">${escapeHtml(p.name)} <span class="muted mono" style="font-size:11px">#${escapeHtml(p.number||"--")} • ${escapeHtml(p.pos||"—")}</span></div>
+        <div class="meta">${escapeHtml(p.notes||"")}</div>
+        <div class="meta" style="margin-top:8px">
+          <span class="tag blue">7d</span>
+          ${top7.length ? top7.map(([c,n])=>`<span class="tag">${escapeHtml(c)} (${n})</span>`).join(" ") : `<span class="tag">No misses logged</span>`}
+        </div>
+        <div class="meta" style="margin-top:6px">
+          <span class="tag blue">All</span>
+          ${topA.length ? topA.map(([c,n])=>`<span class="tag">${escapeHtml(c)} (${n})</span>`).join(" ") : `<span class="tag">No logs</span>`}
+        </div>
+      </div>
+      <div class="right">
+        <button class="btn" data-act="coach">Coach Cue</button>
+        <button class="btn" data-act="logs">View Logs</button>
+      </div>
+    `;
+    item.querySelector('[data-act="coach"]').onclick = ()=>{
+      const focusCat = (top7[0]?.[0] || need.cat);
+      openAskCoach(`Quick cue for ${p.name} to improve ${focusCat}`);
+    };
+    item.querySelector('[data-act="logs"]').onclick = ()=>{
+      const last = all.filter(l => (l.players||[]).includes(p.id)).slice(-15).reverse();
+      const lines = last.map(l=>`• ${new Date(l.ts).toLocaleDateString()} — ${l.cat} — ${l.standard} — ${l.drillTitle}`).join("\n");
+      openModal(`${p.name} Logs`, "Last 15 misses", `<div class="card" style="background:rgba(255,255,255,.03); box-shadow:none; white-space:pre-line">${escapeHtml(lines || "No logs yet.")}</div>`);
+    };
+    wrap.appendChild(item);
+  });
 }
-function hardReset(){
-  if (!confirm("Hard reset EVERYTHING (roster, present, today, grades, weekly no-repeat)?")) return;
-  [KEY_ROSTER,KEY_PRESENT,KEY_TODAY,KEY_GRADES,KEY_WEEKLY_USED,KEY_REGEN_SEED].forEach(k=>localStorage.removeItem(k));
-  boot();
-  alert("Reset complete.");
+
+/* =========================================================
+   REPORTS: 4 points/month weekly bucket + category charts
+========================================================= */
+function initReportsUI(){
+  const monthInput = document.getElementById("repMonth");
+  if (!monthInput.value){
+    const d = new Date();
+    monthInput.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+  }
+  const who = document.getElementById("repWho");
+  const roster = getRoster();
+  who.innerHTML = "";
+  who.appendChild(new Option("Team (all players)", "TEAM"));
+  roster.forEach(p => who.appendChild(new Option(p.name, p.id)));
 }
-function exportData(){
+
+function monthRange(year, monthIdx0){
+  const start = new Date(year, monthIdx0, 1, 0,0,0,0).getTime();
+  const end = new Date(year, monthIdx0+1, 1, 0,0,0,0).getTime();
+  return { start, end };
+}
+function monthWeeks4Buckets(ts, year, monthIdx0){
+  // 4 equal-ish buckets across the month range
+  const { start, end } = monthRange(year, monthIdx0);
+  const span = end - start;
+  const q = span / 4;
+  if (ts < start || ts >= end) return null;
+  const idx = Math.min(3, Math.floor((ts - start) / q));
+  return idx; // 0..3
+}
+
+function colorForPlayer(pid, idx){
+  // stable-ish palette
+  const palette = ["#60a5fa","#3b82f6","#93c5fd","#2563eb","#1d4ed8","#7dd3fc","#38bdf8","#0ea5e9","#1e40af","#4f46e5"];
+  if (pid==="TEAM") return "#60a5fa";
+  const h = hashString(pid);
+  return palette[h % palette.length];
+}
+function hashString(s){
+  let h=0;
+  for (let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; }
+  return h;
+}
+
+function computeMonthlyScores(year, monthIdx0){
+  // Score per player per category per bucket(0..3)
+  // score = 100 - (misses / max(1, opportunities)) * 100
+  const planLogs = getLogs().filter(l=>{
+    const d = new Date(l.ts);
+    return d.getFullYear()===year && d.getMonth()===monthIdx0;
+  });
+
+  const plansById = {}; // planId -> plan meta/blocks (only have current plan stored, so we approximate opportunities via logs by cat)
+  // V1 approach (simple + works): opportunities = # of logs saved in that category that week OR at least 1 if any drill run.
+  // This still gives meaningful trend lines for excellence (misses drive score down).
+
+  const roster = getRoster();
+  const players = roster.map(p=>p.id);
+
+  const scores = {}; // pid -> cat -> [4]
+  const misses = {}; // pid -> cat -> [4]
+  const opps = {};   // pid -> cat -> [4]
+
+  function ensure(pid, cat){
+    scores[pid] = scores[pid] || {};
+    misses[pid] = misses[pid] || {};
+    opps[pid] = opps[pid] || {};
+    if (!scores[pid][cat]) scores[pid][cat] = [100,100,100,100];
+    if (!misses[pid][cat]) misses[pid][cat] = [0,0,0,0];
+    if (!opps[pid][cat]) opps[pid][cat] = [0,0,0,0];
+  }
+
+  // count opps + misses from logs (fast)
+  for (const l of planLogs){
+    const b = monthWeeks4Buckets(l.ts, year, monthIdx0);
+    if (b===null) continue;
+    const cat = l.cat;
+    for (const pid of (l.players||[])){
+      ensure(pid, cat);
+      misses[pid][cat][b] += 1;
+      opps[pid][cat][b] += 1; // each logged miss implies an opportunity happened
+    }
+  }
+
+  // also account for players with no misses: give them baseline opps=1 per bucket per category if they practiced that month
+  // We'll infer "practiced" if ANY log exists for that player in that bucket, else leave blank baseline.
+  for (const pid of players){
+    for (const cat of EMPHASIS){
+      ensure(pid, cat);
+      for (let b=0;b<4;b++){
+        // If no opps and no misses, keep 100 but don't fabricate opps.
+        const m = misses[pid][cat][b];
+        const o = opps[pid][cat][b];
+        const denom = Math.max(1, o);
+        const sc = clamp(Math.round(100 - (m/denom)*100), 0, 100);
+        scores[pid][cat][b] = sc;
+      }
+    }
+  }
+
+  // TEAM aggregation (avg across players)
+  const teamScores = {}; // cat -> [4]
+  for (const cat of EMPHASIS){
+    teamScores[cat] = [100,100,100,100];
+    for (let b=0;b<4;b++){
+      let sum=0, n=0;
+      for (const pid of players){
+        sum += (scores[pid]?.[cat]?.[b] ?? 100);
+        n += 1;
+      }
+      teamScores[cat][b] = n ? Math.round(sum/n) : 100;
+    }
+  }
+
+  return { scores, teamScores };
+}
+
+function drawLineChart(canvas, series, options){
+  // series: [{label, color, points:[4]}]
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // background
+  ctx.fillStyle = "rgba(255,255,255,0.01)";
+  ctx.fillRect(0,0,W,H);
+
+  const padL=42, padR=10, padT=14, padB=26;
+  const x0=padL, y0=padT, x1=W-padR, y1=H-padB;
+  const w=x1-x0, h=y1-y0;
+
+  // grid
+  ctx.strokeStyle = "rgba(234,241,255,0.08)";
+  ctx.lineWidth = 1;
+  for (let i=0;i<=4;i++){
+    const y = y0 + (h*i/4);
+    ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+  }
+
+  // y labels (100,75,50,25,0)
+  ctx.fillStyle="rgba(234,241,255,0.65)";
+  ctx.font="11px ui-sans-serif, system-ui";
+  const yVals=[100,75,50,25,0];
+  yVals.forEach((v,i)=>{
+    const y = y0 + (h*i/4);
+    ctx.fillText(String(v), 8, y+4);
+  });
+
+  // x labels W1..W4
+  const xLabels=["W1","W2","W3","W4"];
+  xLabels.forEach((lab,i)=>{
+    const x = x0 + (w*i/3);
+    ctx.fillText(lab, x-10, H-8);
+  });
+
+  // series lines
+  function xy(i, val){
+    const x = x0 + (w*i/3);
+    const y = y0 + (h*(1 - (val/100)));
+    return {x,y};
+  }
+
+  for (const s of series){
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    s.points.forEach((v,i)=>{
+      const p = xy(i,v);
+      if (i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y);
+    });
+    ctx.stroke();
+
+    // points
+    ctx.fillStyle = s.color;
+    s.points.forEach((v,i)=>{
+      const p = xy(i,v);
+      ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill();
+    });
+  }
+
+  // title
+  if (options?.title){
+    ctx.fillStyle="rgba(234,241,255,0.92)";
+    ctx.font="12px ui-sans-serif, system-ui";
+    ctx.fillText(options.title, x0, 12);
+  }
+
+  // legend (top right, limited)
+  ctx.font="10px ui-sans-serif, system-ui";
+  let lx = W-10, ly=12;
+  const maxLegend = Math.min(6, series.length);
+  for (let i=0;i<maxLegend;i++){
+    const s = series[i];
+    const label = s.label.length>14 ? s.label.slice(0,14)+"…" : s.label;
+    const textW = ctx.measureText(label).width;
+    lx = W-10 - textW;
+    ctx.fillStyle = s.color;
+    ctx.fillRect(lx-12, ly-8, 8, 8);
+    ctx.fillStyle="rgba(234,241,255,0.72)";
+    ctx.fillText(label, lx, ly);
+    ly += 12;
+  }
+  if (series.length > maxLegend){
+    ctx.fillStyle="rgba(234,241,255,0.45)";
+    ctx.fillText(`+${series.length-maxLegend} more`, W-80, ly);
+  }
+}
+
+function renderMonthlyPreview(){
+  const monthVal = document.getElementById("repMonth").value;
+  if (!monthVal){ alert("Pick a month."); return; }
+  const [yy, mm] = monthVal.split("-").map(x=>parseInt(x,10));
+  const year = yy, monthIdx0 = mm-1;
+
+  const who = document.getElementById("repWho").value;
+  const roster = getRoster();
+  if (!roster.length){
+    alert("Add roster first.");
+    go("roster");
+    return;
+  }
+
+  const { scores, teamScores } = computeMonthlyScores(year, monthIdx0);
+
+  const preview = document.getElementById("repPreview");
+  preview.innerHTML = "";
+
+  document.getElementById("repMeta").textContent =
+    `Month: ${monthVal} • Weekly buckets: W1–W4 • Charts: category-based`;
+
+  // For each category, build chart series
+  for (const cat of EMPHASIS){
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.background = "rgba(255,255,255,.03)";
+    card.style.boxShadow = "none";
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 900;
+    canvas.height = 260;
+
+    let series = [];
+    if (who==="TEAM"){
+      series = roster.map((p,idx)=>({
+        label:p.name,
+        color: colorForPlayer(p.id, idx),
+        points: scores[p.id]?.[cat] ?? [100,100,100,100]
+      }));
+      // sort by last value (show top movers first)
+      series.sort((a,b)=> (b.points[3]-a.points[3]));
+    } else {
+      const p = roster.find(x=>x.id===who);
+      series = [{
+        label:p?.name || "Player",
+        color: colorForPlayer(who,0),
+        points: scores[who]?.[cat] ?? [100,100,100,100]
+      }];
+    }
+
+    // Draw
+    drawLineChart(canvas, series, { title: `${cat} — ${monthVal}` });
+
+    card.innerHTML = `<div class="row wrap">
+        <div>
+          <div class="h2">${cat}</div>
+          <div class="muted">W1–W4 score (0–100). Higher = fewer missed standards.</div>
+        </div>
+        <div class="chipRow">
+          <span class="tag blue">${who==="TEAM" ? "All Players" : "Single Player"}</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+    `;
+    card.appendChild(canvas);
+    preview.appendChild(card);
+  }
+}
+
+function printMonthlyPDF(){
+  // Use print window with rendered canvases
+  const monthVal = document.getElementById("repMonth").value;
+  if (!monthVal){ alert("Pick a month."); return; }
+  renderMonthlyPreview();
+
+  const title = `Practice Builder Pro — Monthly Report — ${monthVal}`;
+  const html = document.getElementById("repPreview").innerHTML;
+
+  // Convert canvases to images for print reliability
+  const canvases = document.querySelectorAll("#repPreview canvas");
+  const images = [];
+  canvases.forEach(c=>{
+    images.push(c.toDataURL("image/png"));
+  });
+
+  // Rebuild printable HTML with images
+  let body = `
+    <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#0b1220">
+      <h1 style="margin:0 0 6px 0; font-size:18px">${title}</h1>
+      <div style="font-size:12px; margin-bottom:14px; color:#334155">
+        Weekly buckets: W1–W4 • Categories: Defense/Rebounding/Offense/Press/Conditioning/Shooting
+      </div>
+  `;
+
+  let idx=0;
+  for (const cat of EMPHASIS){
+    const img = images[idx++];
+    body += `
+      <div style="page-break-inside:avoid; margin:0 0 18px 0; padding:12px; border:1px solid #e2e8f0; border-radius:12px">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:10px">
+          <div>
+            <div style="font-weight:800; font-size:14px">${cat}</div>
+            <div style="font-size:11px; color:#475569">Score 0–100. Higher = fewer missed standards.</div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <img src="${img}" style="width:100%; max-width:100%; border:1px solid #e2e8f0; border-radius:10px"/>
+        </div>
+      </div>
+    `;
+  }
+
+  body += `
+      <div style="font-size:10px; color:#64748b; margin-top:6px">
+        Export method: Print → Save as PDF (offline, no cost).
+      </div>
+    </div>
+  `;
+
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(`
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+        <title>${title}</title>
+        <style>
+          @page { size: landscape; margin: 12mm; }
+          body { margin:0; padding:0; }
+        </style>
+      </head>
+      <body>${body}</body>
+    </html>
+  `);
+  w.document.close();
+
+  // Let it render, then print
+  setTimeout(()=>{ w.print(); }, 400);
+}
+
+/* =========================================================
+   EXPORT JSON
+========================================================= */
+function exportJSON(){
   const data = {
     roster: getRoster(),
-    present: getPresentIds(),
-    today: getToday(),
-    grades: getGrades(),
-    weeklyUsed: loadJSON(KEY_WEEKLY_USED, {}),
-    regenSeed: getRegenSeed()
+    present: getPresent(),
+    plan: getPlan(),
+    logs: getLogs(),
+    history: getHistory(),
+    settings: getSettings()
   };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `pcc-export-${Date.now()}.json`;
+  a.download = `practice-builder-pro-export-${Date.now()}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
 /* =========================================================
-   HELPERS: formatting + grade jump
+   RESET DATA
 ========================================================= */
-function formatHeight(inches){
-  const ft = Math.floor(inches/12);
-  const inch = inches % 12;
-  return `${ft}'${inch}`;
+function resetData(){
+  if (!confirm("Reset ALL app data? (Roster, plan, logs)")) return;
+  localStorage.removeItem(K.roster);
+  localStorage.removeItem(K.present);
+  localStorage.removeItem(K.plan);
+  localStorage.removeItem(K.logs);
+  localStorage.removeItem(K.history);
+  localStorage.removeItem(K.settings);
+  ui = { tab:"home", logSelectedVid:null, logSelectedPlayers:new Set(), runIndex:0, runTimer:{running:false,endTs:0,remainSec:0,interval:null} };
+  stopTimer();
+  renderAll();
+  go("home");
 }
-function scrollToDrillGrades(drillId){
-  // small delay so view renders
-  setTimeout(()=>{
-    const el = document.getElementById(`grade-${drillId}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 50);
+
+/* =========================================================
+   MODAL
+========================================================= */
+function openModal(title, sub, bodyHtml){
+  document.getElementById("mTitle").textContent = title;
+  document.getElementById("mSub").textContent = sub;
+  document.getElementById("mBody").innerHTML = bodyHtml;
+  document.getElementById("modalWrap").classList.add("show");
+}
+function closeModal(){
+  document.getElementById("modalWrap").classList.remove("show");
+}
+
+/* =========================================================
+   RENDER ALL
+========================================================= */
+function renderAll(){
+  renderHomeHeaderLine();
+  renderRoster();
+  renderBuildUI();
+  renderPlan();
+  renderLogUI();
+  renderProgress();
+  // keep run screen accurate if open
+  if (ui.tab==="run") renderRun();
 }
 
 /* =========================================================
    BOOT
 ========================================================= */
-function boot(){
-  // Ensure TODAY exists
-  const today = getToday();
-  today.presentIds = getPresentIds();
-  saveToday(today);
-
-  // Default nav
-  go("dashboard");
+(function init(){
+  // defaults
+  if (!localStorage.getItem(K.settings)){
+    setSettings({ emphasis:[], hardMode:true });
+  }
   renderAll();
-}
-boot();
+  go("home");
+
+  // Reports tab is not on bottom nav; access via Home/Progress area:
+  // Add quick access: clicking team need tag goes to reports
+  document.getElementById("teamNeedTag").onclick = ()=>go("reports");
+})();
+</script>
+
+<!-- Quick hidden access to reports in UI: click Progress tab then type 'reports' in URL bar? (No.)
+     You can navigate to Reports by tapping Progress then clicking the teamNeed tag, or from Home quick actions. -->
+<script>
+  // Add Home button access to Reports without adding bottom nav button (keeps nav clean)
+  // We'll hijack a simple gesture: double-click Need tag on Home to open Reports
+  document.addEventListener("DOMContentLoaded", ()=>{
+    const needTag = document.getElementById("tagNeed");
+    if (needTag){
+      needTag.ondblclick = ()=>go("reports");
+      needTag.title = "Double-click to open Reports";
+    }
+  });
 </script>
 </body>
 </html>
